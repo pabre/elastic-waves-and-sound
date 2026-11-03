@@ -27,8 +27,6 @@
   --r1: #1d8a8c; --r1-lo: #0b4c4f; --r1-hi: #93ddd7;
   --r2: #c8701f; --r2-lo: #74390a; --r2-hi: #f7c387;
   --r3: #8a6440; --r3-lo: #3e2a16; --r3-hi: #d8b688;
-  --skin: #e8bf98; --skin-lo: #b0784f; --skin-hi: #f8dcc0; --nail: #f2c9bf;
-  --sleeve: #3d6fb6; --sleeve-lo: #22457c; --sleeve-hi: #6e9bd8;
   --metal-hi: #f7f9fb; --metal: #a9b3bd; --metal-lo: #5b6671;
   --iron: #3d454e; --iron-hi: #6a747f;
   --brick: #d9cbb9; --brick-lo: #b19d86; --mortar: #ece4d8;
@@ -48,8 +46,6 @@
     --hi: #ff7461; --hi-ink: #0d1116; --lo: #5d9cff; --heat: #ffbb33; --nodal: #b08cff; --anti: #4fd389;
     --stage: #12171d; --stage-a: #1a222b; --stage-b: #10161c; --floor-a: #232a31; --floor-b: #1a2027;
     --r1: #33b2ae; --r1-lo: #0f5355; --r1-hi: #aaf1ea; --r2: #e48a3a; --r2-lo: #80420c; --r2-hi: #ffd09c; --r3: #ab8257; --r3-lo: #45301c; --r3-hi: #e6c498;
-    --skin: #d2a47c; --skin-lo: #8a5c3c; --skin-hi: #e8c4a2; --nail: #e2b4aa;
-    --sleeve: #4f86d1; --sleeve-lo: #2a548f; --sleeve-hi: #7fa9e2;
     --metal-hi: #e3e9ee; --metal: #87939f; --metal-lo: #38424c;
     --iron: #2a3037; --iron-hi: #545e69;
     --brick: #48413a; --brick-lo: #2c2722; --mortar: #5a524a;
@@ -67,8 +63,6 @@
   --hi: #ff7461; --hi-ink: #0d1116; --lo: #5d9cff; --heat: #ffbb33; --nodal: #b08cff; --anti: #4fd389;
   --stage: #12171d; --stage-a: #1a222b; --stage-b: #10161c; --floor-a: #232a31; --floor-b: #1a2027;
   --r1: #33b2ae; --r1-lo: #0f5355; --r1-hi: #aaf1ea; --r2: #e48a3a; --r2-lo: #80420c; --r2-hi: #ffd09c; --r3: #ab8257; --r3-lo: #45301c; --r3-hi: #e6c498;
-  --skin: #d2a47c; --skin-lo: #8a5c3c; --skin-hi: #e8c4a2; --nail: #e2b4aa;
-  --sleeve: #4f86d1; --sleeve-lo: #2a548f; --sleeve-hi: #7fa9e2;
   --metal-hi: #e3e9ee; --metal: #87939f; --metal-lo: #38424c;
   --iron: #2a3037; --iron-hi: #545e69;
   --brick: #48413a; --brick-lo: #2c2722; --mortar: #5a524a;
@@ -179,6 +173,65 @@ h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white
   .pbtn .lg { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- PHONE v1: 휴대폰 세로·가로 ---------- */
+.presets, .dock { scrollbar-width: none; }
+.presets::-webkit-scrollbar, .dock::-webkit-scrollbar { display: none; }
+@media (max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape) {
+  html, body { height: 100%; }
+  body { overscroll-behavior: none; }
+  .app { height: 100vh; height: 100dvh; min-height: 0; gap: 6px;
+         padding: max(6px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) max(6px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+  .topbar { flex: 0 0 auto; gap: 6px 8px; }
+  .brand { gap: 6px; }
+  .tag { font-size: 11px; padding: 1px 6px; }
+  h1 { font-size: 16px; }
+  .presets { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 4px; padding: 1px 0;
+             -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent); mask-image: linear-gradient(90deg, #000 90%, transparent); }
+  .chip { flex: 0 0 auto; font-size: 13px; padding: 3px 9px 3px 3px; min-height: 30px; }
+  .chip b { width: 22px; height: 22px; font-size: 11px; }
+  .tools { gap: 4px; }
+  .tbtn { padding: 5px 9px; font-size: 13px; min-height: 30px; }
+  .stage { height: auto; flex: 1 1 0; min-height: 0; border-radius: 12px; }
+  .glass { border-radius: 11px; }
+  .playbar { top: 6px; left: 6px; padding: 4px; gap: 4px; }
+  .pbtn { padding: 6px 11px; font-size: 14px; min-height: 34px; }
+  .playbar .seg, .timenote { display: none; }
+  .readout { top: 6px; right: 6px; width: auto; min-width: 118px; max-width: 46%; padding: 6px 9px; gap: 1px; }
+  .ro { font-size: 12px; gap: 6px; } .ro b { font-size: 14px; }
+  .ro-db b { font-size: 24px; } .ro-db small, .ro-sub { font-size: 11px; }
+  .ro-opt { display: none !important; }
+  .bottom { left: 6px; right: 6px; bottom: 6px; gap: 6px; }
+  .caption { font-size: 13.5px; padding: 6px 11px; line-height: 1.35; }
+  .dock { flex: 0 0 auto; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 6px; }
+  .dg { flex: 0 0 auto; padding: 4px 9px; gap: 7px; border-radius: 10px; }
+  .dg.slider { flex: 0 0 auto; width: min(76vw, 300px); }
+  .seg button, .tg { padding: 7px 10px; font-size: 13px; }
+  /* 이 파일: 측정값 카드는 핵심 값(반사파·투과파 / 반사 시간·깊이)만, 조작 묶음은 한 줄씩 */
+  .ro.opt, .ro-sep { display: none; }
+  .ro-cap { font-size: 12px; line-height: 1.3; }
+  .ro-db { flex-wrap: nowrap; gap: 5px; }
+  .state { font-size: 12px; padding: 1px 7px; }
+  .pbtn .lg { display: none; }
+  .dg, .dg .seg, .tgs { flex-wrap: nowrap; }
+  .caption { word-break: keep-all; }
+  .presets::after { content: ""; flex: 0 0 28px; }  /* 마지막 장면 버튼도 흐려지는 끝을 지나 다 보이게 */
+}
+@media (max-width: 600px) and (orientation: portrait) {
+  .brand { flex: 1 1 auto; min-width: 0; }
+  .presets { order: 3; flex: 1 0 100%; }          /* 장면 버튼: 둘째 줄, 옆으로 밀기 */
+  .dg.slider[data-for="scan"] { width: min(50vw, 210px); }   /* 탐촉자는 블록 위를 끌어도 되므로 짧게: 옆 버튼이 보이게 */
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .topbar { flex-wrap: nowrap; }                   /* 한 줄: 제목 · 장면 버튼(옆으로 밀기) · 도구 */
+  .presets { flex: 1 1 0; min-width: 0; }
+  .caption { font-size: 13px; max-width: 58%; }
+  .readout { max-width: 32%; }
+  /* 이 파일: 무대가 낮아서 설명은 위쪽 가운데(재생 막대와 측정값 카드 사이)에. 아래는 바닥의 자 자리 (--cap-l, --cap-r은 스크립트가 잼) */
+  .bottom { top: 6px; bottom: auto; left: var(--cap-l, 200px); right: var(--cap-r, 34%); justify-content: center; }
+  .readout { width: 172px; min-width: 0; }         /* 폭을 고정: 값이 바뀌어도 설명 줄바꿈·장면 배치가 흔들리지 않게 */
+  .bottom .caption { max-width: 100%; padding: 5px 10px; line-height: 1.3; }
+}
 </style>
 
 <div class="app" id="app">
@@ -366,7 +419,7 @@ function stepTime(d) { if (S.mode !== 'rope') return; S.t = Math.max(0, Math.min
 const T = {};
 const A = (hex, a) => { const n = parseInt(String(hex).slice(1), 16) || 0; return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; };   // 토큰 색 + 투명도
 const KEYS = ['surface', 'surface-2', 'ink', 'muted', 'line', 'accent', 'hi', 'lo', 'heat', 'nodal', 'anti', 'stage', 'stage-a', 'stage-b', 'floor-a', 'floor-b',
-  'r1', 'r1-lo', 'r1-hi', 'r2', 'r2-lo', 'r2-hi', 'r3', 'r3-lo', 'r3-hi', 'skin', 'skin-lo', 'skin-hi', 'nail', 'sleeve', 'sleeve-lo', 'sleeve-hi',
+  'r1', 'r1-lo', 'r1-hi', 'r2', 'r2-lo', 'r2-hi', 'r3', 'r3-lo', 'r3-hi',
   'metal-hi', 'metal', 'metal-lo', 'iron', 'iron-hi', 'brick', 'brick-lo', 'mortar', 'wood', 'wood-lo', 'wood-ink', 'steel-hi', 'steel', 'steel-lo',
   'case', 'case-hi', 'bumper', 'bumper-lo', 'cable', 'cable-hi', 'scope-bg', 'scope-grid', 'scope-trace', 'scope-ink', 'shadow', 'spec'];
 const steelCache = { key: '', cv: document.createElement('canvas') };
@@ -382,7 +435,8 @@ new MutationObserver(readTheme).observe(document.documentElement, { attributes: 
 
 /* ---------- 캔버스 ---------- */
 const stage = $('#stage'), cv = $('#cv'), ctx = cv.getContext('2d');
-const D = { dpr: 1, w: 1, h: 1, roBottom: 200, roLeft: 9999, botTop: 9999, pbBottom: 64, pbRight: 300 };
+const D = { dpr: 1, w: 1, h: 1, roBottom: 200, roLeft: 9999, botTop: 9999, pbBottom: 64, pbRight: 300, phone: false, capBot: 0, capRight: 0 };
+const PHONE = matchMedia('(max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape)');   // CSS의 PHONE v1과 같은 조건
 function resize() {
   const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
   const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
@@ -393,9 +447,19 @@ function resize() {
 }
 function measureOverlays() {
   const r = cv.getBoundingClientRect(), ro = $('#ro').getBoundingClientRect(), cap = $('#caption'), pb = $('#playbar').getBoundingClientRect();
+  D.phone = PHONE.matches;
   D.roBottom = ro.bottom - r.top; D.roLeft = ro.left - r.left;
   D.pbBottom = pb.bottom - r.top; D.pbRight = pb.right - r.left;
-  D.botTop = cap.hidden ? r.height : cap.getBoundingClientRect().top - r.top;
+  // 휴대폰 가로: 설명을 재생 막대와 측정값 카드 사이(위쪽 가운데)에 둔다 (CSS가 이 두 값을 씀)
+  const cl = `${Math.round(D.pbRight + 8)}px`, cr = `${Math.round(r.right - ro.left + 8)}px`;
+  if (stage.style.getPropertyValue('--cap-l') !== cl) stage.style.setProperty('--cap-l', cl);
+  if (stage.style.getPropertyValue('--cap-r') !== cr) stage.style.setProperty('--cap-r', cr);
+  D.botTop = r.height; D.capBot = 0; D.capRight = 0;
+  if (!cap.hidden) {
+    const c = cap.getBoundingClientRect(), top = c.top - r.top;
+    if (top < r.height / 2) D.capBot = c.bottom - r.top; else D.botTop = top;   // 위에 있으면 위 띠, 아래에 있으면 바닥 쪽 한계
+    D.capRight = c.right - r.left;
+  }
 }
 new ResizeObserver(resize).observe(stage);
 
@@ -455,13 +519,13 @@ function rope(pts, wd, key, pxPerM) {
   ctx.strokeStyle = T.spec; ctx.globalAlpha = 0.45; ctx.lineWidth = Math.max(1, wd * 0.08); path(pts, 0, -wd * 0.27); ctx.stroke();
   ctx.restore();
 }
-function arrowDim(x, y0, y1, color, text, left = false) {
+function arrowDim(x, y0, y1, color, text, left = false, size = 15) {
   ctx.save(); ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = 2.2;
   const d = Math.sign(y1 - y0) || 1, len = Math.abs(y1 - y0), ah = Math.min(10, len * 0.38), aw = Math.min(6, ah * 0.65);
   if (len > 2 * ah + 1) { ctx.beginPath(); ctx.moveTo(x, y0 + d * ah); ctx.lineTo(x, y1 - d * ah); ctx.stroke(); }
   for (const [yy, s] of [[y0, 1], [y1, -1]]) { ctx.beginPath(); ctx.moveTo(x, yy); ctx.lineTo(x - aw, yy + s * d * ah); ctx.lineTo(x + aw, yy + s * d * ah); ctx.closePath(); ctx.fill(); }
   ctx.restore();
-  label(text, left ? x - 10 : x + 10, (y0 + y1) / 2, color, left ? 'right' : 'left', 15);
+  if (text) label(text, left ? x - 10 : x + 10, (y0 + y1) / 2, color, left ? 'right' : 'left', size);
 }
 function background() {
   ctx.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); ctx.globalAlpha = 1; ctx.setLineDash([]); ctx.filter = 'none';
@@ -470,22 +534,49 @@ function background() {
 
 /* ---------- 장면: 두 줄 (옆에서 본 모습) ---------- */
 function rgeo() {
-  const w = D.w, h = D.h, x0 = w < 720 ? -0.6 : -0.36, x1 = XMAX + 0.04, s = w / (x1 - x0);   // 왼쪽 여백 = 주먹과 짧은 소매 자리
+  if (D.phone) return rgeoPhone();
+  const w = D.w, h = D.h, x0 = w < 720 ? -0.6 : -0.36, x1 = XMAX + 0.04, s = w / (x1 - x0);   // 왼쪽 여백 = 주먹과 줄 꼬리 자리
   const floorY = Math.min(h - (w < 720 ? 120 : 118), (D.botTop || h) - 52), top = (w < 720 ? (D.roBottom || 160) : Math.min(D.roBottom || 160, h * 0.45)) - 10, avail = floorY - top;
   let E = Math.max(1, Math.max(44, 0.15 * h) / (AMP * s));
   if (0.64 * s * E + 96 > avail) E = Math.max(0.6, (avail - 96) / (0.64 * s));
   const up = 0.42 * s * E, down = 0.22 * s * E + 96;
   const cy = top + up + Math.max(0, avail - up - down) * 0.5;
   const k = Math.max(0.65, Math.min(1.35, s / 280));
-  return { w, h, s, E, cy, floorY, k, X: x => (x - x0) * s, Y: y => cy - y * s * E };
+  // 자(위치·높이), 매질 이름 높이, 파동 이름표 거리·글자 크기, 출처 글 위치
+  const credit = D.capRight > w - 230 && D.botTop < h - 4 ? D.botTop - 6 : h - 8;
+  return { w, h, s, E, cy, floorY, k, X: x => (x - x0) * s, Y: y => cy - y * s * E,
+    rOff: 14, rH: 28, ny: floorY - 22, tagOff: 34, lbl: 16, dimLbl: 15, nameLbl: 16, credit };
 }
+// 휴대폰: 세로는 남는 위아래 공간으로 펄스를 키우고, 가로는 낮은 무대에 맞춰 자·이름표를 줄인다.
+// 위 띠(재생 막대·측정값 카드, 가로에선 설명)와 아래(설명 또는 무대 끝) 사이에 줄·펄스·이름표·자·출처가 겹치지 않게 펄스 높이 A(px)를 고른다.
+function rgeoPhone() {
+  const w = D.w, h = D.h, land = w > h, x1 = XMAX + 0.04;
+  let x0, s, k;
+  if (land) { x0 = -0.36; s = w / (x1 - x0); k = clamp(s / 240, 0.8, 1.1); }                                // 작은 화면에선 줄을 조금 굵게
+  else { k = clamp(w / 400, 0.8, 1); const M = FIST.wpx(k) * 1.3 + 8; s = (w - M) / x1; x0 = -M / s; }   // 왼쪽 여백 = 주먹 + 줄 꼬리
+  const rOff = land ? 5 : 10, rH = land ? 22 : 26, lbl = land ? 14 : 15, lh = lbl + 11, tagOff = land ? 22 : 30, nameLbl = land ? 13 : 15, nlh = nameLbl + 11;
+  const floorY = land ? h - 4 - rH - rOff : (D.botTop || h) - 4 - 15 - rH - rOff;  // 세로: 자 아래 15 px = 출처 글 줄 (가로는 매질 이름표 줄 왼쪽 끝에)
+  const ny = floorY - nlh / 2 - 5;                                                  // 매질 이름표 가운데
+  const top = Math.max(D.pbBottom || 50, land ? D.capBot : D.roBottom || 0) + 4;
+  const roTop = (D.roBottom || 0) + 4;                                              // 가로: 카드 아래로 지나가는 투과파(≤ 1.34 A)
+  const U = A => Math.max(2 * A + 19 * k + 4, A + tagOff + lh / 2 + 2);            // 위: 고리(2A)와 막대 끝, 입사파 이름표
+  const hiOf = A => ny - nlh / 2 - 4 - (A + tagOff + lh / 2);                       // cy 최댓값: 뒤집힌 반사파 이름표가 매질 이름표 위에
+  const loOf = A => Math.max(top + U(A), land ? roTop + 1.34 * A : -1e9);
+  let lo = 8, hi = land ? 0.75 * h : Math.min(0.2 * h, 2.4 * v1Max() * TP * s);       // 세로: 너무 뾰족한 바늘이 되지 않게
+  if (loOf(lo) > hiOf(lo)) hi = lo;
+  for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; if (loOf(m) <= hiOf(m)) lo = m; else hi = m; }
+  const A = lo, E = A / (AMP * s), cy = (loOf(A) + Math.max(loOf(A), hiOf(A))) / 2;
+  return { w, h, s, E, cy, floorY, k, X: x => (x - x0) * s, Y: y => cy - y * s * E,
+    rOff, rH, ny, tagOff, lbl, dimLbl: land ? 13 : 14, nameLbl, credit: land ? ny + 4 : floorY + rOff + rH + 13, creditLeft: land, phone: true, land };
+}
+const v1Max = () => ROPES.thin.v;
 function drawFloor(G) {
   const { X, floorY, s } = G;
   ctx.fillStyle = lin(0, floorY, 0, D.h, [[0, T['floor-a']], [1, T['floor-b']]]); ctx.fillRect(0, floorY, D.w, D.h - floorY);
   ctx.fillStyle = lin(0, floorY - 26, 0, floorY, [[0, A(T.shadow, 0)], [1, A(T.shadow, .06)]]); ctx.fillRect(0, floorY - 26, D.w, 26);   // 벽과 바닥이 만나는 곳의 그늘
   ctx.strokeStyle = T.spec; ctx.globalAlpha = 0.45; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, floorY + 0.5); ctx.lineTo(D.w, floorY + 0.5); ctx.stroke(); ctx.globalAlpha = 1;
   // 바닥에 놓인 나무 자 (0 ~ 4 m)
-  const y = floorY + 14, x0 = X(0) - 8, x1 = Math.min(D.w - 8, X(XMAX) + 8), hh = 28;
+  const y = floorY + G.rOff, x0 = X(0) - 8, x1 = Math.min(D.w - 8, X(XMAX) + 8), hh = G.rH, big = hh >= 28 ? 10 : 8, small = hh >= 28 ? 6 : 5;
   shadowed(() => { ctx.fillStyle = lin(0, y, 0, y + hh, [[0, T.wood], [1, T['wood-lo']]]); ctx.beginPath(); ctx.roundRect(x0, y, x1 - x0, hh, 4); ctx.fill(); }, 10, 4, 0, 0.22);
   ctx.save(); ctx.beginPath(); ctx.roundRect(x0, y, x1 - x0, hh, 4); ctx.clip();          // 나뭇결
   ctx.strokeStyle = T['wood-lo']; ctx.globalAlpha = 0.18; ctx.lineWidth = 1;
@@ -494,9 +585,9 @@ function drawFloor(G) {
   ctx.strokeStyle = T.spec; ctx.globalAlpha = 0.4; ctx.beginPath(); ctx.moveTo(x0 + 4, y + 1); ctx.lineTo(x1 - 4, y + 1); ctx.stroke(); ctx.globalAlpha = 1;
   ctx.strokeStyle = T['wood-ink']; ctx.fillStyle = T['wood-ink']; ctx.lineWidth = 1;
   ctx.beginPath();
-  for (let i = 0; i <= XMAX * 10; i++) { if (s < 120 && i % 5) continue; const x = Math.round(X(i / 10)) + 0.5, len = i % 5 === 0 ? 10 : 6; ctx.moveTo(x, y); ctx.lineTo(x, y + len); }
+  for (let i = 0; i <= XMAX * 10; i++) { if (s < 120 && i % 5) continue; const x = Math.round(X(i / 10)) + 0.5, len = i % 5 === 0 ? big : small; ctx.moveTo(x, y); ctx.lineTo(x, y + len); }
   ctx.stroke();
-  ctx.font = `600 14px ${T.mono}`; ctx.textBaseline = 'alphabetic';
+  ctx.font = `600 ${hh >= 28 ? 14 : 13}px ${T.mono}`; ctx.textBaseline = 'alphabetic';
   for (let i = 0; i <= XMAX * 2; i++) {
     if (s < 150 && i % 2) continue; const v = i / 2;
     if (v === XMAX) { ctx.textAlign = 'right'; ctx.fillText('4 m', x1 - 5, y + hh - 5); continue; }
@@ -504,184 +595,39 @@ function drawFloor(G) {
   }
 }
 
-// 굵기가 변하는 둥근 관 모양 (손가락·엄지)
-function limb(pts, rs) {
-  const sp = [], sr = [];
-  for (let i = 0; i < pts.length - 1; i++) {                       // Catmull–Rom으로 매끄럽게
-    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
-    for (let j = 0; j < 8; j++) {
-      const t = j / 8, t2 = t * t, t3 = t2 * t;
-      const f = (a, b, c, d) => 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3);
-      sp.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])]); sr.push(rs[i] + (rs[i + 1] - rs[i]) * t);
-    }
-  }
-  sp.push(pts[pts.length - 1]); sr.push(rs[rs.length - 1]);
-  const n = sp.length, L = [], R = [], A = [];
-  for (let i = 0; i < n; i++) {
-    const a = sp[Math.max(0, i - 1)], b = sp[Math.min(n - 1, i + 1)];
-    let tx = b[0] - a[0], ty = b[1] - a[1]; const l = Math.hypot(tx, ty) || 1; tx /= l; ty /= l;
-    L.push([sp[i][0] - ty * sr[i], sp[i][1] + tx * sr[i]]); R.push([sp[i][0] + ty * sr[i], sp[i][1] - tx * sr[i]]); A.push(Math.atan2(ty, tx));
-  }
-  const p = new Path2D();
-  p.moveTo(L[0][0], L[0][1]); for (let i = 1; i < n; i++) p.lineTo(L[i][0], L[i][1]);
-  p.arc(sp[n - 1][0], sp[n - 1][1], sr[n - 1], A[n - 1] + Math.PI / 2, A[n - 1] - Math.PI / 2, true);
-  for (let i = n - 1; i >= 0; i--) p.lineTo(R[i][0], R[i][1]);
-  p.arc(sp[0][0], sp[0][1], sr[0], A[0] - Math.PI / 2, A[0] - Math.PI * 1.5, true);
-  p.closePath();
-  return p;
+/* ---------- 줄을 쥔 주먹: 그림 = Microsoft Fluent Emoji 'Raised fist' (MIT) ----------
+   손바닥 쪽에서 본 오른손 주먹. 줄은 말아 쥔 손가락 안을 가로로 지나 새끼손가락 쪽(왼쪽)으로 짧게 삐져나오고,
+   검지와 엄지 사이(오른쪽)로 나와 경계 쪽으로 뻗는다. 그림(32 × 32 단위)에서 주먹 폭은 x 3.45–28.5 = 25 단위 ≈ 실제 8.5 cm,
+   줄 그림의 배율(6.2·k px = 1 cm, 굵은 줄 지름 ≈ 2.3 cm)에 맞춘다. 그림이 아직 안 읽혔으면 줄 끝만 그린다. */
+const IMG = {};
+function loadImg(key, uri) { const im = new Image(); im.decoding = 'async'; im.onload = () => { IMG[key] = im; fistCache.key = ''; }; im.src = uri; }
+const FIST = { cm: 8.5, w: 25, ex: 27.6, ey: 12.2, wpx: k => FIST.cm * 6.2 * k };   // ex, ey = 줄이 주먹에서 나오는 점(그림 좌표)
+const fistCache = { key: '', cv: document.createElement('canvas') };
+function fistSprite(box) {                                            // SVG를 한 번만 래스터로 만들어 두고 매 프레임 그 비트맵을 그린다
+  const n = Math.max(8, Math.round(box * D.dpr));
+  if (fistCache.key !== n) { const c = fistCache.cv; c.width = c.height = n; const x = c.getContext('2d'); x.clearRect(0, 0, n, n); x.drawImage(IMG.fist, 0, 0, n, n); fistCache.key = n; }
+  return fistCache.cv;
 }
-// 닫힌 Catmull–Rom 곡선 (손 윤곽)
-function smoothLoop(pts) {
-  const p = new Path2D(), n = pts.length; p.moveTo(pts[0][0], pts[0][1]);
-  for (let i = 0; i < n; i++) {
-    const a = pts[(i + n - 1) % n], b = pts[i], c = pts[(i + 1) % n], d = pts[(i + 2) % n];
-    p.bezierCurveTo(b[0] + (c[0] - a[0]) / 6, b[1] + (c[1] - a[1]) / 6, c[0] - (d[0] - b[0]) / 6, c[1] - (d[1] - b[1]) / 6, c[0], c[1]);
-  }
-  p.closePath(); return p;
-}
-// 줄을 쥔 오른손: 손바닥 쪽에서 본 주먹 (교과서 삽화풍, 빛은 왼쪽 위)
-// 줄은 새끼손가락 쪽으로 들어가 검지와 엄지가 만든 고리로 나온다. 네 손가락은 가운데 마디가 앞에 보이고 끝마디는 손바닥 쪽으로 접혀 들어가며,
-// 엄지가 검지·중지 위를 덮는다(그래서 손톱은 엄지 것만 보인다). 팔뚝은 왼쪽 아래에서 45°로 들어오고 소맷부리만 조금 보인다.
-// 그림 단위는 cm: 손바닥 폭 ≈ 8 cm, 굵은 줄 지름 ≈ 2.3 cm. (x, y) = 줄이 고리에서 나오는 곳, ang = 손을 젖힌 각(rad), wd·key = 쥔 줄의 굵기(px)와 색
-const FINGERS = [   // 새끼 → 검지: [가로 중심, 폭, 둘째 마디 관절(PIP) 높이, 끝마디 관절(DIP) 높이, 아래로 갈수록 엄지 쪽으로 기우는 정도]
-  [-7.05, 1.62, -1.65, 0.75, 0.14], [-5.25, 1.9, -2.15, 1.05, 0.1], [-3.28, 2.04, -2.35, 1.2, 0.07], [-1.22, 1.98, -2.1, 1.0, 0.04]
-];
+// (x, y) = 줄이 주먹에서 나오는 곳 = 줄의 손 쪽 끝, ang = 손목을 꺾은 각(rad), wd·key = 쥔 줄의 굵기(px)와 색
 function drawHand(x, y, k, ang, wd, key) {
-  const u = 6.2 * k, ca = Math.cos(ang), sa = Math.sin(ang), px = 1 / u, dp = D.dpr;
-  const toS = (a, b) => [x + (a * ca - b * sa) * u, y + (a * sa + b * ca) * u];            // 손 좌표(cm) → 화면
-  const sk = T.skin, lo = T['skin-lo'], hi = T['skin-hi'];
-  // 팔뚝 축: 손목 가운데 C에서 왼쪽 아래로 45°. F(s, h) = 축을 따라 s, 옆으로 h (h > 0 은 엄지 쪽 = 아래 가장자리)
-  const C = [-4.9, 5.5], dx = -Math.SQRT1_2, dy = Math.SQRT1_2, nx = dy, ny = -dx;
-  const F = (s, h) => [C[0] + s * dx + h * nx, C[1] + s * dy + h * ny];
-
-  // 1) 새끼손가락 쪽으로 빠져나온 줄 끝 (손 뒤)
-  const tl = [[-6.3, 0], [-8.4, 0.05], [-9.6, 0.35], [-10.4, 0.9]];
+  const q = FIST.wpx(k) / FIST.w, ca = Math.cos(ang), sa = Math.sin(ang);
+  const toS = (a, b) => [x + ((a - FIST.ex) * ca - (b - FIST.ey) * sa) * q, y + ((a - FIST.ex) * sa + (b - FIST.ey) * ca) * q];
+  // 1) 주먹 속을 지나 새끼손가락 쪽으로 빠져나온 줄 끝 (주먹 뒤에 먼저 그림)
+  const tl = [[27, 12.2], [6, 12.2], [2.6, 12.45], [0.1, 13.3], [-2.0, 14.7]];
   let m = 0;
-  const tp = tl.map(([a, b], i) => { if (i) m += Math.hypot(a - tl[i - 1][0], b - tl[i - 1][1]) * u / 1e3; return [...toS(a, b), m]; });
+  const tp = tl.map(([a, b], i) => { if (i) m += Math.hypot(a - tl[i - 1][0], b - tl[i - 1][1]) * q / 1e3; return [...toS(a, b), m]; });
   rope(tp, wd, key, 1e3);
-  { const [ex, ey] = tp[3], [qx, qy] = tp[2], a = Math.atan2(ey - qy, ex - qx);
+  { const n = tp.length, [ex, ey] = tp[n - 1], [qx, qy] = tp[n - 2], a = Math.atan2(ey - qy, ex - qx);
     ctx.fillStyle = T[key + '-lo']; ctx.beginPath(); ctx.ellipse(ex, ey, wd * 0.22, wd * 0.5, a, 0, 2 * Math.PI); ctx.fill(); }
-
-  ctx.save(); ctx.translate(x, y); ctx.rotate(ang); ctx.scale(u, u);
-  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-  // 2) 윤곽: 손 + 팔뚝 / 엄지 / 소매(팔뚝 축에 맞춘 좌표 M: +x = 팔꿈치 쪽, +y = 아래 가장자리)
-  const body = smoothLoop([[-8.0, -0.9], [-7.8, -1.95], [-7.05, -2.42], [-6.2, -2.58], [-5.25, -2.95], [-4.3, -3.0], [-3.28, -3.15], [-2.24, -3.03], [-1.22, -2.95], [-0.3, -2.55], [0.15, -1.5], [0.3, -0.05],
-    [0.8, 0.8], [1.35, 1.6], [1.6, 2.6], [1.5, 3.7], [0.85, 4.75], [-0.45, 5.75], [-1.8, 6.5], F(1.2, 2.62), F(3.6, 2.75), F(5.4, 2.85), F(5.4, -2.85), F(3.6, -2.75),
-    [-8.44, 5.22], [-7.75, 4.45], [-7.85, 3.75], [-8.2, 2.7], [-8.25, 1.4], [-8.15, 0.25]]);
-  const TH = [[0.5, 2.5], [-0.5, 1.95], [-1.5, 1.42], [-2.6, 1.02], [-3.55, 0.78]];
-  const thumb = limb(TH, [1.08, 0.98, 0.95, 0.92, 0.82]);
-  const M = new DOMMatrix().translate(C[0], C[1]).rotate(135).scale(1, -1);
-  const sleeve = new Path2D();
-  sleeve.moveTo(5.3, -3.35); sleeve.quadraticCurveTo(6.0, -3.9, 8.0, -3.95); sleeve.lineTo(60, -4.4); sleeve.lineTo(60, 4.4); sleeve.lineTo(8.0, 3.95); sleeve.quadraticCurveTo(6.0, 3.9, 5.3, 3.35); sleeve.closePath();
-  const cuff = new Path2D(); cuff.roundRect(3.35, -3.2, 2.2, 6.4, 0.5);
-  // 그림자는 전체 윤곽 하나로 (겹친 곳이 더 진해지지 않게)
-  const sil = new Path2D(); sil.addPath(body); sil.addPath(thumb); sil.addPath(sleeve, M); sil.addPath(cuff, M);
-  ctx.save(); ctx.shadowColor = A(T.shadow, .27); ctx.shadowBlur = 14 * dp; ctx.shadowOffsetX = 5 * dp; ctx.shadowOffsetY = 11 * dp; ctx.fillStyle = sk; ctx.fill(sil); ctx.restore();
-
-  // 3) 손바닥·손목·팔뚝 피부
-  const rg = (cx, cy, r, c, a, sy = 1) => { ctx.save(); ctx.translate(cx, cy); ctx.scale(1, sy); const g0 = ctx.createRadialGradient(0, 0, 0, 0, 0, r); g0.addColorStop(0, A(c, a)); g0.addColorStop(1, A(c, 0)); ctx.fillStyle = g0; ctx.fillRect(-r, -r, 2 * r, 2 * r); ctx.restore(); };
-  ctx.fillStyle = sk; ctx.fill(body);
-  ctx.save(); ctx.clip(body);
-  ctx.fillStyle = lin(-8.5, -3, 2, 9, [[0, A(hi, .8)], [0.42, A(hi, 0)], [0.7, A(lo, 0)], [1, A(lo, .4)]]); ctx.fillRect(-14, -4, 18, 18);
-  ctx.fillStyle = lin(0, -3.2, 0, -1.5, [[0, A(hi, .1)], [0.45, A(hi, .65)], [1, A(hi, 0)]]); ctx.fillRect(-9, -3.3, 10, 1.8);      // 주먹 윗면(첫마디 등)
-  ctx.fillStyle = lin(0, -2.2, 0, 2.4, [[0, A(lo, 0)], [0.15, A(lo, .6)], [0.74, A(lo, .6)], [1, A(lo, 0)]]); ctx.fillRect(-7.85, -2.2, 7.7, 4.6);     // 손가락 사이 틈과 손가락 밑의 그늘
-  ctx.fillStyle = lin(-0.5, 0, 0.45, 0, [[0, A(lo, 0)], [1, A(lo, .5)]]); ctx.fillRect(-0.5, -2.9, 1.1, 3.1);                        // 검지 옆면 (빛 반대쪽)
-  rg(-3.7, 2.4, 3.0, lo, .5, 0.7);                                    // 손가락 밑 오목한 손바닥
-  rg(-7.5, 2.9, 1.5, hi, .5, 1.3);                                    // 새끼두덩
-  rg(0.3, 3.9, 1.7, hi, .4);                                          // 엄지두덩
-  rg(-7.8, 4.6, 0.9, lo, .45);                                        // 손목 새끼 쪽 접힌 곳
-  ctx.fillStyle = lin(...F(2, -2.9), ...F(2, 2.9), [[0, A(hi, .4)], [0.45, A(hi, 0)], [0.7, A(lo, 0)], [1, A(lo, .32)]]);
-  ctx.beginPath(); [F(0.55, -3.5), F(7, -3.5), F(7, 3.5), F(0.55, 3.5)].forEach((p, i) => i ? ctx.lineTo(...p) : ctx.moveTo(...p)); ctx.fill();   // 팔뚝의 둥근 면 (손목 주름에서 시작)
-  ctx.restore();
-  ctx.strokeStyle = A(lo, .75); ctx.lineWidth = 1.05 * px; ctx.stroke(body);
-  // 손금(엄지두덩 경계)과 손목 주름
-  ctx.strokeStyle = A(lo, .42); ctx.lineWidth = 0.9 * px;
-  ctx.beginPath(); ctx.moveTo(-0.9, 2.75); ctx.bezierCurveTo(-1.9, 3.5, -2.5, 4.7, -2.75, 5.95); ctx.stroke();
-  ctx.strokeStyle = A(lo, .3);
-  for (const s of [0.05, 0.6]) { ctx.beginPath(); ctx.moveTo(...F(s + 0.35, -2.2)); ctx.quadraticCurveTo(...F(s - 0.2, 0), ...F(s - 0.55, 2.0)); ctx.stroke(); }
-
-  // 4) 소매와 소맷부리 (팔뚝 축 좌표)
-  ctx.save(); ctx.transform(M.a, M.b, M.c, M.d, M.e, M.f);
-  ctx.fillStyle = lin(0, -4.3, 0, 4.3, [[0, T['sleeve-hi']], [0.3, T.sleeve], [1, T['sleeve-lo']]]); ctx.fill(sleeve);
-  ctx.save(); ctx.clip(sleeve);                                       // 천 주름
-  for (const [s0, s1, b, al2] of [[7.0, 9.6, 1.1, 0.5], [11.5, 14.6, 1.5, 0.42], [17.5, 20.5, 1.1, 0.32]]) {
-    ctx.strokeStyle = T['sleeve-lo']; ctx.globalAlpha = al2; ctx.lineWidth = 0.4;
-    ctx.beginPath(); ctx.moveTo(s0, -4.4); ctx.bezierCurveTo(s0 + b, -1.5, s1 - b, 1.3, s1, 4.4); ctx.stroke();
-    ctx.strokeStyle = T['sleeve-hi']; ctx.globalAlpha = al2 * 0.8; ctx.lineWidth = 0.2;
-    ctx.beginPath(); ctx.moveTo(s0 - 0.33, -4.4); ctx.bezierCurveTo(s0 + b - 0.33, -1.5, s1 - b - 0.33, 1.3, s1 - 0.33, 4.4); ctx.stroke();
-  }
-  ctx.globalAlpha = 1;
-  ctx.strokeStyle = A(T['sleeve-lo'], .5); ctx.lineWidth = 0.17;     // 소맷부리에 모인 잔주름
-  for (const h of [-2.3, -0.6, 1.2, 2.7]) { ctx.beginPath(); ctx.moveTo(5.6, h); ctx.quadraticCurveTo(6.3, h + 0.15, 7.0, h + 0.42); ctx.stroke(); }
-  ctx.restore();
-  ctx.fillStyle = lin(0, -3.2, 0, 3.2, [[0, T['sleeve-hi']], [0.32, T.sleeve], [1, T['sleeve-lo']]]); ctx.fill(cuff);
-  ctx.strokeStyle = A(T['sleeve-lo'], .9); ctx.lineWidth = px; ctx.stroke(cuff);
-  ctx.fillStyle = A(T['sleeve-lo'], .75); ctx.beginPath(); ctx.roundRect(3.35, -3.2, 0.3, 6.4, [0.5, 0, 0, 0.5]); ctx.fill();         // 소맷부리 안쪽 테
-  ctx.strokeStyle = A(T['sleeve-hi'], .7); ctx.lineWidth = 0.08; ctx.setLineDash([0.22, 0.18]);                                    // 박음질
-  ctx.beginPath(); ctx.moveTo(3.95, -2.95); ctx.lineTo(3.95, 2.95); ctx.moveTo(5.2, -2.95); ctx.lineTo(5.2, 2.95); ctx.stroke(); ctx.setLineDash([]);
-  ctx.fillStyle = T['metal-hi']; ctx.beginPath(); ctx.arc(4.57, 2.15, 0.38, 0, 2 * Math.PI); ctx.fill();                             // 단추
-  ctx.strokeStyle = A(T['sleeve-lo'], .9); ctx.lineWidth = px; ctx.stroke();
-  ctx.fillStyle = T['metal-lo']; for (const o of [-0.12, 0.12]) { ctx.beginPath(); ctx.arc(4.57 + o, 2.15, 0.06, 0, 2 * Math.PI); ctx.fill(); }
-  ctx.restore();
-
-  // 5) 네 손가락 (새끼 → 검지): 둥근 둘째 마디 관절 → 가운데 마디 → 손바닥 쪽으로 돌아 들어가는 끝마디
-  for (const [cx, w, yp, yd, tilt] of FINGERS) {
-    const Ld = yd - yp, L = Ld + 0.72, h = w / 2;
-    ctx.save(); ctx.translate(cx, yp); ctx.rotate(-Math.atan(tilt));
-    const f = new Path2D();
-    f.moveTo(0, 0);
-    f.bezierCurveTo(-h * 0.58, 0, -h, h * 0.3, -h, h * 0.86);                 // 둘째 마디 관절의 둥근 등
-    f.bezierCurveTo(-h, Ld * 0.45, -h * 0.9, Ld * 0.62, -h * 0.92, Ld);        // 가운데 마디 (가운데가 살짝 잘록)
-    f.bezierCurveTo(-h * 0.94, L - h * 0.25, -h * 0.5, L, 0, L);              // 손바닥 쪽으로 돌아 들어가는 끝마디
-    f.bezierCurveTo(h * 0.5, L, h * 0.94, L - h * 0.25, h * 0.92, Ld);
-    f.bezierCurveTo(h * 0.9, Ld * 0.62, h, Ld * 0.45, h, h * 0.86);
-    f.bezierCurveTo(h, h * 0.3, h * 0.58, 0, 0, 0);
-    f.closePath();
-    ctx.fillStyle = sk; ctx.fill(f);
-    ctx.save(); ctx.clip(f);
-    ctx.fillStyle = lin(-h, 0, h, 0, [[0, A(hi, .7)], [0.3, A(hi, 0)], [0.66, A(lo, 0)], [1, A(lo, .45)]]); ctx.fillRect(-w, -1, 2 * w, L + 2);
-    ctx.fillStyle = lin(0, 0, 0, L, [[0, A(hi, .55)], [0.22, A(hi, 0)], [Ld / L - 0.08, A(lo, 0)], [Ld / L + 0.06, A(lo, .32)], [1, A(lo, .55)]]); ctx.fillRect(-w, -1, 2 * w, L + 2);
-    ctx.restore();
-    ctx.strokeStyle = lin(0, 0, 0, L, [[0, A(lo, .75)], [Ld / L, A(lo, .7)], [1, A(lo, .35)]]); ctx.lineWidth = px; ctx.stroke(f);
-    ctx.fillStyle = A(T.spec, .45); ctx.beginPath(); ctx.ellipse(-h * 0.22, 0.38, h * 0.42, 0.16, -0.1, 0, 2 * Math.PI); ctx.fill();   // 관절 위 반사광
-    ctx.strokeStyle = A(lo, .3); ctx.lineWidth = 0.8 * px;                                                                         // 관절 잔주름, 끝마디 주름
-    for (const [o, q] of [[0.78, 0.55], [1.0, 0.4]]) { ctx.beginPath(); ctx.moveTo(-h * q, o); ctx.quadraticCurveTo(0, o + 0.12, h * q, o - 0.04); ctx.stroke(); }
-    ctx.strokeStyle = A(lo, .38); ctx.beginPath(); ctx.moveTo(-h * 0.55, Ld - 0.05); ctx.quadraticCurveTo(0, Ld + 0.1, h * 0.55, Ld - 0.08); ctx.stroke();
-    ctx.restore();
-  }
-  // 첫마디 등 사이의 골과 손허리 관절(맨 위 마디) 반사광
-  ctx.strokeStyle = A(lo, .4); ctx.lineWidth = 0.9 * px;
-  for (let i = 0; i < 3; i++) {
-    const a = FINGERS[i], b = FINGERS[i + 1], xb = (a[0] + a[1] / 2 + b[0] - b[1] / 2) / 2;
-    ctx.beginPath(); ctx.moveTo(xb - 0.05, [-2.58, -3.0, -3.03][i] + 0.14); ctx.quadraticCurveTo(xb + 0.05, -2.2, xb, Math.max(a[2], b[2]) + 0.3); ctx.stroke();
-  }
-  ctx.fillStyle = A(T.spec, .4);
-  FINGERS.forEach(([cx, w], i) => { ctx.beginPath(); ctx.ellipse(cx - 0.15, [-2.42, -2.95, -3.15, -2.95][i] + 0.3, w * 0.26, 0.12, -0.08, 0, 2 * Math.PI); ctx.fill(); });
-
-  // 6) 엄지: 검지·중지의 가운데 마디 위를 감싼다 (손가락 위에 작은 그림자)
-  ctx.save(); ctx.shadowColor = A(T.shadow, .3); ctx.shadowBlur = 5 * dp; ctx.shadowOffsetX = 1.5 * dp; ctx.shadowOffsetY = 3 * dp; ctx.fillStyle = sk; ctx.fill(thumb); ctx.restore();
-  ctx.save(); ctx.clip(thumb);
-  const ux = 0.42, uy = -0.91;                                        // 엄지 축에 수직인 '위쪽'
-  ctx.fillStyle = lin(-1.5 + ux * 1.05, 1.45 + uy * 1.05, -1.5 - ux * 1.05, 1.45 - uy * 1.05, [[0, A(hi, .75)], [0.38, A(hi, 0)], [0.64, A(lo, 0)], [1, A(lo, .5)]]); ctx.fillRect(-6, -2, 9, 7);
-  rg(1.0, 3.0, 1.2, lo, .3);                                          // 엄지 뿌리가 엄지두덩으로 이어지는 곳
-  ctx.restore();
-  ctx.strokeStyle = A(lo, .8); ctx.lineWidth = 1.05 * px; ctx.stroke(thumb);
-  ctx.fillStyle = A(T.spec, .35); ctx.beginPath(); ctx.ellipse(0.3, 1.75, 0.5, 0.18, -0.5, 0, 2 * Math.PI); ctx.fill();      // 엄지 뿌리 마디 반사광
-  ctx.strokeStyle = A(lo, .45); ctx.lineWidth = 0.85 * px;                                                                     // 엄지 마디 주름
-  for (const o of [-0.12, 0.16]) { const c0 = -1.5 - 0.94 * o, c1 = 1.42 - 0.34 * o; ctx.beginPath(); ctx.moveTo(c0 + 0.34 * 0.6, c1 - 0.94 * 0.6); ctx.quadraticCurveTo(c0 - 0.1, c1, c0 - 0.34 * 0.42, c1 + 0.94 * 0.42); ctx.stroke(); }
-  // 엄지손톱 (+x = 손끝 쪽, +y = 위쪽)
-  ctx.save(); ctx.translate(-3.37, 0.74); ctx.rotate(Math.atan2(-0.25, -0.95));
-  const nl = new Path2D(); nl.moveTo(-0.64, -0.46); nl.bezierCurveTo(-0.9, -0.26, -0.9, 0.26, -0.64, 0.46); nl.lineTo(0.5, 0.5); nl.bezierCurveTo(0.72, 0.4, 0.72, -0.4, 0.5, -0.5); nl.closePath();
-  ctx.fillStyle = T.nail; ctx.fill(nl);
-  ctx.save(); ctx.clip(nl);
-  ctx.fillStyle = lin(0, 0.55, 0, -0.55, [[0, A(T.spec, .5)], [0.45, A(T.spec, 0)], [1, A(lo, .35)]]); ctx.fillRect(-1, -0.7, 2, 1.4);
-  ctx.fillStyle = A(T.spec, .5); ctx.fillRect(0.42, -0.7, 0.5, 1.4);                                    // 손톱 끝
-  ctx.restore();
-  ctx.strokeStyle = A(lo, .7); ctx.lineWidth = 0.9 * px; ctx.stroke(nl);
-  ctx.strokeStyle = A(T.spec, .75); ctx.beginPath(); ctx.moveTo(-0.38, 0.26); ctx.lineTo(0.26, 0.3); ctx.stroke();   // 반사광
-  ctx.restore();
+  if (!IMG.fist) return;
+  // 2) 주먹 (그림자는 그림 모양 그대로 은은하게)
+  const box = 32 * q, dp = D.dpr;
+  ctx.save(); ctx.translate(x, y); ctx.rotate(ang);
+  ctx.shadowColor = A(T.shadow, .24); ctx.shadowBlur = 10 * dp; ctx.shadowOffsetX = 3 * dp; ctx.shadowOffsetY = 7 * dp;
+  ctx.drawImage(fistSprite(box), -FIST.ex * q, -FIST.ey * q, box, box);
   ctx.restore();
 }
+loadImg('fist', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDMyIDMyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyMF9pXzIwMDIwXzMxNTIpIj4KPHBhdGggZD0iTTI3LjgyMjggOS40Nzg3NkgzLjQ4OTk5VjE4LjgwN0MzLjQ4OTk5IDI1LjE1ODMgOC42Mzg3MiAzMC4zMDcgMTQuOTkgMzAuMzA3SDE2LjMyMjhDMTguNDc1NyAzMC4zMDcgMjAuNDkwNSAyOS43MTU0IDIyLjIxMzQgMjguNjg1OUwyMi4yMTc1IDI4LjcwNDFDMjQuNzM2NCAyNy4yNTA1IDI3LjMwNjggMjQuNjA1MSAyOC4xMjE1IDIxLjM0NjVDMjguOTUyOSAxOC4wMjA4IDI4LjI1NjIgMTUuNjM4NyAyNy44MjI4IDE0Ljc5MzZWOS40Nzg3NloiIGZpbGw9InVybCgjcGFpbnQwX3JhZGlhbF8yMDAyMF8zMTUyKSIvPgo8L2c+CjxwYXRoIGQ9Ik0yNy44MjI4IDkuNDc4NzZIMy40ODk5OVYxOC44MDdDMy40ODk5OSAyNS4xNTgzIDguNjM4NzIgMzAuMzA3IDE0Ljk5IDMwLjMwN0gxNi4zMjI4QzE4LjQ3NTcgMzAuMzA3IDIwLjQ5MDUgMjkuNzE1NCAyMi4yMTM0IDI4LjY4NTlMMjIuMjE3NSAyOC43MDQxQzI0LjczNjQgMjcuMjUwNSAyNy4zMDY4IDI0LjYwNTEgMjguMTIxNSAyMS4zNDY1QzI4Ljk1MjkgMTguMDIwOCAyOC4yNTYyIDE1LjYzODcgMjcuODIyOCAxNC43OTM2VjkuNDc4NzZaIiBmaWxsPSJ1cmwoI3BhaW50MV9yYWRpYWxfMjAwMjBfMzE1MikiLz4KPHBhdGggZD0iTTI3LjgyMjggOS40Nzg3NkgzLjQ4OTk5VjE4LjgwN0MzLjQ4OTk5IDI1LjE1ODMgOC42Mzg3MiAzMC4zMDcgMTQuOTkgMzAuMzA3SDE2LjMyMjhDMTguNDc1NyAzMC4zMDcgMjAuNDkwNSAyOS43MTU0IDIyLjIxMzQgMjguNjg1OUwyMi4yMTc1IDI4LjcwNDFDMjQuNzM2NCAyNy4yNTA1IDI3LjMwNjggMjQuNjA1MSAyOC4xMjE1IDIxLjM0NjVDMjguOTUyOSAxOC4wMjA4IDI4LjI1NjIgMTUuNjM4NyAyNy44MjI4IDE0Ljc5MzZWOS40Nzg3NloiIGZpbGw9InVybCgjcGFpbnQyX3JhZGlhbF8yMDAyMF8zMTUyKSIvPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyMV9mXzIwMDIwXzMxNTIpIj4KPHJlY3QgeD0iMTAuMjgwMSIgeT0iMTIuOTAyNyIgd2lkdGg9IjEyLjY3NzciIGhlaWdodD0iNi4xOTQ1MyIgcng9IjMuMDk3MjYiIGZpbGw9InVybCgjcGFpbnQzX2xpbmVhcl8yMDAyMF8zMTUyKSIvPgo8L2c+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIyX2ZfMjAwMjBfMzE1MikiPgo8cGF0aCBkPSJNMTUuMDIzOSAxNC4yODM0QzE0LjUxOTcgMTUuMTUwNiAxMy42MDIyIDE1Ljc1NDkgMTIuNTUzOSAxNS43NTQ5QzExLjYyNDMgMTUuNzU0OSAxMC43OTc1IDE1LjQ0MDYgMTAuMjcwNiAxNC43NjhDOS43NDIyNSAxNS4zNzc3IDguOTYyMjEgMTUuNzYzNCA4LjA5MjEgMTUuNzYzNEM2LjUwMDY0IDE1Ljc2MzQgNS4yMTA0OSAxNC40NzMyIDUuMjEwNDkgMTIuODgxOFYxMC4xNzc2QzUuMjEwNDkgOC41ODYxNyA2LjUwMDY0IDcuMjk2MDQgOC4wOTIxIDcuMjk2MDRDOC43NDA4NSA3LjI5NjA0IDkuMzM5NTEgNy41MTA0MiA5LjgyMTEzIDcuODcyMjFDMTAuMjA0IDYuNjI4MjcgMTEuMjgyOSA2LjA2MjI4IDEyLjU1MzkgNi4wNjIyOEMxMy40OSA2LjA2MjI4IDE0LjMyMTggNi41MDg2MiAxNC44NDgyIDcuMjAwMDlDMTUuMTA3NyA1LjkyODAxIDE2LjI1NTcgNS4wNjUxMiAxNy42MzI2IDUuMDY1MTJDMTguODY1NCA1LjA2NTEyIDE5LjkxNDYgNS44NTA3MSAyMC4zMDcxIDYuOTQ4NTZDMjAuNzMyOSA1Ljg4OTE0IDIxLjc3IDUuMTQxMTggMjIuOTgxOCA1LjE0MTE4QzI0LjU3MzIgNS4xNDExOCAyNS44NjM0IDYuNDMxMzEgMjUuODYzNCA4LjAyMjc4VjEyLjM1NzhDMjUuODYzNCAxMy45NDkzIDI0LjU3MzIgMTUuMjM5NCAyMi45ODE4IDE1LjIzOTRDMjEuODY5MSAxNS4yMzk0IDIwLjkwMzcgMTQuNjA4OCAyMC40MjM2IDEzLjY4NTVDMjAuMTc3NCAxNS4wMDI5IDE5LjAyMTQgMTYgMTcuNjMyNiAxNkMxNi40NjMzIDE2IDE1LjQ1OSAxNS4yOTMxIDE1LjAyMzkgMTQuMjgzNFoiIGZpbGw9IiM1QTMxMzkiLz4KPC9nPgo8cmVjdCB4PSIzLjQ4OTk5IiB5PSI1LjEzNzg4IiB3aWR0aD0iNi43OTAwOSIgaGVpZ2h0PSI5Ljk3NjA1IiByeD0iMy4zOTUwNCIgZmlsbD0idXJsKCNwYWludDRfcmFkaWFsXzIwMDIwXzMxNTIpIi8+CjxyZWN0IHg9IjMuNDg5OTkiIHk9IjUuMTM3ODgiIHdpZHRoPSI2Ljc5MDA5IiBoZWlnaHQ9IjkuOTc2MDUiIHJ4PSIzLjM5NTA0IiBmaWxsPSJ1cmwoI3BhaW50NV9yYWRpYWxfMjAwMjBfMzE1MikiLz4KPHJlY3QgeD0iMy40ODk5OSIgeT0iNS4xMzc4OCIgd2lkdGg9IjYuNzkwMDkiIGhlaWdodD0iOS45NzYwNSIgcng9IjMuMzk1MDQiIGZpbGw9InVybCgjcGFpbnQ2X3JhZGlhbF8yMDAyMF8zMTUyKSIvPgo8cmVjdCB4PSIzLjQ4OTk5IiB5PSI1LjEzNzg4IiB3aWR0aD0iNi43OTAwOSIgaGVpZ2h0PSI5Ljk3NjA1IiByeD0iMy4zOTUwNCIgZmlsbD0idXJsKCNwYWludDdfcmFkaWFsXzIwMDIwXzMxNTIpIi8+CjxwYXRoIGQ9Ik04Ljc0Njg0IDcuMDc5MzFDOC43NDY4NCA0LjcyOTY2IDEwLjI2NjkgMy42ODQyNyAxMi4xNDE5IDMuNjg0MjdDMTQuMDE2OSAzLjY4NDI3IDE1LjUzNjkgNS4yMDQyOCAxNS41MzY5IDcuMDc5MzFWMTEuNTg3OUMxNS41MzY5IDEzLjQ2MjkgMTQuMDE2OSAxNS4xMDQgMTIuMTQxOSAxNS4xMDRDMTAuMjY2OSAxNS4xMDQgOC43NDY4NCAxNC4wMTg3IDguNzQ2ODQgMTEuNTg3OVY3LjA3OTMxWiIgZmlsbD0idXJsKCNwYWludDhfcmFkaWFsXzIwMDIwXzMxNTIpIi8+CjxwYXRoIGQ9Ik04Ljc0Njg0IDcuMDc5MzFDOC43NDY4NCA0LjcyOTY2IDEwLjI2NjkgMy42ODQyNyAxMi4xNDE5IDMuNjg0MjdDMTQuMDE2OSAzLjY4NDI3IDE1LjUzNjkgNS4yMDQyOCAxNS41MzY5IDcuMDc5MzFWMTEuNTg3OUMxNS41MzY5IDEzLjQ2MjkgMTQuMDE2OSAxNS4xMDQgMTIuMTQxOSAxNS4xMDRDMTAuMjY2OSAxNS4xMDQgOC43NDY4NCAxNC4wMTg3IDguNzQ2ODQgMTEuNTg3OVY3LjA3OTMxWiIgZmlsbD0idXJsKCNwYWludDlfcmFkaWFsXzIwMDIwXzMxNTIpIi8+CjxwYXRoIGQ9Ik04Ljc0Njg0IDcuMDc5MzFDOC43NDY4NCA0LjcyOTY2IDEwLjI2NjkgMy42ODQyNyAxMi4xNDE5IDMuNjg0MjdDMTQuMDE2OSAzLjY4NDI3IDE1LjUzNjkgNS4yMDQyOCAxNS41MzY5IDcuMDc5MzFWMTEuNTg3OUMxNS41MzY5IDEzLjQ2MjkgMTQuMDE2OSAxNS4xMDQgMTIuMTQxOSAxNS4xMDRDMTAuMjY2OSAxNS4xMDQgOC43NDY4NCAxNC4wMTg3IDguNzQ2ODQgMTEuNTg3OVY3LjA3OTMxWiIgZmlsbD0idXJsKCNwYWludDEwX3JhZGlhbF8yMDAyMF8zMTUyKSIvPgo8cGF0aCBkPSJNOC43NDY4NCA3LjA3OTMxQzguNzQ2ODQgNC43Mjk2NiAxMC4yNjY5IDMuNjg0MjcgMTIuMTQxOSAzLjY4NDI3QzE0LjAxNjkgMy42ODQyNyAxNS41MzY5IDUuMjA0MjggMTUuNTM2OSA3LjA3OTMxVjExLjU4NzlDMTUuNTM2OSAxMy40NjI5IDE0LjAxNjkgMTUuMTA0IDEyLjE0MTkgMTUuMTA0QzEwLjI2NjkgMTUuMTA0IDguNzQ2ODQgMTQuMDE4NyA4Ljc0Njg0IDExLjU4NzlWNy4wNzkzMVoiIGZpbGw9InVybCgjcGFpbnQxMV9yYWRpYWxfMjAwMjBfMzE1MikiLz4KPHJlY3QgeD0iMjEuMDMyNyIgeT0iMi41OTkwNiIgd2lkdGg9IjYuNzkwMDkiIGhlaWdodD0iMTEuODk3NiIgcng9IjMuMzk1MDQiIGZpbGw9IiM3RERFNUIiIGZpbGwtb3BhY2l0eT0iMC41NSIvPgo8cmVjdCB4PSIyMS4wMzI3IiB5PSIyLjU5OTA2IiB3aWR0aD0iNi43OTAwOSIgaGVpZ2h0PSIxMS44OTc2IiByeD0iMy4zOTUwNCIgZmlsbD0idXJsKCNwYWludDEyX3JhZGlhbF8yMDAyMF8zMTUyKSIvPgo8cmVjdCB4PSIyMS4wMzI3IiB5PSIyLjU5OTA2IiB3aWR0aD0iNi43OTAwOSIgaGVpZ2h0PSIxMS44OTc2IiByeD0iMy4zOTUwNCIgZmlsbD0idXJsKCNwYWludDEzX3JhZGlhbF8yMDAyMF8zMTUyKSIvPgo8cGF0aCBkPSJNMTQuNzgwMyA1LjY3NTQ1QzE0Ljc4MDMgMy44Mjc5MSAxNi4yNzggMi41MDk0IDE4LjEyNTUgMi41MDk0QzE5Ljk3MzEgMi41MDk0IDIxLjQ3MDggNC4wMDcxMiAyMS40NzA4IDUuODU0NjZWMTIuMDQ3NEMyMS40NzA4IDEzLjg5NDkgMTkuOTczMSAxNS4zOTI2IDE4LjEyNTUgMTUuMzkyNkMxNi4yNzggMTUuMzkyNiAxNC43ODAzIDEzLjg5NDkgMTQuNzgwMyAxMi4wNDc0VjUuNjc1NDVaIiBmaWxsPSJ1cmwoI3BhaW50MTRfcmFkaWFsXzIwMDIwXzMxNTIpIi8+CjxwYXRoIGQ9Ik0xNC43ODAzIDUuNjc1NDVDMTQuNzgwMyAzLjgyNzkxIDE2LjI3OCAyLjUwOTQgMTguMTI1NSAyLjUwOTRDMTkuOTczMSAyLjUwOTQgMjEuNDcwOCA0LjAwNzEyIDIxLjQ3MDggNS44NTQ2NlYxMi4wNDc0QzIxLjQ3MDggMTMuODk0OSAxOS45NzMxIDE1LjM5MjYgMTguMTI1NSAxNS4zOTI2QzE2LjI3OCAxNS4zOTI2IDE0Ljc4MDMgMTMuODk0OSAxNC43ODAzIDEyLjA0NzRWNS42NzU0NVoiIGZpbGw9InVybCgjcGFpbnQxNV9yYWRpYWxfMjAwMjBfMzE1MikiLz4KPHBhdGggZD0iTTE0Ljc4MDMgNS42NzU0NUMxNC43ODAzIDMuODI3OTEgMTYuMjc4IDIuNTA5NCAxOC4xMjU1IDIuNTA5NEMxOS45NzMxIDIuNTA5NCAyMS40NzA4IDQuMDA3MTIgMjEuNDcwOCA1Ljg1NDY2VjEyLjA0NzRDMjEuNDcwOCAxMy44OTQ5IDE5Ljk3MzEgMTUuMzkyNiAxOC4xMjU1IDE1LjM5MjZDMTYuMjc4IDE1LjM5MjYgMTQuNzgwMyAxMy44OTQ5IDE0Ljc4MDMgMTIuMDQ3NFY1LjY3NTQ1WiIgZmlsbD0idXJsKCNwYWludDE2X3JhZGlhbF8yMDAyMF8zMTUyKSIvPgo8cGF0aCBkPSJNMTQuNzgwMyA1LjY3NTQ1QzE0Ljc4MDMgMy44Mjc5MSAxNi4yNzggMi41MDk0IDE4LjEyNTUgMi41MDk0QzE5Ljk3MzEgMi41MDk0IDIxLjQ3MDggNC4wMDcxMiAyMS40NzA4IDUuODU0NjZWMTIuMDQ3NEMyMS40NzA4IDEzLjg5NDkgMTkuOTczMSAxNS4zOTI2IDE4LjEyNTUgMTUuMzkyNkMxNi4yNzggMTUuMzkyNiAxNC43ODAzIDEzLjg5NDkgMTQuNzgwMyAxMi4wNDc0VjUuNjc1NDVaIiBmaWxsPSJ1cmwoI3BhaW50MTdfcmFkaWFsXzIwMDIwXzMxNTIpIi8+CjxwYXRoIGQ9Ik0xOC4zMzkgOS43OTcwNkMxNi4zNzM2IDkuNzk3MDYgMTQuNzgwMyAxMS4zMDM3IDE0Ljc4MDMgMTMuMTYyMkMxNC43ODAzIDE1LjAyMDggMTYuMzczNiAxNi41Mjc0IDE4LjMzOSAxNi41Mjc0SDIwLjk0MDlDMjIuMTA5IDE2LjUyNzQgMjMuMDU2IDE3LjQyMjggMjMuMDU2IDE4LjUyNzRWMjEuNTI1NEgyMy4yNTUxQzI2LjcyMDEgMjEuNTI1NCAyOC41MSAxOC41MDQyIDI4LjUxIDE1Ljc1OTlDMjguNTEgMTIuNDY2NyAyNS42ODY4IDkuNzk3MDYgMjIuMjA0MSA5Ljc5NzA2SDE4LjMzOVoiIGZpbGw9InVybCgjcGFpbnQxOF9yYWRpYWxfMjAwMjBfMzE1MikiLz4KPHBhdGggZD0iTTE4LjMzOSA5Ljc5NzA2QzE2LjM3MzYgOS43OTcwNiAxNC43ODAzIDExLjMwMzcgMTQuNzgwMyAxMy4xNjIyQzE0Ljc4MDMgMTUuMDIwOCAxNi4zNzM2IDE2LjUyNzQgMTguMzM5IDE2LjUyNzRIMjAuOTQwOUMyMi4xMDkgMTYuNTI3NCAyMy4wNTYgMTcuNDIyOCAyMy4wNTYgMTguNTI3NFYyMS41MjU0SDIzLjI1NTFDMjYuNzIwMSAyMS41MjU0IDI4LjUxIDE4LjUwNDIgMjguNTEgMTUuNzU5OUMyOC41MSAxMi40NjY3IDI1LjY4NjggOS43OTcwNiAyMi4yMDQxIDkuNzk3MDZIMTguMzM5WiIgZmlsbD0idXJsKCNwYWludDE5X3JhZGlhbF8yMDAyMF8zMTUyKSIvPgo8cGF0aCBkPSJNMTguMzM5IDkuNzk3MDZDMTYuMzczNiA5Ljc5NzA2IDE0Ljc4MDMgMTEuMzAzNyAxNC43ODAzIDEzLjE2MjJDMTQuNzgwMyAxNS4wMjA4IDE2LjM3MzYgMTYuNTI3NCAxOC4zMzkgMTYuNTI3NEgyMC45NDA5QzIyLjEwOSAxNi41Mjc0IDIzLjA1NiAxNy40MjI4IDIzLjA1NiAxOC41Mjc0VjIxLjUyNTRIMjMuMjU1MUMyNi43MjAxIDIxLjUyNTQgMjguNTEgMTguNTA0MiAyOC41MSAxNS43NTk5QzI4LjUxIDEyLjQ2NjcgMjUuNjg2OCA5Ljc5NzA2IDIyLjIwNDEgOS43OTcwNkgxOC4zMzlaIiBmaWxsPSJ1cmwoI3BhaW50MjBfcmFkaWFsXzIwMDIwXzMxNTIpIi8+CjxwYXRoIGQ9Ik0xOC4zMzkgOS43OTcwNkMxNi4zNzM2IDkuNzk3MDYgMTQuNzgwMyAxMS4zMDM3IDE0Ljc4MDMgMTMuMTYyMkMxNC43ODAzIDE1LjAyMDggMTYuMzczNiAxNi41Mjc0IDE4LjMzOSAxNi41Mjc0SDIwLjk0MDlDMjIuMTA5IDE2LjUyNzQgMjMuMDU2IDE3LjQyMjggMjMuMDU2IDE4LjUyNzRWMjEuNTI1NEgyMy4yNTUxQzI2LjcyMDEgMjEuNTI1NCAyOC41MSAxOC41MDQyIDI4LjUxIDE1Ljc1OTlDMjguNTEgMTIuNDY2NyAyNS42ODY4IDkuNzk3MDYgMjIuMjA0MSA5Ljc5NzA2SDE4LjMzOVoiIGZpbGw9InVybCgjcGFpbnQyMV9yYWRpYWxfMjAwMjBfMzE1MikiLz4KPHBhdGggZD0iTTE4LjMzOSA5Ljc5NzA2QzE2LjM3MzYgOS43OTcwNiAxNC43ODAzIDExLjMwMzcgMTQuNzgwMyAxMy4xNjIyQzE0Ljc4MDMgMTUuMDIwOCAxNi4zNzM2IDE2LjUyNzQgMTguMzM5IDE2LjUyNzRIMjAuOTQwOUMyMi4xMDkgMTYuNTI3NCAyMy4wNTYgMTcuNDIyOCAyMy4wNTYgMTguNTI3NFYyMS41MjU0SDIzLjI1NTFDMjYuNzIwMSAyMS41MjU0IDI4LjUxIDE4LjUwNDIgMjguNTEgMTUuNzU5OUMyOC41MSAxMi40NjY3IDI1LjY4NjggOS43OTcwNiAyMi4yMDQxIDkuNzk3MDZIMTguMzM5WiIgZmlsbD0idXJsKCNwYWludDIyX3JhZGlhbF8yMDAyMF8zMTUyKSIvPgo8cGF0aCBkPSJNMTguMzM5IDkuNzk3MDZDMTYuMzczNiA5Ljc5NzA2IDE0Ljc4MDMgMTEuMzAzNyAxNC43ODAzIDEzLjE2MjJDMTQuNzgwMyAxNS4wMjA4IDE2LjM3MzYgMTYuNTI3NCAxOC4zMzkgMTYuNTI3NEgyMC45NDA5QzIyLjEwOSAxNi41Mjc0IDIzLjA1NiAxNy40MjI4IDIzLjA1NiAxOC41Mjc0VjIxLjUyNTRIMjMuMjU1MUMyNi43MjAxIDIxLjUyNTQgMjguNTEgMTguNTA0MiAyOC41MSAxNS43NTk5QzI4LjUxIDEyLjQ2NjcgMjUuNjg2OCA5Ljc5NzA2IDIyLjIwNDEgOS43OTcwNkgxOC4zMzlaIiBmaWxsPSJ1cmwoI3BhaW50MjNfcmFkaWFsXzIwMDIwXzMxNTIpIi8+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIzX2ZfMjAwMjBfMzE1MikiPgo8cGF0aCBkPSJNMTkuODI3OSAxMi4yNTAxSDIxLjk2ODJDMjUuMTU1MSAxMi4xMTg3IDI2LjY3MzcgMTMuMjYwOCAyNy4xODc3IDE1LjM5MjciIHN0cm9rZT0idXJsKCNwYWludDI0X2xpbmVhcl8yMDAyMF8zMTUyKSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPC9nPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9pXzIwMDIwXzMxNTIiIHg9IjMuNDg5OTkiIHk9IjkuNDc4NzYiIHdpZHRoPSIyNS4wMiIgaGVpZ2h0PSIyMC44MjgyIiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9InNoYXBlIi8+CjxmZUNvbG9yTWF0cml4IGluPSJTb3VyY2VBbHBoYSIgdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDEyNyAwIiByZXN1bHQ9ImhhcmRBbHBoYSIvPgo8ZmVPZmZzZXQvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIyIi8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9ImFyaXRobWV0aWMiIGsyPSItMSIgazM9IjEiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMC41NzY0NzEgMCAwIDAgMCAwLjM4ODIzNSAwIDAgMCAwIDAuNCAwIDAgMCAxIDAiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbjI9InNoYXBlIiByZXN1bHQ9ImVmZmVjdDFfaW5uZXJTaGFkb3dfMjAwMjBfMzE1MiIvPgo8L2ZpbHRlcj4KPGZpbHRlciBpZD0iZmlsdGVyMV9mXzIwMDIwXzMxNTIiIHg9IjcuMjgwMDgiIHk9IjkuOTAyNzEiIHdpZHRoPSIxOC42Nzc3IiBoZWlnaHQ9IjEyLjE5NDUiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0ic2hhcGUiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMS41IiByZXN1bHQ9ImVmZmVjdDFfZm9yZWdyb3VuZEJsdXJfMjAwMjBfMzE1MiIvPgo8L2ZpbHRlcj4KPGZpbHRlciBpZD0iZmlsdGVyMl9mXzIwMDIwXzMxNTIiIHg9IjMuMjEwNDkiIHk9IjMuMDY1MTIiIHdpZHRoPSIyNC42NTI5IiBoZWlnaHQ9IjE0LjkzNDkiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0ic2hhcGUiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMSIgcmVzdWx0PSJlZmZlY3QxX2ZvcmVncm91bmRCbHVyXzIwMDIwXzMxNTIiLz4KPC9maWx0ZXI+CjxmaWx0ZXIgaWQ9ImZpbHRlcjNfZl8yMDAyMF8zMTUyIiB4PSIxNy4xMjc5IiB5PSI5LjUzOTg3IiB3aWR0aD0iMTIuNzYiIGhlaWdodD0iOC41NTMwOCIgZmlsdGVyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiBjb2xvci1pbnRlcnBvbGF0aW9uLWZpbHRlcnM9InNSR0IiPgo8ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJzaGFwZSIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIwLjg1IiByZXN1bHQ9ImVmZmVjdDFfZm9yZWdyb3VuZEJsdXJfMjAwMjBfMzE1MiIvPgo8L2ZpbHRlcj4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDBfcmFkaWFsXzIwMDIwXzMxNTIiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTYgMTcuNTE1OSkgcm90YXRlKDkwKSBzY2FsZSgxNC4zMDM0IDE1LjE0MzkpIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzkyNjg2MiIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNBMjcwNzQiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDFfcmFkaWFsXzIwMDIwXzMxNTIiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTYgMTguMDc1Mikgcm90YXRlKDkwKSBzY2FsZSgxMy4wMzk5IDIwLjYyNzcpIj4KPHN0b3Agb2Zmc2V0PSIwLjY1NzI1OSIgc3RvcC1jb2xvcj0iIzlCNUE4OCIgc3RvcC1vcGFjaXR5PSIwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzlCNUE4OCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50Ml9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgxNi41MTMyIDE3LjU2OTcpIHJvdGF0ZSgxMzYuODAxKSBzY2FsZSgxNC4yMzk4IDE5LjYwNjQpIj4KPHN0b3Agb2Zmc2V0PSIwLjc3ODU2NSIgc3RvcC1jb2xvcj0iIzlENzE2QSIgc3RvcC1vcGFjaXR5PSIwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzlENzE2QSIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50M19saW5lYXJfMjAwMjBfMzE1MiIgeDE9IjIwLjM5MzIiIHkxPSIxNy4yNDA2IiB4Mj0iOC41NzA1NSIgeTI9IjIxLjE5NjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzZDNDE0MyIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM2QzQxNDMiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50NF9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSg4LjIzMzI1IDEwLjQzODIpIHJvdGF0ZSgxODApIHNjYWxlKDIuODYwMjYgNi41MjA3MikiPgo8c3RvcCBzdG9wLWNvbG9yPSIjQjY5MDgwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzk4NzM2MSIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50NV9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSg2Ljg4NTAzIDcuMDY0NDgpIHJvdGF0ZSg5MCkgc2NhbGUoNy44MDk3OSA2Ljc3NjMpIj4KPHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiM4RDU1NjYiIHN0b3Atb3BhY2l0eT0iMCIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM4RDU1NjYiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDZfcmFkaWFsXzIwMDIwXzMxNTIiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoOS42NjMxMyAxMC4xMjU5KSByb3RhdGUoLTE4MCkgc2NhbGUoMS42Nzk1NCAxMC4wMTg3KSI+CjxzdG9wIG9mZnNldD0iMC40MTMwNDMiIHN0b3AtY29sb3I9IiM3NzU5NDUiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNzc1OTQ1IiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDdfcmFkaWFsXzIwMDIwXzMxNTIiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoNC4yMDI0OCA1LjUzMTEpIHJvdGF0ZSg1My4wOTY5KSBzY2FsZSgyLjA0NTIgMy45OTI3KSI+CjxzdG9wIHN0b3AtY29sb3I9IiM5MTc3NjYiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOTE3NzY2IiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDhfcmFkaWFsXzIwMDIwXzMxNTIiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTMuNDkwMSA5Ljc1MTYzKSByb3RhdGUoMTgwKSBzY2FsZSg1LjA3Nzg4IDEzLjI1MTYpIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0MzOUM4NyIvPgo8c3RvcCBvZmZzZXQ9IjAuNzA3ODg3IiBzdG9wLWNvbG9yPSIjOTg3MzYxIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzgzNjE1MCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50OV9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgxMi4xNDE5IDUuODg5NjcpIHJvdGF0ZSg5MCkgc2NhbGUoOS41NzIwNyA3LjI1NTQ0KSI+CjxzdG9wIG9mZnNldD0iMC41MzYwNzgiIHN0b3AtY29sb3I9IiM4QzU0NjciIHN0b3Atb3BhY2l0eT0iMCIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM4QzU0NjciLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDEwX3JhZGlhbF8yMDAyMF8zMTUyIiBjeD0iMCIgY3k9IjAiIHI9IjEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDE1LjUzNjkgOS4zOTQxMSkgcm90YXRlKC0xODApIHNjYWxlKDEuNzU2MTkgMTEuOTkxOSkiPgo8c3RvcCBvZmZzZXQ9IjAuMjI4OTcxIiBzdG9wLWNvbG9yPSIjNjY0OTM2Ii8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NDkzNiIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjxyYWRpYWxHcmFkaWVudCBpZD0icGFpbnQxMV9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSg5LjQ1OTMzIDQuMTM0MzkpIHJvdGF0ZSg1Ni43MzYpIHNjYWxlKDIuMjM4OTcgNC4xNzQ5NCkiPgo8c3RvcCBzdG9wLWNvbG9yPSIjOTE3NzY2Ii8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzkxNzc2NiIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjxyYWRpYWxHcmFkaWVudCBpZD0icGFpbnQxMl9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgyNS43NzYgOC45MjAzMykgcm90YXRlKDE4MCkgc2NhbGUoNC43NDMyNiAxNC4zMDcpIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0NEQTU4QyIvPgo8c3RvcCBvZmZzZXQ9IjAuNjE0NjE0IiBzdG9wLWNvbG9yPSIjOTg3MzYwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzdCNTMzRiIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50MTNfcmFkaWFsXzIwMDIwXzMxNTIiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMzAuMzgxIDguNTQ3ODUpIHJvdGF0ZSgxODApIHNjYWxlKDMuMDI0NTYgMjEuNTE3MSkiPgo8c3RvcCBvZmZzZXQ9IjAuMjI4OTcxIiBzdG9wLWNvbG9yPSIjOUQ3OTVDIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzY2NDkzNiIgc3RvcC1vcGFjaXR5PSIwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzlENzk1QyIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjxyYWRpYWxHcmFkaWVudCBpZD0icGFpbnQxNF9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgxOS40NTQgOS4zNTQzNikgcm90YXRlKC0xODApIHNjYWxlKDQuNjczNzEgMTUuNDkyMykiPgo8c3RvcCBzdG9wLWNvbG9yPSIjQ0RBNThDIi8+CjxzdG9wIG9mZnNldD0iMC42MTQ2MTQiIHN0b3AtY29sb3I9IiM5ODczNjAiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjN0I1MzNGIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjxyYWRpYWxHcmFkaWVudCBpZD0icGFpbnQxNV9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgxOC4xMjU1IDQuOTk3NDUpIHJvdGF0ZSg5MCkgc2NhbGUoMTAuNzk4OCA3LjE0OTA2KSI+CjxzdG9wIG9mZnNldD0iMC41MzYwNzgiIHN0b3AtY29sb3I9IiM4QzU0NjciIHN0b3Atb3BhY2l0eT0iMCIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM4QzU0NjciLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDE2X3JhZGlhbF8yMDAyMF8zMTUyIiBjeD0iMCIgY3k9IjAiIHI9IjEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDIyLjY5NiA4Ljk1MTAyKSByb3RhdGUoLTE4MCkgc2NhbGUoMS44MTI5NCAxNC4xNzM4KSI+CjxzdG9wIG9mZnNldD0iMC4yMjg5NzEiIHN0b3AtY29sb3I9IiM5RDc5NUMiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNjY0OTM2IiBzdG9wLW9wYWNpdHk9IjAiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOUQ3OTVDIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDE3X3JhZGlhbF8yMDAyMF8zMTUyIiBjeD0iMCIgY3k9IjAiIHI9IjEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDE1LjQ4MjMgMy4wMTcyMSkgcm90YXRlKDYwLjE5MDIpIHNjYWxlKDIuNDM0MTMgNC4yNjg4NCkiPgo8c3RvcCBzdG9wLWNvbG9yPSIjOTE3NzY2Ii8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzkxNzc2NiIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjxyYWRpYWxHcmFkaWVudCBpZD0icGFpbnQxOF9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgyMy43NjkxIDEwLjk4Nykgcm90YXRlKDEwMy40NTkpIHNjYWxlKDUuNjA3NjYgMTIuMTY5OSkiPgo8c3RvcCBzdG9wLWNvbG9yPSIjQkI5Njc4Ii8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0EwNzU2QiIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50MTlfcmFkaWFsXzIwMDIwXzMxNTIiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTkuODM2NCAxNy41NDc3KSByb3RhdGUoOTApIHNjYWxlKDIuNzcxNzkgNi40MTYzOCkiPgo8c3RvcCBvZmZzZXQ9IjAuNDExODgxIiBzdG9wLWNvbG9yPSIjOTM1NzcyIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzkzNTc3MiIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjxyYWRpYWxHcmFkaWVudCBpZD0icGFpbnQyMF9yYWRpYWxfMjAwMjBfMzE1MiIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgyMy45MDg5IDIxLjUyNTQpIHJvdGF0ZSgtNTQuMjg4Nikgc2NhbGUoNy44ODI2MyA5LjAzNDYzKSI+CjxzdG9wIHN0b3AtY29sb3I9IiM5QzZENkQiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOUM2RDZEIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDIxX3JhZGlhbF8yMDAyMF8zMTUyIiBjeD0iMCIgY3k9IjAiIHI9IjEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDE0LjIzOTYgMTMuMjY2Nykgc2NhbGUoMy43NDY3NyA1LjQyNTEpIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzg4NjY1NCIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM4ODY2NTQiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50MjJfcmFkaWFsXzIwMDIwXzMxNTIiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTYuMTcxMiAxNi43MjAzKSByb3RhdGUoLTQwLjE1Nikgc2NhbGUoMy45MDMyMiA0LjA0MzY0KSI+CjxzdG9wIHN0b3AtY29sb3I9IiM5MzU3NzIiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOTM1NzcyIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDIzX3JhZGlhbF8yMDAyMF8zMTUyIiBjeD0iMCIgY3k9IjAiIHI9IjEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDE1LjMwNzMgMTUuNjYxMikgcm90YXRlKC00MC44MDY4KSBzY2FsZSgxLjUwNjMxIDIuNTIxMTgpIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzk0Njg2NiIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM5NDY4NjYiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MjRfbGluZWFyXzIwMDIwXzMxNTIiIHgxPSIxOS44Mjc5IiB5MT0iMTIuNDAyIiB4Mj0iMzEuMTMiIHkyPSIxNi4wOTI4IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiNDNzlFOEEiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQzc5RThBIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K');
 // 두 줄을 이은 매듭: 굵은 줄을 접은 고리 + 가는 줄이 감긴 띠 + 두 줄의 꼬리
 function drawKnot(G, x, y, m) {
   const { k } = G, a = ROPES[S.r1], b = ROPES[S.r2], wa = a.w * k, wb = b.w * k, big = Math.max(wa, wb), sm = Math.min(wa, wb);
@@ -771,7 +717,7 @@ function drawEye(W, front) {                                          // 나사 
   ctx.restore();
 }
 // 자유로운 끝: 받침대에 세운 매끄러운 쇠막대와 막대에 끼운 고리. 줄 끝(고리 왼쪽)은 정확히 x = L₁
-function poleGeo(G, yEnd) { const { X, Y, k } = G, pr = 6.5 * k, ringR = pr + 8 * k, ex = X(L1); return { ex, px: ex + ringR, pr, ringR, ry: 5.5 * k, yt: Math.max(70, Y(0.62)), ye: Y(yEnd) }; }
+function poleGeo(G, yEnd) { const { X, Y, k } = G, pr = 6.5 * k, ringR = pr + 8 * k, ex = X(L1); return { ex, px: ex + ringR, pr, ringR, ry: 5.5 * k, yt: G.phone ? Y(2 * AMP) - 16 * k : Math.max(70, Y(0.62)), ye: Y(yEnd) }; }
 function drawPole(G, yEnd, front) {
   const { floorY, k } = G, P = poleGeo(G, yEnd), { px, pr, ringR, ry, yt, ye } = P;
   if (!front) {
@@ -840,34 +786,59 @@ function drawRope() {
   void E;
 
   // 매질 이름
-  const ny = G.floorY - 22;
-  label(`${ROPES[S.r1].name} ${ROPES[S.r1].v} m/s`, X(L1 / 2 + 0.15), ny, T[ROPES[S.r1].c]);
-  if (S.r2 in ROPES) label(`${ROPES[S.r2].name} ${ROPES[S.r2].v} m/s`, X(L1 + 1.05), ny, T[ROPES[S.r2].c]);
-  else if (S.r2 === 'wall') label('벽에 박은 고리', xEnd + 6 * k, Y(0) + 54 * k, T.ink, 'left');
-  else { const P0 = poleGeo(G, 0), hit = P0.px + 80 > (D.roLeft || D.w) && P0.yt - 24 < (D.roBottom || 0) + 8;   // 측정값 카드와 겹치면 막대 오른쪽 아래로
-    hit ? label('막대에 끼운 고리', P0.px + 12 * k, Y(0) + 56 * k, T.ink, 'left') : label('막대에 끼운 고리', P0.px, P0.yt - 24, T.ink, 'center'); }
-  if (S.r2 in ROPES) label(S.r2 !== S.r1 ? '경계' : '이은 곳', xEnd, Y(Math.max(0, yEnd)) - 32 * k - 12, T.muted, 'center', 15);
+  const ny = G.ny, nl = G.nameLbl;
+  label(`${ROPES[S.r1].name} ${ROPES[S.r1].v} m/s`, X(L1 / 2 + 0.15), ny, T[ROPES[S.r1].c], 'center', nl);
+  if (S.r2 in ROPES) label(`${ROPES[S.r2].name} ${ROPES[S.r2].v} m/s`, X(L1 + 1.05), ny, T[ROPES[S.r2].c], 'center', nl);
+  else if (S.r2 === 'wall') label('벽에 박은 고리', xEnd + 6 * k, Y(0) + (G.phone ? Math.max(54 * k, 40) : 54 * k), T.ink, 'left', nl);
+  else { const P0 = poleGeo(G, 0), hit = G.phone || P0.px + 80 > (D.roLeft || D.w) && P0.yt - 24 < (D.roBottom || 0) + 8;   // 측정값 카드와 겹치면(휴대폰은 늘) 막대 오른쪽 아래로
+    hit ? label('막대에 끼운 고리', P0.px + 12 * k, Y(0) + (G.phone ? Math.max(56 * k, 40) : 56 * k), T.ink, 'left', nl) : label('막대에 끼운 고리', P0.px, P0.yt - 24, T.ink, 'center'); }
+  if (S.r2 in ROPES) {
+    const name = S.r2 !== S.r1 ? '경계' : '이은 곳';
+    if (G.phone) {                                                    // 휴대폰: 좁아서 위쪽 파동 이름표와 겹치므로 줄 아래(매듭 꼬리 밑)에.
+      const rk = Math.max(wd(S.r1), wd(S.r2)) * 0.62 + 4 * k, y0 = Y(Math.min(0, yEnd)), knotY = y0 + Math.max(32 * k + 12, rk * 1.6 + 16);
+      const ly = c.R >= 0 ? knotY : Math.max(knotY, Y(c.R * AMP) + G.tagOff + G.lbl + 17);   // 반사파가 아래로 뒤집혀 오면(R < 0) 그 이름표 줄보다 아래에, 점선으로 경계와 잇는다
+      if (ly > knotY + 4) {
+        ctx.save(); ctx.strokeStyle = T.muted; ctx.globalAlpha = 0.45; ctx.lineWidth = 1.2; ctx.setLineDash([3, 4]);
+        ctx.beginPath(); ctx.moveTo(xEnd, y0 + rk * 1.7); ctx.lineTo(xEnd, ly - 13); ctx.stroke(); ctx.restore();
+      }
+      label(name, xEnd, ly, T.muted, 'center', 15);
+    } else label(name, xEnd, Y(Math.max(0, yEnd)) - 32 * k - 12, T.muted, 'center', 15);
+  }
 
   // 파동 이름과 높이
   if (t >= 0) {
     const w1 = v1() * TP, d = v1() * t;
-    const tag = (txt, x, v, col) => {
+    const tag = (txt, x, v, col, hw = w1 / 2) => {
       if (x < 0.1 || x > XMAX - 0.05) return;
-      let ly = v >= 0 ? Y(v) - 34 : Y(v) + 34;
-      if (v >= 0 && X(x) > (D.roLeft || D.w) - 80 && ly < (D.roBottom || 0) + 8) ly = Y(0) + 36;   // 측정값 카드에 가리면 아래로
-      const r = label(txt, X(x), ly, col);
-      if (S.dims && Math.abs(v) > 0.004) {
+      let ly = v >= 0 ? Y(v) - G.tagOff : Y(v) + G.tagOff;
+      if (v >= 0 && X(x) > (D.roLeft || D.w) - 80 && ly < (D.roBottom || 0) + 8) ly = Y(0) + G.tagOff + 2;   // 측정값 카드에 가리면 아래로
+      const hs = S.dims && Math.abs(v) > 0.004 ? `${(Math.abs(v) * 100).toFixed(1)} cm` : '';
+      if (G.phone && !G.land) {                                       // 휴대폰 세로: 줄이 짧아 옆에 둘 자리가 없으므로 높이를 이름표에 붙이고 화살표만 펄스 옆에
+        label(hs ? `${txt} ${hs}` : txt, X(x), ly, col, 'center', G.lbl);
+        if (hs) arrowDim(X(x) + hw * s + 7, Y(0), Y(v), col, '');
+        return;
+      }
+      const r = label(txt, X(x), ly, col, 'center', G.lbl);
+      if (hs) {
         const bx = X(L1), right = r.x + r.w + 12, clash = right < bx + 40 && right + 90 > bx - 30;   // 경계·고리 근처에서는 높이 표시를 왼쪽에
-        clash ? arrowDim(r.x - 12, Y(0), Y(v), col, `${(Math.abs(v) * 100).toFixed(1)} cm`, true) : arrowDim(right, Y(0), Y(v), col, `${(Math.abs(v) * 100).toFixed(1)} cm`);
+        clash ? arrowDim(r.x - 12, Y(0), Y(v), col, `${(Math.abs(v) * 100).toFixed(1)} cm`, true, G.dimLbl) : arrowDim(right, Y(0), Y(v), col, `${(Math.abs(v) * 100).toFixed(1)} cm`, false, G.dimLbl);
       }
     };
     if (d - w1 / 2 < L1 - w1 * 0.5) tag('입사파', d - w1 / 2, AMP, T.hi);
     if (split()) {
       if (Math.abs(c.R) > 0.003) tag('반사파', 2 * L1 - (d - w1 / 2), c.R * AMP, T.lo);
-      else label('반사파 없음', X(Math.max(0.5, 2 * L1 - (d - w1 / 2))), Y(0) - 36, T.muted);
-      if (c.v2) tag('투과파', L1 + (d - w1 / 2 - L1) * c.v2 / v1(), c.tau * AMP, T[ROPES[S.r2].c]);
+      else {
+        let nx = X(Math.max(0.5, 2 * L1 - (d - w1 / 2)));
+        if (G.phone) { ctx.font = `700 ${G.lbl}px ${T.font}`; nx = Math.min(nx, xEnd - 40 - (ctx.measureText('반사파 없음').width + 20) / 2); }   // '이은 곳'과 겹치지 않게
+        label('반사파 없음', nx, Y(0) - G.tagOff - 2, T.muted, 'center', G.lbl);
+      }
+      if (c.v2) tag('투과파', L1 + (d - w1 / 2 - L1) * c.v2 / v1(), c.tau * AMP, T[ROPES[S.r2].c], w1 / 2 * c.v2 / v1());
     }
     if (S.r2 === 'ring' && Math.abs(yEnd) > 0.01) label(`고리 ${(yEnd * 100).toFixed(0)} cm`, poleGeo(G, yEnd).px + 26 * k, Y(yEnd), T.ink, 'left', 15);
+  }
+  if (IMG.fist) {                                                     // 주먹 그림 출처 (무대 오른쪽 아래, 흐리게)
+    ctx.font = `500 11px ${T.font}`; ctx.fillStyle = T.muted; ctx.globalAlpha = 0.75; ctx.textAlign = G.creditLeft ? 'left' : 'right'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText('그림: Microsoft Fluent Emoji (MIT)', G.creditLeft ? 10 : D.w - 10, G.credit); ctx.globalAlpha = 1;
   }
 }
 const W_tie = WG => WG.ex + WG.rr * 0.15;
@@ -885,6 +856,7 @@ function drawTie(x, y, wd, key, k) {
 
 /* ---------- 장면: 강철 블록과 초음파 탐상기 ---------- */
 function ngeo() {
+  if (D.phone) return ngeoPhone();
   const w = D.w, h = D.h, wide = w > 820 && w / h > 1.2;
   const roB = D.roBottom || 200, pbB = D.pbBottom || 64;
   let bx, bw, bh, by, sc, bench;
@@ -901,6 +873,24 @@ function ngeo() {
     sc = { x: w * 0.03, y: sy, w: sw, h: Math.max(130, Math.min(avail, sw * 0.62)), wide: false };
   }
   return { w, h, bx, by, bw, bh, sc, wide, bench, d: Math.max(7, bw * 0.017), X: x => bx + x / K.W * bw, Y: d => by + d / K.D * bh };
+}
+// 휴대폰 세로: 블록(위) · 탐상기(아래)를 위아래 공간에 나눠 크게. 가로: 블록(왼쪽) · 탐상기(오른쪽, 측정값 카드 아래)
+function ngeoPhone() {
+  const w = D.w, h = D.h, land = w > h, roB = D.roBottom || 90, pbB = D.pbBottom || 50;
+  let bx, bw, bh, by, sc, bench, d;
+  if (land) {
+    const top = Math.max(pbB, D.capBot) + 6, sy = roB + 8, sh = Math.max(120, h - sy - 14), sw = Math.min(sh * 1.6, w * 0.38);
+    sc = { x: w - sw - 10, y: sy, w: sw, h: sh, wide: true };
+    bench = h - 14; bx = 46; bw = sc.x - 46 - bx; d = Math.max(7, bw * 0.017); bw -= d;
+    bh = Math.min(bw * 0.32, bench - top - 2.2 * clamp(bw * 0.066, 26, 42) - 8); by = bench - bh;   // 위쪽: 탐촉자(이름표는 옆에)
+    return { w, h, bx, by, bw, bh, sc, wide: true, bench, d, phone: true, land, top, X: x => bx + x / K.W * bw, Y: dd => by + dd / K.D * bh };
+  }
+  const top = Math.max(roB, pbB) + 98;                                 // 탐촉자와 이름표 자리
+  bw = w * 0.84; bx = w * 0.11; d = Math.max(7, bw * 0.017); bh = bw * 0.36;
+  const sw = w * 0.94, free = (D.botTop || h) - 12 - (top + bh + 30), sh = clamp(free, 140, sw * 0.72), extra = Math.max(0, free - sh);
+  by = top + extra * 0.3; bench = by + bh;
+  sc = { x: w * 0.03, y: bench + 30 + extra * 0.4, w: sw, h: sh, wide: false };
+  return { w, h, bx, by, bw, bh, sc, wide: false, bench, d, phone: true, land, top, X: x => bx + x / K.W * bw, Y: dd => by + dd / K.D * bh };
 }
 function steelTexture(G) {
   const key = `${Math.round(G.bw)}x${Math.round(G.bh)}x${D.dpr}x${T.steel}`;
@@ -967,11 +957,11 @@ function drawScan() {
   ctx.drawImage(steelTexture(G), bx, by, bw, bh);
   ctx.strokeStyle = T.spec; ctx.globalAlpha = 0.85; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(bx, by + 0.5); ctx.lineTo(bx + bw, by + 0.5); ctx.moveTo(bx + 0.5, by); ctx.lineTo(bx + 0.5, by + bh); ctx.stroke(); ctx.globalAlpha = 1;
   ctx.strokeStyle = T['steel-lo']; ctx.lineWidth = 1; ctx.strokeRect(bx + 0.5, by + 0.5, bw - 1, bh - 1);
-  if (G.wide) label('강철 블록 (두께 50 mm)', bx + bw, bench + 24, T.muted, 'right', 15);
+  if (G.wide && !G.phone) label('강철 블록 (두께 50 mm)', bx + bw, bench + 24, T.muted, 'right', 15);
   // 깊이 눈금
   ctx.font = `500 14px ${T.mono}`; ctx.fillStyle = T.muted; ctx.strokeStyle = T.muted; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.lineWidth = 1.2;
   for (let dd = 0; dd <= K.D; dd += 10) { const y = Math.round(Y(dd)) + 0.5; ctx.beginPath(); ctx.moveTo(bx - 9, y); ctx.lineTo(bx - 3, y); ctx.stroke(); if (bh > 120 || dd % 50 === 0 || dd === 20) ctx.fillText(String(dd), bx - 12, y); }
-  ctx.textAlign = 'right'; ctx.font = `600 12px ${T.font}`; ctx.fillText('깊이 mm', bx - 4, by - dy - 12);
+  ctx.textAlign = 'right'; ctx.font = `600 12px ${T.font}`; ctx.fillText('깊이 mm', Math.max(bx - 4, ctx.measureText('깊이 mm').width + 4), by - dy - 12);
   // 결함
   if (S.flaw) {
     const x0 = X(TG.x0), x1 = X(TG.x0 + TG.w), y = Y(TG.d), th = Math.max(6, bh * 0.06), n = 16;
@@ -1027,8 +1017,11 @@ function drawScan() {
   const port = sc.wide ? { x: sc.x - 7, y: sc.y + sc.h * 0.66 } : { x: sc.x + sc.w * 0.86, y: sc.y - 5 };
   drawCable(tip, port, G);
   drawScope(sc);
-  const lx = tip.x, ly = tip.y - 22;
-  label(`탐촉자 x = ${S.probeX} mm`, lx, ly, T.ink, 'center', 15);
+  if (G.land) {                                                       // 휴대폰 가로: 위쪽은 설명 자리라 이름표를 탐촉자 옆에
+    const txt = `탐촉자 x = ${S.probeX} mm`, my = by - dy * 0.5 - pw * 0.7; ctx.font = `700 14px ${T.font}`;
+    const right = tip.x + pw / 2 + 10 + ctx.measureText(txt).width + 20 < sc.x - 10;
+    label(txt, right ? tip.x + pw / 2 + 10 : tip.x - pw / 2 - 6, my, T.ink, right ? 'left' : 'right', 14);
+  } else label(`탐촉자 x = ${S.probeX} mm`, tip.x, tip.y - 22, T.ink, 'center', 15);
   if (tag) {                                                          // 고리 오른쪽 위 이름표: 표시한 선을 가리지 않게. 블록 끝에 가까우면 왼쪽으로,
     ctx.font = `700 15px ${T.font}`;                                  // 결함이 윗면에 가깝거나 (좁은 화면에서) 바닥면이면 아래로
     const right = tag.x + 14 + ctx.measureText(tag.txt).width + 20 <= bx + bw + d, up = tag.fl ? tag.y - 35 >= by + 2 : bh >= 120;
@@ -1038,8 +1031,9 @@ function drawScan() {
 // 탐촉자 아래에서 잰 반사파: 결함에서 온 것이 있으면 그것, 없으면 바닥면 (너무 약한 반사는 읽지 않음)
 const mainEcho = r => r && (r.echoes.find(q => q.type === 'flaw' && q.amp >= 0.1) || r.echoes.find(q => q.type === 'back'));
 function drawCable(a, b, G) {
-  const hi = Math.min(a.y - 40, G.by - 70), sag = Math.max(b.y + 40, G.bench - 12);
-  const c = G.wide ? (dx, dy) => { ctx.beginPath(); ctx.moveTo(a.x + dx, a.y + dy); ctx.bezierCurveTo(a.x + dx, hi + dy, b.x - 160 + dx, sag + dy, b.x + dx, b.y + dy); }
+  const hi = Math.max(G.land ? G.top + 4 : -1e9, Math.min(a.y - 40, G.by - 70)), sag = Math.max(b.y + 40, G.bench - 12);
+  const c = G.land ? (dx, dy) => { ctx.beginPath(); ctx.moveTo(a.x + dx, a.y + dy); ctx.bezierCurveTo(a.x + dx, hi + dy, G.bx + G.bw + G.d + 10 + dx, hi + dy, b.x + dx, b.y + dy); }   // 휴대폰 가로: 블록 위로 넘어가 탐상기로
+    : G.wide ? (dx, dy) => { ctx.beginPath(); ctx.moveTo(a.x + dx, a.y + dy); ctx.bezierCurveTo(a.x + dx, hi + dy, b.x - 160 + dx, sag + dy, b.x + dx, b.y + dy); }
     : (dx, dy) => { ctx.beginPath(); ctx.moveTo(a.x + dx, a.y + dy); ctx.bezierCurveTo(a.x + dx, a.y - 46 + dy, Math.max(b.x, G.bx + G.bw + 30) + dx, b.y - 140 + dy, b.x + dx, b.y + dy); };
   ctx.save(); ctx.lineCap = 'round';
   ctx.filter = 'blur(4px)'; ctx.strokeStyle = T.shadow; ctx.globalAlpha = 0.2; ctx.lineWidth = 8; c(7, 12); ctx.stroke();
@@ -1086,7 +1080,8 @@ function drawScope(sc) {
   for (let i = 0; i <= 10; i++) { const xx = Math.round(L + pw * i / 10) + 0.5; ctx.beginPath(); ctx.moveTo(xx, Tt); ctx.lineTo(xx, B); ctx.stroke(); }
   for (let j = 0; j <= 6; j++) { const yy = Math.round(Tt + ph * j / 6) + 0.5; ctx.beginPath(); ctx.moveTo(L, yy); ctx.lineTo(R, yy); ctx.stroke(); }
   ctx.font = `500 14px ${T.mono}`; ctx.fillStyle = T['scope-ink']; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
-  for (let t = 0; t <= K.tMax; t += 5) ctx.fillText(t === K.tMax ? '20 μs' : String(t), Math.min(Xt(t), R - 24), B + 7);
+  const lastL = R - 24 - ctx.measureText('20 μs').width / 2;           // 좁은 화면: '15'가 '20 μs'와 겹치면 뺀다
+  for (let t = 0; t <= K.tMax; t += 5) { if (t < K.tMax && Xt(t) + ctx.measureText(String(t)).width / 2 + 6 > lastL) continue; ctx.fillText(t === K.tMax ? '20 μs' : String(t), Math.min(Xt(t), R - 24), B + 7); }
   const trace = (r, tE, alpha, glow) => {
     ctx.save(); ctx.globalAlpha = alpha; ctx.strokeStyle = T['scope-trace']; ctx.lineWidth = 2; ctx.lineJoin = 'round';
     if (glow) { ctx.shadowColor = T['scope-trace']; ctx.shadowBlur = 10; }
@@ -1141,8 +1136,8 @@ function readout() {
     const c = coef(), sp = split(), none = Math.abs(c.R) < 0.003;
     const n2 = S.r2 in ROPES ? ROPES[S.r2].name : ENDS[S.r2];
     const st = !sp || none ? '' : c.R < 0 ? 'minus' : 'plus';
-    h = `<div class="ro ${ROPES[S.r1].c}"><span>${ROPES[S.r1].name}</span><b>${v1()} m/s</b></div>
-      <div class="ro ${S.r2 in ROPES ? ROPES[S.r2].c : ''}"><span>${n2}</span><b>${c.v2 ? `${c.v2} m/s` : S.r2 === 'wall' ? '고정' : '자유'}</b></div>
+    h = `<div class="ro ro-opt ${ROPES[S.r1].c}"><span>${ROPES[S.r1].name}</span><b>${v1()} m/s</b></div>
+      <div class="ro ro-opt ${S.r2 in ROPES ? ROPES[S.r2].c : ''}"><span>${n2}</span><b>${c.v2 ? `${c.v2} m/s` : S.r2 === 'wall' ? '고정' : '자유'}</b></div>
       <div class="ro opt"><span>입사파</span><b>20.0 cm</b></div>
       <div class="ro-sep"></div>
       <div class="ro-cap">반사파</div>
@@ -1151,7 +1146,7 @@ function readout() {
       <div class="ro"><span>투과파</span><b>${!c.v2 ? '—' : sp ? `${fmtCm(c.tau * AMP)} cm` : '?'}</b></div>`;
   } else {
     const e = mainEcho(S.last);
-    h = `<div class="ro"><span>탐촉자 위치</span><b>${S.probeX} mm</b></div>
+    h = `<div class="ro ro-opt"><span>탐촉자 위치</span><b>${S.probeX} mm</b></div>
       <div class="ro opt"><span>강철 속 음속 v</span><b>6000 m/s</b></div>
       <div class="ro"><span>반사파 시간 t</span><b>${e ? e.t.toFixed(1) + ' μs' : '—'}</b></div>
       <div class="ro-sep"></div>
@@ -1167,6 +1162,11 @@ function readout() {
 /* ---------- 동기화 ---------- */
 function sync() {
   $$('.chip').forEach((b, i) => b.setAttribute('aria-pressed', String(i === S.preset)));
+  const pr = $('#presets'), on = pr.children[S.preset];                // 휴대폰: 장면 버튼 줄이 옆으로 넘치면 고른 버튼이 보이게 민다
+  if (on && pr.scrollWidth > pr.clientWidth + 1) {
+    const a = pr.getBoundingClientRect(), b = on.getBoundingClientRect(), edge = a.right - a.width * 0.12;
+    if (b.left < a.left + 4) pr.scrollLeft -= a.left + 28 - b.left; else if (b.right > edge) pr.scrollLeft += b.right - edge + 4;
+  }
   $$('[data-for]').forEach(el => { el.hidden = el.dataset.for !== S.mode; });
   $$('[data-seg]').forEach(sg => sg.querySelectorAll('button').forEach(b => {
     const k = sg.dataset.seg, on = k === 'rate' ? Math.abs(S.rate - +b.dataset.v) < 1e-6 : S[k] === b.dataset.v;

@@ -149,6 +149,68 @@ h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white
   .playbar .seg, .timenote { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- PHONE v1: 휴대폰 세로·가로 ---------- */
+.presets, .dock { scrollbar-width: none; }
+.presets::-webkit-scrollbar, .dock::-webkit-scrollbar { display: none; }
+@media (max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape) {
+  html, body { height: 100%; }
+  body { overscroll-behavior: none; }
+  .app { height: 100vh; height: 100dvh; min-height: 0; gap: 6px;
+         padding: max(6px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) max(6px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+  .topbar { flex: 0 0 auto; gap: 6px 8px; }
+  .brand { gap: 6px; }
+  .tag { font-size: 11px; padding: 1px 6px; }
+  h1 { font-size: 16px; }
+  .presets { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 4px; padding: 1px 0;
+             -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent); mask-image: linear-gradient(90deg, #000 90%, transparent); }
+  .chip { flex: 0 0 auto; font-size: 13px; padding: 3px 9px 3px 3px; min-height: 30px; }
+  .chip b { width: 22px; height: 22px; font-size: 11px; }
+  .tools { gap: 4px; }
+  .tbtn { padding: 5px 9px; font-size: 13px; min-height: 30px; }
+  .stage { height: auto; flex: 1 1 0; min-height: 0; border-radius: 12px; }
+  .glass { border-radius: 11px; }
+  .playbar { top: 6px; left: 6px; padding: 4px; gap: 4px; }
+  .pbtn { padding: 6px 11px; font-size: 14px; min-height: 34px; }
+  .playbar .seg, .timenote { display: none; }
+  .readout { top: 6px; right: 6px; width: auto; min-width: 118px; max-width: 46%; padding: 6px 9px; gap: 1px; }
+  .ro { font-size: 12px; gap: 6px; } .ro b { font-size: 14px; }
+  .ro-sep { margin: 3px 0; }
+  .ro-db b { font-size: 24px; } .ro-db small, .ro-sub { font-size: 11px; }
+  .state { font-size: 12px; padding: 1px 7px; }
+  .meter { height: 6px; margin-top: 4px; }
+  .ro-opt { display: none !important; }
+  .bottom { left: 6px; right: 6px; bottom: 6px; gap: 6px; }
+  .caption { font-size: 13.5px; padding: 6px 11px; line-height: 1.35; }
+  /* 소리 크기 그래프: 숨기지 않고 작게 */
+  .graph-card { display: block; width: 100%; padding: 3px 6px 1px; }
+  .graph-card .gt { font-size: 11px; padding: 0 2px; }
+  #graph { height: clamp(78px, 12vh, 104px); }
+  .lbl { font-size: 13px; padding: 1px 7px; }
+  .lbl.dist { font-size: 12.5px; }
+  .lbl.mic { font-size: 15px; padding: 2px 9px; }
+  .dock { flex: 0 0 auto; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 6px; }
+  .dg { flex: 0 0 auto; padding: 4px 9px; gap: 7px; border-radius: 10px; }
+  .dg.slider { flex: 0 0 auto; width: min(76vw, 300px); }
+  .tgs { flex-wrap: nowrap; }
+  .seg button, .tg { padding: 7px 10px; font-size: 13px; }
+}
+@media (max-width: 600px) and (orientation: portrait) {
+  .brand { flex: 1 1 auto; min-width: 0; }
+  .tag { display: none; }                          /* 제목과 도구 버튼을 한 줄에 */
+  .presets { order: 3; flex: 1 0 100%; }          /* 장면 버튼: 둘째 줄, 옆으로 밀기 */
+  .readout { max-width: calc(100% - 160px); }
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .topbar { flex-wrap: nowrap; }                   /* 한 줄: 제목 · 장면 버튼(옆으로 밀기) · 도구 */
+  .presets { flex: 1 1 0; min-width: 0; }
+  .caption { font-size: 13px; max-width: 58%; }
+  .readout { max-width: 32%; }
+  /* 그래프는 왼쪽 칸(재생 막대 아래), 설명은 오른쪽 아래 */
+  .graph-card { position: absolute; left: 0; bottom: 0; width: min(38%, 320px); }
+  #graph { height: clamp(64px, calc(var(--sh, 290px) - 170px), 96px); }
+  .stage.graphing .caption { margin-left: auto; max-width: min(36%, 300px); }
+}
 </style>
 
 <div class="app" id="app">
@@ -224,6 +286,9 @@ const $ = s => document.querySelector(s);
 const V = 340, FD = 0.5, BG = 35, EAR = 1.0;          // 음속 m/s, 화면 속 진동수 Hz, 배경 소음 dB, 소리 평면 높이 m
 const PW = 9.0, PD = 5.85, PZ0 = -0.65;                 // 소리 평면 크기와 시작 위치 (스피커 뒤쪽도 조금 보이게)
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const PHONE = matchMedia('(max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape)');   // CSS의 PHONE v1과 같은 조건
+const isPhone = () => PHONE.matches;
+const SMALL_GPU = Math.min(screen.width || 1e4, screen.height || 1e4) < 600;                // 휴대폰: 그림자 지도를 작게
 
 const BASE = { f: 680, d: 1.0, ph2: 0, on1: true, on2: true, mode: 0, front: false, nodal: false, anti: false, paths: false, graph: false };
 const S = { ...BASE, run: !reduce, speed: reduce ? 0.3 : 1, sound: false, cap: true, top: false, mic: { x: 0, z: 1.0 }, preset: 0 };
@@ -344,7 +409,7 @@ function build3D() {
   const hemi = new THREE.HemisphereLight(0xffffff, 0x8f8a80, 0.32); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff8ef, 1.05);
   sun.position.set(-2.4, 7, 3.6); sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048); sun.shadow.camera.left = -4.5; sun.shadow.camera.right = 4.5; sun.shadow.camera.top = 4.5; sun.shadow.camera.bottom = -4.5;
+  sun.shadow.mapSize.set(SMALL_GPU ? 1024 : 2048, SMALL_GPU ? 1024 : 2048); sun.shadow.camera.left = -4.5; sun.shadow.camera.right = 4.5; sun.shadow.camera.top = 4.5; sun.shadow.camera.bottom = -4.5;
   sun.shadow.camera.near = 1; sun.shadow.camera.far = 18; sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.01;
   sun.target.position.set(0, 0, 1.2); scene.add(sun, sun.target);
   const fill = new THREE.DirectionalLight(0xdfe8ff, 0.22); fill.position.set(4, 3, 6); scene.add(fill);
@@ -506,6 +571,7 @@ function build3D() {
 
   const spk = [makeSpeaker(T.s1), makeSpeaker(T.s2)]; spk.forEach(s => scene.add(s.g));
   const mic = makeMic(); scene.add(mic);
+  const micGrab = new THREE.Mesh(new THREE.SphereGeometry(0.15, 10, 8), new THREE.MeshBasicMaterial({ visible: false })); scene.add(micGrab);   // 손가락용 (터치일 때만 검사)
   const gen = makeSource(); scene.add(gen.g);
   let cables = [];
   function buildCables() {
@@ -625,13 +691,115 @@ function build3D() {
   controls.addEventListener('end', () => { orbiting = false; });
   controls.addEventListener('change', () => { if (orbiting) userMoved = true; });
   function goView(top, instant) {
-    const v = viewFor(top); userMoved = false;
-    if (instant || reduce) { camera.position.copy(v.pos); controls.target.copy(v.tgt); controls.update(); cam.t = 1; return; }
-    cam.from = { pos: camera.position.clone(), tgt: controls.target.clone() }; cam.to = v; cam.t = 0;
+    const v = isPhone() ? fitView(top) : Object.assign(viewFor(top), { off: { x: 0, y: 0 } }); userMoved = false;
+    if (instant || reduce) { camera.position.copy(v.pos); controls.target.copy(v.tgt); off = v.off; applyOff(); controls.update(); cam.t = 1; return; }
+    cam.from = { pos: camera.position.clone(), tgt: controls.target.clone(), off: { ...off } }; cam.to = v; cam.t = 0;
+  }
+
+  /* ---------- 휴대폰: 겹쳐 놓인 카드(재생·측정값·그래프·설명)를 피해 장치를 가장 크게 ----------
+     카메라 방향은 데스크톱과 같고, 거리와 '렌즈 이동'(setViewOffset: 원근은 그대로, 화면만 평행 이동)으로 맞춘다. */
+  let off = { x: 0, y: 0 }, fitSigV = null;
+  function applyOff(force) {
+    const W = canvas.clientWidth || 1, H = canvas.clientHeight || 1, vw = camera.view;
+    if (!off.x && !off.y) { if (vw && vw.enabled) camera.clearViewOffset(); return; }
+    if (!force && vw && vw.enabled && vw.offsetX === -off.x && vw.offsetY === -off.y && vw.fullWidth === W && vw.fullHeight === H) return;
+    camera.setViewOffset(W, H, -off.x, -off.y, W, H);
+  }
+  let measCtx = null;
+  function lw(text, px = 13, style = '700', font = T.font) {   // 휴대폰 이름표의 너비(px)
+    measCtx = measCtx || document.createElement('canvas').getContext('2d');
+    measCtx.font = `${style} ${px}px ${font}`; return measCtx.measureText(text).width + 16;
+  }
+  function overlayRects() {
+    const st = stage.getBoundingClientRect(), out = [];
+    for (const el of document.querySelectorAll('#stage .playbar, #stage .readout, #caption, #graphCard')) {
+      if (el.hidden) continue;
+      const r = el.getBoundingClientRect(); if (r.width < 2 || r.height < 2) continue;
+      out.push([r.left - st.left - 5, r.right - st.left + 5, r.top - st.top - 5, r.bottom - st.top + 5]);
+    }
+    return { W: st.width, H: st.height, obs: out };
+  }
+  function fitPts(top, tall) {                              // [x, y, z, 왼쪽, 오른쪽, 위, 아래 px] — 이름표는 화면에서의 크기까지
+    const P = [], add = (x, y, z, l = 0, r = 0, u = 0, d = 0) => P.push([x, y, z, l, r, u, d]);
+    const m = micTw ? micTw.to : S.mic, ss = srcs(), sl = lw('S₁', 13) / 2;
+    for (const s of ss) {                                   // 스피커 (상자 + 이름표)
+      add(s.x - 0.13, EAR + 0.24, -0.25); add(s.x + 0.13, EAR + 0.24, -0.25); add(s.x - 0.13, EAR - 0.13, 0.02); add(s.x + 0.13, EAR - 0.13, 0.02);
+      add(s.x, EAR + 0.29, -0.1, sl, sl, 26, 0);
+    }
+    add(m.x, EAR + 0.075, m.z, 34, 34, 32, 0); add(m.x, 0, m.z + 0.12); add(m.x - 0.15, 0, m.z); add(m.x + 0.15, 0, m.z);   // 마이크 + dB 이름표, 스탠드 발
+    if (top) {                                              // 위에서: 바닥의 간섭 무늬가 넉넉히 보이게
+      const hx = tall ? 1.35 : 2.7, z1 = tall ? 3.1 : 2.5;
+      for (const x of [-hx, hx]) for (const z of [-0.35, z1]) add(x, 0, z);
+    } else {
+      const hx = S.d / 2 + 0.35;                            // 비스듬히: 스피커 삼발이 발과 마이크 앞쪽 바닥
+      for (const x of [-hx, hx]) { add(x, 0, -0.45); add(x * 0.6, 0, Math.max(m.z, 1) + 0.2); }
+      if (!tall) { add(-1.75, 0.75, -0.75); add(-1.2, 0.0, -0.45); }   // 가로 화면: 소리 발생기(스마트폰 올린 탁자)까지
+      if (S.paths) for (const s of ss) { const w = lw('000 cm', 12.5, '600', T.mono) + 10; add((s.x + m.x) / 2, EAR, m.z / 2, w, w, 12, 12); }
+    }
+    return P;
+  }
+  function fitView(top) {
+    const { W, H, obs } = overlayRects(), mg = 5, base = viewFor(top);
+    const tgt = base.tgt.clone(), dir = base.pos.clone().sub(tgt).normalize(), pts = fitPts(top, W < H);
+    const fc = fitView.cam || (fitView.cam = new THREE.PerspectiveCamera());
+    fc.fov = camera.fov; fc.aspect = W / H; fc.near = 0.05; fc.far = 80; fc.updateProjectionMatrix();
+    const v3 = new THREE.Vector3();
+    const boxes = d => {
+      fc.position.copy(dir).multiplyScalar(d).add(tgt); fc.lookAt(tgt); fc.updateMatrixWorld();
+      const out = [];
+      for (const q of pts) {
+        const p = v3.set(q[0], q[1], q[2]).project(fc); if (p.z > 1 || p.z < -1) return null;
+        const x = (p.x + 1) / 2 * W, y = (1 - p.y) / 2 * H; out.push([x - q[3], x + q[4], y - q[5], y + q[6]]);
+      }
+      return out;
+    };
+    const shift = (B, free) => {                            // 모든 상자를 무대 안·카드 밖에 두는 평행 이동 중 가운데에 가장 가까운 것
+      let x0 = Infinity, x1 = -Infinity, y0 = Infinity, y1 = -Infinity;
+      for (const b of B) { x0 = Math.min(x0, b[0]); x1 = Math.max(x1, b[1]); y0 = Math.min(y0, b[2]); y1 = Math.max(y1, b[3]); }
+      const ax = [mg - x0, W - mg - x1], ay = [mg - y0, H - mg - y1];
+      if (ax[0] > ax[1] || ay[0] > ay[1]) return null;
+      const cl = (v, a) => Math.min(a[1], Math.max(a[0], v)), cx = cl(W / 2 - (x0 + x1) / 2, ax), cy = cl(H / 2 - (y0 + y1) / 2, ay);
+      if (free) return [cx, cy];
+      const xs = [cx, ax[0], ax[1]], ys = [cy, ay[0], ay[1]];
+      for (const o of obs) for (const b of B) { xs.push(o[0] - b[1], o[1] - b[0]); ys.push(o[2] - b[3], o[3] - b[2]); }
+      const X = xs.filter(v => v >= ax[0] - 1e-6 && v <= ax[1] + 1e-6), Y = ys.filter(v => v >= ay[0] - 1e-6 && v <= ay[1] + 1e-6), cand = [];
+      for (const dx of X) for (const dy of Y) cand.push([(dx - cx) ** 2 + (dy - cy) ** 2, dx, dy]);
+      cand.sort((a, b) => a[0] - b[0]);
+      outer: for (const [, dx, dy] of cand) {
+        for (const o of obs) for (const b of B) if (b[0] + dx < o[1] - 1e-6 && b[1] + dx > o[0] + 1e-6 && b[2] + dy < o[3] - 1e-6 && b[3] + dy > o[2] + 1e-6) continue outer;
+        return [dx, dy];
+      }
+      return null;
+    };
+    let lo = 1, hi = 40, best = null;
+    for (let i = 0; i < 22; i++) { const d = (lo + hi) / 2, B = boxes(d), s = B && shift(B); if (s) { best = d; hi = d; } else lo = d; }
+    let d = best ? best * 1.035 : hi, B = boxes(d), s = B && (shift(B) || shift(B, true));      // 카드와 살짝 떨어지게
+    if (!s) { d = best || hi; B = boxes(d); s = (B && (shift(B) || shift(B, true))) || [0, 0]; }
+    controls.maxDistance = Math.max(16, d * 1.5); controls.minDistance = Math.min(2.2, d * 0.6);
+    fitSigV = fitSig();
+    return { pos: dir.multiplyScalar(d).add(tgt), tgt, off: { x: Math.round(s[0]), y: Math.round(s[1]) } };
+  }
+  function fitSig() { const o = overlayRects(); o.key = [S.top, S.paths].join(); return o; }
+  let refitQ = false;
+  function maybeRefit() {                                   // 휴대폰에서 카드가 나타나거나 바뀌면 (사용자가 시점을 돌리지 않았을 때) 다시 맞춤
+    if (!isPhone() || refitQ) return;
+    refitQ = true;
+    requestAnimationFrame(() => {
+      refitQ = false;
+      if (userMoved || !isPhone() || cam.t < 1 || drag) return;
+      const a = fitSigV, b = fitSig();
+      // 카드가 새로 나타나거나 커졌을 때만 (설명이 사라지는 것처럼 줄어들 때는 시점을 그대로 둠)
+      const grew = !a || a.key !== b.key || Math.abs(a.W - b.W) > 2 || Math.abs(a.H - b.H) > 2 ||
+        b.obs.some(o => !a.obs.some(q => q[0] <= o[0] + 14 && q[1] >= o[1] - 14 && q[2] <= o[2] + 14 && q[3] >= o[3] - 14));
+      if (grew) goView(S.top, false);
+    });
   }
   function resize() {
     const r = stage.getBoundingClientRect(); if (!r.width) return;
+    stage.style.setProperty('--sh', `${Math.round(r.height)}px`);
     renderer.setSize(r.width, r.height, false); camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+    if (!isPhone()) off = { x: 0, y: 0 };
+    applyOff(true); for (const el of Object.values(lab)) el._w = 0;
     if (!userMoved && cam.t >= 1) goView(S.top, true);
   }
 
@@ -642,7 +810,8 @@ function build3D() {
   const clampMic = (x, z) => ({ x: Math.max(-2.9, Math.min(2.9, x)), z: Math.max(0.35, Math.min(4.3, z)) });
   canvas.addEventListener('pointerdown', e => {
     setRay(e); downAt = { x: e.clientX, y: e.clientY };
-    if (ray.intersectObject(mic, true).length) drag = 'mic';
+    const touch = e.pointerType && e.pointerType !== 'mouse';
+    if (ray.intersectObject(mic, true).length || (touch && ray.intersectObject(micGrab).length)) drag = 'mic';
     else { const si = spk.findIndex(s => ray.intersectObject(s.g, true).length); if (si >= 0) drag = 'spk'; }
     if (drag) { controls.enabled = false; canvas.setPointerCapture(e.pointerId); micTw = null; if (drag === 'spk') stopPreset(); else micMoved(); canvas.style.cursor = drag === 'mic' ? 'grabbing' : 'ew-resize'; }
   }, { capture: true });
@@ -658,7 +827,7 @@ function build3D() {
     }
   });
   const endDrag = e => {
-    if (!drag && downAt && e.type === 'pointerup' && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 5) {
+    if (!drag && downAt && e.type === 'pointerup' && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < (e.pointerType === 'mouse' ? 5 : 10)) {
       setRay(e);
       if (ray.ray.intersectPlane(floorPlane, hit) && Math.abs(hit.x) < 3 && hit.z > 0.3 && hit.z < 4.4) { moveMic(clampMic(hit.x, hit.z)); micMoved(); }
     }
@@ -675,7 +844,12 @@ function build3D() {
     if (tmp.z > 1 || tmp.z < -1) { el.style.visibility = 'hidden'; return; }
     const w = canvas.clientWidth, h = canvas.clientHeight;
     el.style.visibility = '';
-    el.style.transform = `translate(${((tmp.x + 1) / 2 * w + ox).toFixed(1)}px, ${((1 - tmp.y) / 2 * h + oy).toFixed(1)}px) translate(${ax}%, ${ay}%)`;
+    let sx = (tmp.x + 1) / 2 * w + ox;
+    if (isPhone()) {                                         // 휴대폰: 이름표가 무대 밖으로 잘리지 않게 안쪽으로 밀기
+      const bw = el._w || (el._w = el.offsetWidth), x0 = sx + bw * ax / 100;
+      sx += Math.max(0, 4 - x0) + Math.min(0, w - 4 - (x0 + bw));
+    }
+    el.style.transform = `translate(${sx.toFixed(1)}px, ${((1 - tmp.y) / 2 * h + oy).toFixed(1)}px) translate(${ax}%, ${ay}%)`;
   }
   const scr = (x, y, z) => { tmp.set(x, y, z).project(camera); return tmp.x; };
 
@@ -692,7 +866,7 @@ function build3D() {
       s.ringMat.emissiveIntensity = ss[i].on ? 0.45 : 0; s.led.visible = ss[i].on;
       srcMark[i].position.set(ss[i].x, 0.007, 0.0); srcMark[i].visible = ss[i].on;
     });
-    mic.position.set(S.mic.x, EAR, S.mic.z); mic.rotation.y = Math.atan2(S.mic.x, S.mic.z);
+    mic.position.set(S.mic.x, EAR, S.mic.z); mic.rotation.y = Math.atan2(S.mic.x, S.mic.z); micGrab.position.set(S.mic.x, EAR - 0.03, S.mic.z + 0.05);
     const tip = new THREE.Vector3(S.mic.x, EAR, S.mic.z);
     paths.forEach((p, i) => {
       const a = new THREE.Vector3(ss[i].x, EAR, 0.01), show = S.paths && ss[i].on;
@@ -705,24 +879,28 @@ function build3D() {
     if (cam.t < 1) {
       cam.t = Math.min(1, cam.t + dt / 0.9); const u = cam.t < 0.5 ? 4 * cam.t ** 3 : 1 - (-2 * cam.t + 2) ** 3 / 2;
       camera.position.lerpVectors(cam.from.pos, cam.to.pos, u); controls.target.lerpVectors(cam.from.tgt, cam.to.tgt, u);
+      const f = cam.from.off || { x: 0, y: 0 }, g = cam.to.off || { x: 0, y: 0 };
+      off = { x: Math.round(f.x + (g.x - f.x) * u), y: Math.round(f.y + (g.y - f.y) * u) };
     }
+    applyOff();
     controls.update();
     const cd = camera.position.distanceTo(controls.target); scene.fog.near = cd + 5; scene.fog.far = cd + 17;
     renderer.render(scene, camera);
     // 이름표
+    const w = canvas.clientWidth, h = canvas.clientHeight;
     place(lab.s1, ss[0].x, EAR + 0.29, -0.1, -50, -100); place(lab.s2, ss[1].x, EAR + 0.29, -0.1, -50, -100);
     lab.s1.style.opacity = S.on1 ? 1 : 0.4; lab.s2.style.opacity = S.on2 ? 1 : 0.4;
     place(lab.mic, S.mic.x, EAR + 0.075, S.mic.z, -50, -100, 0, -6);
     // 경로 길이: 각 경로의 가운데에, 두 경로의 바깥쪽으로 붙여 서로 겹치지 않게
     const mz = S.mic.z / 2, mid = [0, 1].map(i => (ss[i].x + S.mic.x) / 2), flip = scr(mid[0], EAR, mz) > scr(mid[1], EAR, mz);
     [['r1', 0], ['r2', 1]].forEach(([k, i]) => {
-      const el = lab[k], show = S.paths && ss[i].on; el.hidden = !show; if (!show) return;
-      const t = `${Math.round(e.r[i] * 100)} cm`; if (el.textContent !== t) el.textContent = t;
+      const el = lab[k], show = S.paths && ss[i].on && !(isPhone() && h < w && !S.top && h < 360); el.hidden = !show; if (!show) return;
+      const t = `${Math.round(e.r[i] * 100)} cm`; if (el.textContent !== t) { el.textContent = t; el._w = 0; }
       const left = (i === 0) !== flip;
       place(el, mid[i], EAR, mz, left ? -100 : 0, -50, left ? -10 : 10, 0);
     });
   }
-  return { frame, resize, goView, gen, buildCables, applyTheme };
+  return { frame, resize, goView, gen, buildCables, applyTheme, maybeRefit };
 }
 
 /* ---------- 상태와 화면 ---------- */
@@ -764,9 +942,10 @@ function sync() {
   $('#capBtn').setAttribute('aria-pressed', String(S.cap));
   const cap = S.preset >= 0 ? PRESETS[S.preset].cap : '';
   $('#caption').textContent = cap; $('#caption').hidden = !S.cap || !cap;
-  $('#graphCard').hidden = !S.graph;
+  $('#graphCard').hidden = !S.graph; stage.classList.toggle('graphing', !!S.graph);
   $('#sndBtn').setAttribute('aria-pressed', String(S.sound)); $('#sndBtn').textContent = S.sound ? '소리 끄기' : '소리 켜기';
   $('#timenote').textContent = S.run ? `화면 속 진동은 실제보다 약 ${Math.round(S.f / (FD * S.speed)).toLocaleString('ko-KR')}배 느림` : '일시정지';
+  if (R3 && isPhone()) R3.maybeRefit();
 }
 let lastRO = '';
 function updateReadout(e) {
@@ -779,7 +958,7 @@ function updateReadout(e) {
   const st = $('#roState'); const s = !both ? '' : e.deg <= 25 ? 'plus' : e.deg >= 155 ? 'minus' : '';
   st.dataset.s = s; st.textContent = s === 'plus' ? '보강' : s === 'minus' ? '상쇄' : ''; st.hidden = !s;
   $('#roBar').style.width = `${Math.max(0, Math.min(100, (e.dB - 30) / 50 * 100))}%`;
-  $('#lMic').textContent = `${Math.round(e.dB)} dB`;
+  $('#lMic').textContent = `${Math.round(e.dB)} dB`; $('#lMic')._w = 0;
 }
 
 /* ---------- 소리: 소리 발생기 앱의 순수한 음 (마이크가 듣는 크기 그대로) ---------- */

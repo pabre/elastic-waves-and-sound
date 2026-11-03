@@ -21,6 +21,15 @@
 - 소리는 화면을 한 번 누른 뒤부터 나옵니다(브라우저 정책).
 - 3D 시뮬레이터는 three.js를 CDN에서 불러오므로 인터넷 연결이 필요합니다.
 
+## 그림 출처
+
+손·사람·귀 같은 신체 그림은 직접 그리지 않고 아래 공개 이미지를 페이지 안에 넣어 썼습니다.
+
+| 그림 | 출처 | 라이선스 |
+|---|---|---|
+| 주먹, 집는 손, 가리키는 손, 사람 얼굴, 서 있는 사람, 헤드폰 | [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (Medium 피부색, Color) | MIT, Copyright (c) Microsoft Corporation |
+| 귀 단면(글자 없는 판) | [Anatomy of the Human Ear blank.svg](https://commons.wikimedia.org/wiki/File:Anatomy_of_the_Human_Ear_blank.svg) — Chittka L, Brockmann A; derivative work M. Komorniczak | [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/) |
+
 ## 구조
 
 - 각 `*.html`은 외부 파일 없이 혼자 동작하는 한 장짜리 페이지입니다(Claude 아티팩트 형식).

@@ -28,8 +28,6 @@
   --thread: #f4f0e6; --thread-lo: #a59d8c;
   --board: #14181d; --board-hi: #2b323a;
   --p1: #0a7f86; --p2: #d06a14;
-  --skin: #e8bf98; --skin-lo: #b0784f; --skin-hi: #f8dcc0; --nail: #f2c9bf;
-  --sleeve: #3d6fb6; --sleeve-lo: #22457c; --sleeve-hi: #6e9bd8;
   --metal-hi: #f7f9fb; --metal: #a9b3bd; --metal-lo: #5b6671;
   --iron: #3d454e; --iron-hi: #6a747f;
   --case: #2a3037; --case-hi: #4b545e;
@@ -50,8 +48,6 @@
     --str: #c9d4df; --str-lo: #6b7c8d; --str-hi: #ffffff; --p1: #3fc6c4; --p2: #f5a04c;
     --thread: #f1ece0; --thread-lo: #8f8878;
     --board: #07090c; --board-hi: #1d232a;
-    --skin: #d2a47c; --skin-lo: #8a5c3c; --skin-hi: #e8c4a2; --nail: #e2b4aa;
-    --sleeve: #4f86d1; --sleeve-lo: #2a548f; --sleeve-hi: #7fa9e2;
     --metal-hi: #e3e9ee; --metal: #87939f; --metal-lo: #38424c;
     --iron: #2a3037; --iron-hi: #545e69;
     --case: #1d2228; --case-hi: #3c444d;
@@ -71,8 +67,6 @@
   --str: #c9d4df; --str-lo: #6b7c8d; --str-hi: #ffffff; --p1: #3fc6c4; --p2: #f5a04c;
   --thread: #f1ece0; --thread-lo: #8f8878;
   --board: #07090c; --board-hi: #1d232a;
-  --skin: #d2a47c; --skin-lo: #8a5c3c; --skin-hi: #e8c4a2; --nail: #e2b4aa;
-  --sleeve: #4f86d1; --sleeve-lo: #2a548f; --sleeve-hi: #7fa9e2;
   --metal-hi: #e3e9ee; --metal: #87939f; --metal-lo: #38424c;
   --iron: #2a3037; --iron-hi: #545e69;
   --case: #1d2228; --case-hi: #3c444d;
@@ -178,6 +172,61 @@ h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white
   .playbar .seg, .timenote, #backBtn { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- PHONE v1: 휴대폰 세로·가로 ---------- */
+.presets, .dock { scrollbar-width: none; }
+.presets::-webkit-scrollbar, .dock::-webkit-scrollbar { display: none; }
+@media (max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape) {
+  html, body { height: 100%; }
+  body { overscroll-behavior: none; }
+  .app { height: 100vh; height: 100dvh; min-height: 0; gap: 6px;
+         padding: max(6px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) max(6px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+  .topbar { flex: 0 0 auto; gap: 6px 8px; }
+  .brand { gap: 6px; }
+  .tag { font-size: 11px; padding: 1px 6px; }
+  h1 { font-size: 16px; }
+  .presets { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 4px; padding: 1px 0;
+             -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent); mask-image: linear-gradient(90deg, #000 90%, transparent); }
+  .chip { flex: 0 0 auto; font-size: 13px; padding: 3px 9px 3px 3px; min-height: 30px; }
+  .chip b { width: 22px; height: 22px; font-size: 11px; }
+  .tools { gap: 4px; }
+  .tbtn { padding: 5px 9px; font-size: 13px; min-height: 30px; }
+  .stage { height: auto; flex: 1 1 0; min-height: 0; border-radius: 12px; }
+  .glass { border-radius: 11px; }
+  .playbar { top: 6px; left: 6px; padding: 4px; gap: 4px; }
+  .pbtn { padding: 6px 11px; font-size: 14px; min-height: 34px; }
+  .playbar .seg, .timenote { display: none; }
+  .readout { top: 6px; right: 6px; width: 158px; padding: 6px 9px; gap: 1px; }   /* 폭 고정: 값이 바뀌어도 장면이 움직이지 않게 */
+  .ro { font-size: 12px; gap: 6px; } .ro b { font-size: 14px; }
+  .ro-cap { font-size: 11px; }
+  .ro-db { flex-wrap: nowrap; } .ro-db b { font-size: 24px; } .ro-db small { font-size: 11px; }
+  .state { font-size: 12px; padding: 1px 8px; }
+  .ro-opt, .ro-x, .ro.opt, .ro-sep { display: none !important; }
+  .bottom { left: 6px; right: 6px; bottom: 6px; gap: 6px; }
+  .caption { font-size: 13.5px; padding: 6px 11px; line-height: 1.35; word-break: keep-all; }   /* 낱말 가운데서 줄이 바뀌지 않게 */
+  .graph-card { display: none; }
+  .dock { flex: 0 0 auto; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 6px; }
+  .dg { flex: 0 0 auto; padding: 4px 9px; gap: 7px; border-radius: 10px; flex-wrap: nowrap; }
+  .dg.slider { flex: 0 0 auto; width: min(76vw, 300px); }
+  .seg { flex-wrap: nowrap; }
+  .seg button, .tg { padding: 7px 10px; font-size: 13px; }
+  .tgs { flex-wrap: nowrap; }
+}
+@media (max-width: 600px) and (orientation: portrait) {
+  .pbtn { padding: 6px 9px; }                      /* 좁은 화면: 재생 막대가 측정값 카드에 닿지 않게 (T/4 뒤로는 넓은 화면에서처럼 숨김) */
+  .brand { flex: 1 1 auto; min-width: 0; }
+  .presets { order: 3; flex: 1 0 100%; }          /* 장면 버튼: 둘째 줄, 옆으로 밀기 */
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .topbar { flex-wrap: nowrap; }                   /* 한 줄: 제목 · 장면 버튼(옆으로 밀기) · 도구 */
+  .presets { flex: 1 1 0; min-width: 0; }
+  .caption { font-size: 13px; max-width: 58%; }
+  #ro[data-mode="wave"] { width: 204px; flex-direction: row; flex-wrap: wrap; align-items: baseline; column-gap: 8px; }   /* 파동 장면: 낮은 화면이라 */
+  #ro[data-mode="wave"] .ro { display: none; }     /* 합성파 진폭만, 이름과 값을 한 줄에 */
+  .stage[data-mode="motor"] .graph-card { display: block; width: 210px; padding: 4px 8px 2px; }   /* 전동기 장면: 오른쪽 빈자리에 공명 그래프를 작게 */
+  .stage[data-mode="motor"] .graph-card .gt { font-size: 11px; padding: 0 2px; }
+  .stage[data-mode="motor"] #graph { height: 78px; }
+}
 </style>
 
 <div class="app" id="app">
@@ -377,7 +426,7 @@ function tLabel() {
 const T = {};
 const A_ = (hex, a) => { const n = parseInt(String(hex).slice(1), 16) || 0; return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`; };   // 토큰 색 + 투명도
 const KEYS = ['surface', 'surface-2', 'ink', 'muted', 'line', 'accent', 'hi', 'lo', 'heat', 'nodal', 'anti', 'stage', 'stage-a', 'stage-b', 'floor-a', 'floor-b',
-  'str', 'str-lo', 'str-hi', 'thread', 'thread-lo', 'board', 'board-hi', 'p1', 'p2', 'skin', 'skin-lo', 'skin-hi', 'nail', 'sleeve', 'sleeve-lo', 'sleeve-hi',
+  'str', 'str-lo', 'str-hi', 'thread', 'thread-lo', 'board', 'board-hi', 'p1', 'p2',
   'metal-hi', 'metal', 'metal-lo', 'iron', 'iron-hi', 'case', 'case-hi', 'holder', 'holder-hi', 'wire-r', 'rubber', 'rubber-hi', 'wood', 'wood-lo', 'wood-ink', 'shadow', 'spec'];
 function readTheme() {
   const cs = getComputedStyle(document.documentElement);
@@ -390,7 +439,9 @@ new MutationObserver(readTheme).observe(document.documentElement, { attributes: 
 /* ---------- 캔버스 ---------- */
 const stage = $('#stage'), cv = $('#cv'), ctx = cv.getContext('2d');
 const graph = $('#graph'), gctx = graph.getContext('2d');
-const D = { dpr: 1, w: 1, h: 1, roBottom: 160, botTop: 9999, rects: [] };
+const D = { dpr: 1, w: 1, h: 1, roBottom: 160, botTop: 9999, pbBottom: 60, rects: [] };
+const PHONE = matchMedia('(max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape)');   // CSS의 PHONE v1과 같은 조건
+const NARROW = matchMedia('(max-width: 720px)');                       // CSS에서 T/4 뒤로 단추를 숨기는 폭
 function resize() {
   const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
   const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
@@ -404,9 +455,18 @@ function measureRO() {
   let bt = r.bottom; for (const el of [$('#caption'), $('#graphCard')]) if (shown(el)) bt = Math.min(bt, el.getBoundingClientRect().top);
   D.botTop = bt - r.top;
   const rel = (b, pos) => ({ l: b.left - r.left, r: b.right - r.left, t: b.top - r.top, b: b.bottom - r.top, pos });
-  const pb = $('#playbar').getBoundingClientRect();
-  D.rects = [rel(ro, 'top'), { l: pb.left - r.left, r: Math.min(r.width, pb.left - r.left + 700), t: pb.top - r.top, b: pb.bottom - r.top, pos: 'top' }];   // 느린 화면에서 넓어지는 재생 막대까지 미리 비워 둠
+  const pb = $('#playbar').getBoundingClientRect(); D.pbBottom = pb.bottom - r.top; D.pb = rel(pb, 'top');
+  D.rects = [rel(ro, 'top'), { l: pb.left - r.left, r: Math.min(r.width, pb.left - r.left + (PHONE.matches ? pbSpan() : 700)), t: pb.top - r.top, b: pb.bottom - r.top, pos: 'top' }];   // 느린 화면에서 넓어지는 재생 막대까지 미리 비워 둠
   for (const el of [$('#caption'), $('#graphCard')]) if (shown(el)) D.rects.push(rel(el.getBoundingClientRect(), 'bottom'));
+}
+const PBW = {};                                                       // 재생 막대 단추 폭 (숨어 있을 때 쓰려고 기억)
+function pbSpan() {                                                   // 휴대폰: 시간 글씨·빠르기 단추가 없으니 단추가 다 보일 때의 폭만
+  let wsum = 8, n = 0;
+  for (const b of $$('#playbar .pbtn')) {
+    const bw = b.getBoundingClientRect().width; if (bw) PBW[b.id] = bw;
+    if (bw || (S.mode === 'motor' && b.hidden && !(b.id === 'backBtn' && NARROW.matches))) { wsum += PBW[b.id] || 62; n++; }   // 전동기 장면: 느린 화면에서 나타날 단추까지 (좁은 화면은 T/4 뒤로 없음)
+  }
+  return wsum + 4 * Math.max(0, n - 1);
 }
 new ResizeObserver(resize).observe(stage);
 
@@ -474,136 +534,55 @@ function hBracket(x0, x1, y, color, text) {
   ctx.restore();
   label(text, (x0 + x1) / 2, y, color, 'center', 15);
 }
-function vBracket(x, y0, y1, color, text) {
+function vBracket(x, y0, y1, color, text) {                           // text가 비면 선만
   ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = 2;
   ctx.beginPath(); ctx.moveTo(x - 8, y0); ctx.lineTo(x + 8, y0); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.moveTo(x - 8, y1); ctx.lineTo(x + 8, y1); ctx.stroke();
   ctx.restore();
-  label(text, x + 12, (y0 + y1) / 2, color, 'left', 15);
+  if (text) label(text, x + 12, (y0 + y1) / 2, color, 'left', 15);
 }
-// 굵기가 변하는 둥근 관 모양 (손가락·엄지)
-function limb(pts, rs) {
-  const sp = [], sr = [];
-  for (let i = 0; i < pts.length - 1; i++) {
-    const p0 = pts[Math.max(0, i - 1)], p1 = pts[i], p2 = pts[i + 1], p3 = pts[Math.min(pts.length - 1, i + 2)];
-    for (let j = 0; j < 8; j++) {
-      const t = j / 8, t2 = t * t, t3 = t2 * t;
-      const f = (a, b, c, d) => 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3);
-      sp.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])]); sr.push(rs[i] + (rs[i + 1] - rs[i]) * t);
-    }
-  }
-  sp.push(pts[pts.length - 1]); sr.push(rs[rs.length - 1]);
-  const n = sp.length, L = [], R = [], An = [];
-  for (let i = 0; i < n; i++) {
-    const a = sp[Math.max(0, i - 1)], b = sp[Math.min(n - 1, i + 1)];
-    let tx = b[0] - a[0], ty = b[1] - a[1]; const l = Math.hypot(tx, ty) || 1; tx /= l; ty /= l;
-    L.push([sp[i][0] - ty * sr[i], sp[i][1] + tx * sr[i]]); R.push([sp[i][0] + ty * sr[i], sp[i][1] - tx * sr[i]]); An.push(Math.atan2(ty, tx));
-  }
-  const p = new Path2D();
-  p.moveTo(L[0][0], L[0][1]); for (let i = 1; i < n; i++) p.lineTo(L[i][0], L[i][1]);
-  p.arc(sp[n - 1][0], sp[n - 1][1], sr[n - 1], An[n - 1] + Math.PI / 2, An[n - 1] - Math.PI / 2, true);
-  for (let i = n - 1; i >= 0; i--) p.lineTo(R[i][0], R[i][1]);
-  p.arc(sp[0][0], sp[0][1], sr[0], An[0] - Math.PI / 2, An[0] - Math.PI * 1.5, true);
-  p.closePath();
-  return p;
-}
-// 엄지와 검지로 실을 집은 오른손 (교과서 사진과 같은 자세): 손등이 우리 쪽, 손끝이 왼쪽.
-// 검지(앞)와 엄지(뒤, 위쪽) 사이에 실이 끼어 있고, 나머지 세 손가락은 느슨하게 접혀 아래에 있다.
-// 단위는 cm(손 길이 약 18.5 cm, 손바닥 너비 8.5 cm)로 자·실과 같은 축척. (x, y) = 집은 곳, hs = 1 cm의 픽셀 수.
-// 손목 뒤 아래팔은 검은 배경판의 어둠 속으로 사라진다(사진처럼 손과 손목만 보이게).
-const HC = document.createElement('canvas'), HX = HC.getContext('2d');
+/* ---------- 손 그림: Microsoft Fluent Emoji 'Pinching hand' (MIT, github.com/microsoft/fluentui-emoji) ----------
+   좌우로 뒤집고 28° 돌려(손끝이 왼쪽, 손목 쪽이 오른쪽 — 교과서 사진처럼), 검지 끝과 엄지 끝 사이 틈
+   (원본 32×32 좌표 (26.4, 11.15))이 집은 곳에 오게 놓는다. 실은 검지 뒤 · 엄지 앞을 지나 두 손가락 사이에 끼인다.
+   그림 한 변 = 18 cm (손끝에서 손바닥 끝까지 약 17 cm)로 자·실과 같은 축척. */
+const IMG = {};
+function loadImg(key, uri) { const im = new Image(); im.decoding = 'async'; im.onload = () => { IMG[key] = im; }; im.src = uri; }
+loadImg('pinch', 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjU2IiBoZWlnaHQ9IjI1NiIgdmlld0JveD0iMCAwIDMyIDMyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyMF9pXzIwMDIwXzE5OTMpIj4KPHBhdGggZD0iTTI4LjkyMDUgMTMuNjk2NkMyNy45NTc2IDEyLjI2MDMgMjYuMDkyMyAxMS45MTU0IDI0LjU0NTUgMTMuMjU5MUMyMy43ODQyIDEzLjkyMDQgMjIuODk3IDE0Ljg3NzIgMjIuODk3IDEzLjcyMzJWMTAuNjI2M0MyMi45NjczIDkuMzQ1MDUgMjMuNzI1MiA5LjAwMTMgMjQuOTU5NSA5LjQyMzE3QzI2LjcxNjUgOS44Njg1MiAyOC4xMjgyIDguNDU5MjQgMjguMzg5MiA3LjI1OTExQzI4LjU5MzIgNi4zMjEzNyAyOC4zODI0IDQuODE4MDIgMjYuNzc5OCA0LjA1NjAxQzIzLjQ4MyAyLjYzNDE3IDE5LjQyMDUgMy44NTI4OSAxNy44ODA1IDcuMzg5MTNMMTQuNTc3OCA5LjcyMjgzSDIuNTM3NjZWMTYuMzA2QzIuNTM3NjYgMjQuMDI0NyA2LjUyMDE0IDI4LjUyNDcgMTIuOTkzNyAyOC41MjQ3QzE2LjI1MzMgMjguNTI0NyAxOC41NDQ3IDI3LjI3MjggMjAuOTk2OSAyNS4wNzM1QzIyLjMwNjggMjMuODk4NyAyMy40MDg2IDIyLjY3NjMgMjUuMjE3MyAyMC45OTM1QzI3LjI0ODYgMTguNzc0NyAzMC44MjY3IDE2LjU0MDQgMjguOTIwNSAxMy42OTY2WiIgZmlsbD0iI0FFN0Y3OCIvPgo8cGF0aCBkPSJNMjguOTIwNSAxMy42OTY2QzI3Ljk1NzYgMTIuMjYwMyAyNi4wOTIzIDExLjkxNTQgMjQuNTQ1NSAxMy4yNTkxQzIzLjc4NDIgMTMuOTIwNCAyMi44OTcgMTQuODc3MiAyMi44OTcgMTMuNzIzMlYxMC42MjYzQzIyLjk2NzMgOS4zNDUwNSAyMy43MjUyIDkuMDAxMyAyNC45NTk1IDkuNDIzMTdDMjYuNzE2NSA5Ljg2ODUyIDI4LjEyODIgOC40NTkyNCAyOC4zODkyIDcuMjU5MTFDMjguNTkzMiA2LjMyMTM3IDI4LjM4MjQgNC44MTgwMiAyNi43Nzk4IDQuMDU2MDFDMjMuNDgzIDIuNjM0MTcgMTkuNDIwNSAzLjg1Mjg5IDE3Ljg4MDUgNy4zODkxM0wxNC41Nzc4IDkuNzIyODNIMi41Mzc2NlYxNi4zMDZDMi41Mzc2NiAyNC4wMjQ3IDYuNTIwMTQgMjguNTI0NyAxMi45OTM3IDI4LjUyNDdDMTYuMjUzMyAyOC41MjQ3IDE4LjU0NDcgMjcuMjcyOCAyMC45OTY5IDI1LjA3MzVDMjIuMzA2OCAyMy44OTg3IDIzLjQwODYgMjIuNjc2MyAyNS4yMTczIDIwLjk5MzVDMjcuMjQ4NiAxOC43NzQ3IDMwLjgyNjcgMTYuNTQwNCAyOC45MjA1IDEzLjY5NjZaIiBmaWxsPSJ1cmwoI3BhaW50MF9yYWRpYWxfMjAwMjBfMTk5MykiLz4KPC9nPgo8cGF0aCBkPSJNMjguOTIwNSAxMy42OTY2QzI3Ljk1NzYgMTIuMjYwMyAyNi4wOTIzIDExLjkxNTQgMjQuNTQ1NSAxMy4yNTkxQzIzLjc4NDIgMTMuOTIwNCAyMi44OTcgMTQuODc3MiAyMi44OTcgMTMuNzIzMlYxMC42MjYzQzIyLjk2NzMgOS4zNDUwNSAyMy43MjUyIDkuMDAxMyAyNC45NTk1IDkuNDIzMTdDMjYuNzE2NSA5Ljg2ODUyIDI4LjEyODIgOC40NTkyNCAyOC4zODkyIDcuMjU5MTFDMjguNTkzMiA2LjMyMTM3IDI4LjM4MjQgNC44MTgwMiAyNi43Nzk4IDQuMDU2MDFDMjMuNDgzIDIuNjM0MTcgMTkuNDIwNSAzLjg1Mjg5IDE3Ljg4MDUgNy4zODkxM0wxNC41Nzc4IDkuNzIyODNIMi41Mzc2NlYxNi4zMDZDMi41Mzc2NiAyNC4wMjQ3IDYuNTIwMTQgMjguNTI0NyAxMi45OTM3IDI4LjUyNDdDMTYuMjUzMyAyOC41MjQ3IDE4LjU0NDcgMjcuMjcyOCAyMC45OTY5IDI1LjA3MzVDMjIuMzA2OCAyMy44OTg3IDIzLjQwODYgMjIuNjc2MyAyNS4yMTczIDIwLjk5MzVDMjcuMjQ4NiAxOC43NzQ3IDMwLjgyNjcgMTYuNTQwNCAyOC45MjA1IDEzLjY5NjZaIiBmaWxsPSJ1cmwoI3BhaW50MV9yYWRpYWxfMjAwMjBfMTk5MykiLz4KPHBhdGggZD0iTTI4LjkyMDUgMTMuNjk2NkMyNy45NTc2IDEyLjI2MDMgMjYuMDkyMyAxMS45MTU0IDI0LjU0NTUgMTMuMjU5MUMyMy43ODQyIDEzLjkyMDQgMjIuODk3IDE0Ljg3NzIgMjIuODk3IDEzLjcyMzJWMTAuNjI2M0MyMi45NjczIDkuMzQ1MDUgMjMuNzI1MiA5LjAwMTMgMjQuOTU5NSA5LjQyMzE3QzI2LjcxNjUgOS44Njg1MiAyOC4xMjgyIDguNDU5MjQgMjguMzg5MiA3LjI1OTExQzI4LjU5MzIgNi4zMjEzNyAyOC4zODI0IDQuODE4MDIgMjYuNzc5OCA0LjA1NjAxQzIzLjQ4MyAyLjYzNDE3IDE5LjQyMDUgMy44NTI4OSAxNy44ODA1IDcuMzg5MTNMMTQuNTc3OCA5LjcyMjgzSDIuNTM3NjZWMTYuMzA2QzIuNTM3NjYgMjQuMDI0NyA2LjUyMDE0IDI4LjUyNDcgMTIuOTkzNyAyOC41MjQ3QzE2LjI1MzMgMjguNTI0NyAxOC41NDQ3IDI3LjI3MjggMjAuOTk2OSAyNS4wNzM1QzIyLjMwNjggMjMuODk4NyAyMy40MDg2IDIyLjY3NjMgMjUuMjE3MyAyMC45OTM1QzI3LjI0ODYgMTguNzc0NyAzMC44MjY3IDE2LjU0MDQgMjguOTIwNSAxMy42OTY2WiIgZmlsbD0idXJsKCNwYWludDJfcmFkaWFsXzIwMDIwXzE5OTMpIi8+CjxwYXRoIGQ9Ik0yOC45MjA1IDEzLjY5NjZDMjcuOTU3NiAxMi4yNjAzIDI2LjA5MjMgMTEuOTE1NCAyNC41NDU1IDEzLjI1OTFDMjMuNzg0MiAxMy45MjA0IDIyLjg5NyAxNC44NzcyIDIyLjg5NyAxMy43MjMyVjEwLjYyNjNDMjIuOTY3MyA5LjM0NTA1IDIzLjcyNTIgOS4wMDEzIDI0Ljk1OTUgOS40MjMxN0MyNi43MTY1IDkuODY4NTIgMjguMTI4MiA4LjQ1OTI0IDI4LjM4OTIgNy4yNTkxMUMyOC41OTMyIDYuMzIxMzcgMjguMzgyNCA0LjgxODAyIDI2Ljc3OTggNC4wNTYwMUMyMy40ODMgMi42MzQxNyAxOS40MjA1IDMuODUyODkgMTcuODgwNSA3LjM4OTEzTDE0LjU3NzggOS43MjI4M0gyLjUzNzY2VjE2LjMwNkMyLjUzNzY2IDI0LjAyNDcgNi41MjAxNCAyOC41MjQ3IDEyLjk5MzcgMjguNTI0N0MxNi4yNTMzIDI4LjUyNDcgMTguNTQ0NyAyNy4yNzI4IDIwLjk5NjkgMjUuMDczNUMyMi4zMDY4IDIzLjg5ODcgMjMuNDA4NiAyMi42NzYzIDI1LjIxNzMgMjAuOTkzNUMyNy4yNDg2IDE4Ljc3NDcgMzAuODI2NyAxNi41NDA0IDI4LjkyMDUgMTMuNjk2NloiIGZpbGw9InVybCgjcGFpbnQzX3JhZGlhbF8yMDAyMF8xOTkzKSIvPgo8cGF0aCBkPSJNMjguOTIwNSAxMy42OTY2QzI3Ljk1NzYgMTIuMjYwMyAyNi4wOTIzIDExLjkxNTQgMjQuNTQ1NSAxMy4yNTkxQzIzLjc4NDIgMTMuOTIwNCAyMi44OTcgMTQuODc3MiAyMi44OTcgMTMuNzIzMlYxMC42MjYzQzIyLjk2NzMgOS4zNDUwNSAyMy43MjUyIDkuMDAxMyAyNC45NTk1IDkuNDIzMTdDMjYuNzE2NSA5Ljg2ODUyIDI4LjEyODIgOC40NTkyNCAyOC4zODkyIDcuMjU5MTFDMjguNTkzMiA2LjMyMTM3IDI4LjM4MjQgNC44MTgwMiAyNi43Nzk4IDQuMDU2MDFDMjMuNDgzIDIuNjM0MTcgMTkuNDIwNSAzLjg1Mjg5IDE3Ljg4MDUgNy4zODkxM0wxNC41Nzc4IDkuNzIyODNIMi41Mzc2NlYxNi4zMDZDMi41Mzc2NiAyNC4wMjQ3IDYuNTIwMTQgMjguNTI0NyAxMi45OTM3IDI4LjUyNDdDMTYuMjUzMyAyOC41MjQ3IDE4LjU0NDcgMjcuMjcyOCAyMC45OTY5IDI1LjA3MzVDMjIuMzA2OCAyMy44OTg3IDIzLjQwODYgMjIuNjc2MyAyNS4yMTczIDIwLjk5MzVDMjcuMjQ4NiAxOC43NzQ3IDMwLjgyNjcgMTYuNTQwNCAyOC45MjA1IDEzLjY5NjZaIiBmaWxsPSJ1cmwoI3BhaW50NF9yYWRpYWxfMjAwMjBfMTk5MykiLz4KPHBhdGggZD0iTTI4LjkyMDUgMTMuNjk2NkMyNy45NTc2IDEyLjI2MDMgMjYuMDkyMyAxMS45MTU0IDI0LjU0NTUgMTMuMjU5MUMyMy43ODQyIDEzLjkyMDQgMjIuODk3IDE0Ljg3NzIgMjIuODk3IDEzLjcyMzJWMTAuNjI2M0MyMi45NjczIDkuMzQ1MDUgMjMuNzI1MiA5LjAwMTMgMjQuOTU5NSA5LjQyMzE3QzI2LjcxNjUgOS44Njg1MiAyOC4xMjgyIDguNDU5MjQgMjguMzg5MiA3LjI1OTExQzI4LjU5MzIgNi4zMjEzNyAyOC4zODI0IDQuODE4MDIgMjYuNzc5OCA0LjA1NjAxQzIzLjQ4MyAyLjYzNDE3IDE5LjQyMDUgMy44NTI4OSAxNy44ODA1IDcuMzg5MTNMMTQuNTc3OCA5LjcyMjgzSDIuNTM3NjZWMTYuMzA2QzIuNTM3NjYgMjQuMDI0NyA2LjUyMDE0IDI4LjUyNDcgMTIuOTkzNyAyOC41MjQ3QzE2LjI1MzMgMjguNTI0NyAxOC41NDQ3IDI3LjI3MjggMjAuOTk2OSAyNS4wNzM1QzIyLjMwNjggMjMuODk4NyAyMy40MDg2IDIyLjY3NjMgMjUuMjE3MyAyMC45OTM1QzI3LjI0ODYgMTguNzc0NyAzMC44MjY3IDE2LjU0MDQgMjguOTIwNSAxMy42OTY2WiIgZmlsbD0idXJsKCNwYWludDVfcmFkaWFsXzIwMDIwXzE5OTMpIi8+CjxwYXRoIGQ9Ik0yOC45MjA1IDEzLjY5NjZDMjcuOTU3NiAxMi4yNjAzIDI2LjA5MjMgMTEuOTE1NCAyNC41NDU1IDEzLjI1OTFDMjMuNzg0MiAxMy45MjA0IDIyLjg5NyAxNC44NzcyIDIyLjg5NyAxMy43MjMyVjEwLjYyNjNDMjIuOTY3MyA5LjM0NTA1IDIzLjcyNTIgOS4wMDEzIDI0Ljk1OTUgOS40MjMxN0MyNi43MTY1IDkuODY4NTIgMjguMTI4MiA4LjQ1OTI0IDI4LjM4OTIgNy4yNTkxMUMyOC41OTMyIDYuMzIxMzcgMjguMzgyNCA0LjgxODAyIDI2Ljc3OTggNC4wNTYwMUMyMy40ODMgMi42MzQxNyAxOS40MjA1IDMuODUyODkgMTcuODgwNSA3LjM4OTEzTDE0LjU3NzggOS43MjI4M0gyLjUzNzY2VjE2LjMwNkMyLjUzNzY2IDI0LjAyNDcgNi41MjAxNCAyOC41MjQ3IDEyLjk5MzcgMjguNTI0N0MxNi4yNTMzIDI4LjUyNDcgMTguNTQ0NyAyNy4yNzI4IDIwLjk5NjkgMjUuMDczNUMyMi4zMDY4IDIzLjg5ODcgMjMuNDA4NiAyMi42NzYzIDI1LjIxNzMgMjAuOTkzNUMyNy4yNDg2IDE4Ljc3NDcgMzAuODI2NyAxNi41NDA0IDI4LjkyMDUgMTMuNjk2NloiIGZpbGw9InVybCgjcGFpbnQ2X3JhZGlhbF8yMDAyMF8xOTkzKSIvPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyMV9mXzIwMDIwXzE5OTMpIj4KPHBhdGggZD0iTTEzLjMzNzggOC40NjIyOEMxMS44NzAzIDguNDYyMjggMTAuNjc1NiA5LjY0ODQzIDEwLjY3NTYgMTEuMTA1NFYxNC4wNzk0QzEwLjY3NTYgMTUuNTM2NCAxMS44NzAzIDE2LjcyMjYgMTMuMzM3OCAxNi43MjI2QzE0LjgwNTMgMTYuNzIyNiAxNiAxNS41MzY0IDE2IDE0LjA3OTRWMTEuMTA1NEMxNiA5LjYzOTA5IDE0LjgwNTMgOC40NjIyOCAxMy4zMzc4IDguNDYyMjhaIiBmaWxsPSIjNjMzNzQwIi8+CjxwYXRoIGQ9Ik05LjUzMDc2IDguODY1NzRDOC4xMzQ5NCA4Ljg2NTc0IDYuOTk4NiA5Ljk5Mzk1IDYuOTk4NiAxMS4zNzk4VjE0LjIwODVDNi45OTg2IDE1LjU5NDQgOC4xMzQ5NCAxNi43MjI2IDkuNTMwNzYgMTYuNzIyNkMxMC45MjY2IDE2LjcyMjYgMTIuMDYyOSAxNS41OTQ0IDEyLjA2MjkgMTQuMjA4NVYxMS4zNzk4QzEyLjA2MjkgOS45ODUwNyAxMC45MjY2IDguODY1NzQgOS41MzA3NiA4Ljg2NTc0WiIgZmlsbD0iIzYzMzc0MCIvPgo8cGF0aCBkPSJNNi4xOTE1MyA5LjA1MDk5QzQuOTMzMjIgOS4wNTA5OSAzLjkwODgxIDEwLjA2ODEgMy45MDg4MSAxMS4zMTc0VjEzLjg2NzVDMy45MDg4MSAxNS4xMTY4IDQuOTMzMjIgMTYuMTMzOSA2LjE5MTUzIDE2LjEzMzlDNy40NDk4NSAxNi4xMzM5IDguNDc0MjUgMTUuMTE2OCA4LjQ3NDI1IDEzLjg2NzVWMTEuMzE3NEM4LjQ3NDI1IDEwLjA2MDEgNy40NDk4NSA5LjA1MDk5IDYuMTkxNTMgOS4wNTA5OVoiIGZpbGw9IiM2MzM3NDAiLz4KPC9nPgo8cGF0aCBkPSJNNS40NDk5NSA2LjU3NjcyQzMuODQzOTEgNi41NzY3MiAyLjUzNzY2IDcuNzY3NzEgMi41Mzc2NiA5LjIzMjA0VjEyLjg1MzhDMi41Mzc2NiAxNC4zMTgxIDMuODQzOTEgMTUuNTA5MSA1LjQ0OTk1IDE1LjUwOTFDNy4wNTU5OSAxNS41MDkxIDguMzYyMjMgMTQuMzE4MSA4LjM2MjIzIDEyLjg1MzhWOS4yMzIwNEM4LjM2MjIzIDcuNzY3NzEgNy4wNTU5OSA2LjU3NjcyIDUuNDQ5OTUgNi41NzY3MloiIGZpbGw9IiNBNDdDNkIiLz4KPHBhdGggZD0iTTUuNDQ5OTUgNi41NzY3MkMzLjg0MzkxIDYuNTc2NzIgMi41Mzc2NiA3Ljc2NzcxIDIuNTM3NjYgOS4yMzIwNFYxMi44NTM4QzIuNTM3NjYgMTQuMzE4MSAzLjg0MzkxIDE1LjUwOTEgNS40NDk5NSAxNS41MDkxQzcuMDU1OTkgMTUuNTA5MSA4LjM2MjIzIDE0LjMxODEgOC4zNjIyMyAxMi44NTM4VjkuMjMyMDRDOC4zNjIyMyA3Ljc2NzcxIDcuMDU1OTkgNi41NzY3MiA1LjQ0OTk1IDYuNTc2NzJaIiBmaWxsPSJ1cmwoI3BhaW50N19saW5lYXJfMjAwMjBfMTk5MykiLz4KPHBhdGggZD0iTTUuNDQ5OTUgNi41NzY3MkMzLjg0MzkxIDYuNTc2NzIgMi41Mzc2NiA3Ljc2NzcxIDIuNTM3NjYgOS4yMzIwNFYxMi44NTM4QzIuNTM3NjYgMTQuMzE4MSAzLjg0MzkxIDE1LjUwOTEgNS40NDk5NSAxNS41MDkxQzcuMDU1OTkgMTUuNTA5MSA4LjM2MjIzIDE0LjMxODEgOC4zNjIyMyAxMi44NTM4VjkuMjMyMDRDOC4zNjIyMyA3Ljc2NzcxIDcuMDU1OTkgNi41NzY3MiA1LjQ0OTk1IDYuNTc2NzJaIiBmaWxsPSJ1cmwoI3BhaW50OF9yYWRpYWxfMjAwMjBfMTk5MykiLz4KPHBhdGggZD0iTTUuNDQ5OTUgNi41NzY3MkMzLjg0MzkxIDYuNTc2NzIgMi41Mzc2NiA3Ljc2NzcxIDIuNTM3NjYgOS4yMzIwNFYxMi44NTM4QzIuNTM3NjYgMTQuMzE4MSAzLjg0MzkxIDE1LjUwOTEgNS40NDk5NSAxNS41MDkxQzcuMDU1OTkgMTUuNTA5MSA4LjM2MjIzIDE0LjMxODEgOC4zNjIyMyAxMi44NTM4VjkuMjMyMDRDOC4zNjIyMyA3Ljc2NzcxIDcuMDU1OTkgNi41NzY3MiA1LjQ0OTk1IDYuNTc2NzJaIiBmaWxsPSJ1cmwoI3BhaW50OV9yYWRpYWxfMjAwMjBfMTk5MykiLz4KPHBhdGggZD0iTTUuNDQ5OTUgNi41NzY3MkMzLjg0MzkxIDYuNTc2NzIgMi41Mzc2NiA3Ljc2NzcxIDIuNTM3NjYgOS4yMzIwNFYxMi44NTM4QzIuNTM3NjYgMTQuMzE4MSAzLjg0MzkxIDE1LjUwOTEgNS40NDk5NSAxNS41MDkxQzcuMDU1OTkgMTUuNTA5MSA4LjM2MjIzIDE0LjMxODEgOC4zNjIyMyAxMi44NTM4VjkuMjMyMDRDOC4zNjIyMyA3Ljc2NzcxIDcuMDU1OTkgNi41NzY3MiA1LjQ0OTk1IDYuNTc2NzJaIiBmaWxsPSJ1cmwoI3BhaW50MTBfbGluZWFyXzIwMDIwXzE5OTMpIi8+CjxnIGZpbHRlcj0idXJsKCNmaWx0ZXIyX2ZfMjAwMjBfMTk5MykiPgo8cmVjdCB4PSI2Ljk5ODYiIHk9IjcuNTQwMzQiIHdpZHRoPSIwLjc2NTYyNSIgaGVpZ2h0PSI2LjgxMjUiIHJ4PSIwLjM4MjgxMiIgZmlsbD0iIzcxNEUzOCIvPgo8L2c+CjxwYXRoIGQ9Ik0xMC4xODAzIDUuNjY1MzRDOC42MTUyNyA1LjY2NTM0IDcuMzQyMzUgNi44OTU4MyA3LjM0MjM1IDguNDA4NzFWMTIuOTc3NkM3LjM0MjM1IDE0LjQ5MDUgOC42MTUyNyAxNS43MjEgMTAuMTgwMyAxNS43MjFDMTEuNzQ1NCAxNS43MjEgMTMuMDE4MyAxNC40OTA1IDEzLjAxODMgMTIuOTc3NlY4LjM5ODYzQzEzLjAxODMgNi44ODU3NCAxMS43NDU0IDUuNjY1MzQgMTAuMTgwMyA1LjY2NTM0WiIgZmlsbD0iI0E0N0M2QiIvPgo8cGF0aCBkPSJNMTAuMTgwMyA1LjY2NTM0QzguNjE1MjcgNS42NjUzNCA3LjM0MjM1IDYuODk1ODMgNy4zNDIzNSA4LjQwODcxVjEyLjk3NzZDNy4zNDIzNSAxNC40OTA1IDguNjE1MjcgMTUuNzIxIDEwLjE4MDMgMTUuNzIxQzExLjc0NTQgMTUuNzIxIDEzLjAxODMgMTQuNDkwNSAxMy4wMTgzIDEyLjk3NzZWOC4zOTg2M0MxMy4wMTgzIDYuODg1NzQgMTEuNzQ1NCA1LjY2NTM0IDEwLjE4MDMgNS42NjUzNFoiIGZpbGw9InVybCgjcGFpbnQxMV9saW5lYXJfMjAwMjBfMTk5MykiLz4KPHBhdGggZD0iTTEwLjE4MDMgNS42NjUzNEM4LjYxNTI3IDUuNjY1MzQgNy4zNDIzNSA2Ljg5NTgzIDcuMzQyMzUgOC40MDg3MVYxMi45Nzc2QzcuMzQyMzUgMTQuNDkwNSA4LjYxNTI3IDE1LjcyMSAxMC4xODAzIDE1LjcyMUMxMS43NDU0IDE1LjcyMSAxMy4wMTgzIDE0LjQ5MDUgMTMuMDE4MyAxMi45Nzc2VjguMzk4NjNDMTMuMDE4MyA2Ljg4NTc0IDExLjc0NTQgNS42NjUzNCAxMC4xODAzIDUuNjY1MzRaIiBmaWxsPSJ1cmwoI3BhaW50MTJfcmFkaWFsXzIwMDIwXzE5OTMpIi8+CjxwYXRoIGQ9Ik0xMC4xODAzIDUuNjY1MzRDOC42MTUyNyA1LjY2NTM0IDcuMzQyMzUgNi44OTU4MyA3LjM0MjM1IDguNDA4NzFWMTIuOTc3NkM3LjM0MjM1IDE0LjQ5MDUgOC42MTUyNyAxNS43MjEgMTAuMTgwMyAxNS43MjFDMTEuNzQ1NCAxNS43MjEgMTMuMDE4MyAxNC40OTA1IDEzLjAxODMgMTIuOTc3NlY4LjM5ODYzQzEzLjAxODMgNi44ODU3NCAxMS43NDU0IDUuNjY1MzQgMTAuMTgwMyA1LjY2NTM0WiIgZmlsbD0idXJsKCNwYWludDEzX3JhZGlhbF8yMDAyMF8xOTkzKSIvPgo8ZyBmaWx0ZXI9InVybCgjZmlsdGVyM19mXzIwMDIwXzE5OTMpIj4KPHJlY3QgeD0iMTEuOTM2MSIgeT0iNy4xMzQwOSIgd2lkdGg9IjAuNzY1NjI1IiBoZWlnaHQ9IjcuMjE4NzUiIHJ4PSIwLjM4MjgxMiIgZmlsbD0iIzcxNEUzOCIvPgo8L2c+CjxwYXRoIGQ9Ik0xNS4xMTU4IDUuNTI0NzJDMTMuNTI2NyA1LjUyNDcyIDEyLjIzMyA2LjgwOTE3IDEyLjIzMyA4LjM4NjkxVjEyLjczNThDMTIuMjMzIDE0LjMxMzYgMTMuNTI2NyAxNS41OTggMTUuMTE1OCAxNS41OThDMTYuNzA0OSAxNS41OTggMTcuOTk4NiAxNC4zMTM2IDE3Ljk5ODYgMTIuNzM1OFY4LjM4NjkxQzE3Ljk5ODYgNi43OTkwNSAxNi43MDQ5IDUuNTI0NzIgMTUuMTE1OCA1LjUyNDcyWiIgZmlsbD0iI0FGODQ3MSIvPgo8cGF0aCBkPSJNMTUuMTE1OCA1LjUyNDcyQzEzLjUyNjcgNS41MjQ3MiAxMi4yMzMgNi44MDkxNyAxMi4yMzMgOC4zODY5MVYxMi43MzU4QzEyLjIzMyAxNC4zMTM2IDEzLjUyNjcgMTUuNTk4IDE1LjExNTggMTUuNTk4QzE2LjcwNDkgMTUuNTk4IDE3Ljk5ODYgMTQuMzEzNiAxNy45OTg2IDEyLjczNThWOC4zODY5MUMxNy45OTg2IDYuNzk5MDUgMTYuNzA0OSA1LjUyNDcyIDE1LjExNTggNS41MjQ3MloiIGZpbGw9InVybCgjcGFpbnQxNF9saW5lYXJfMjAwMjBfMTk5MykiLz4KPHBhdGggZD0iTTE1LjExNTggNS41MjQ3MkMxMy41MjY3IDUuNTI0NzIgMTIuMjMzIDYuODA5MTcgMTIuMjMzIDguMzg2OTFWMTIuNzM1OEMxMi4yMzMgMTQuMzEzNiAxMy41MjY3IDE1LjU5OCAxNS4xMTU4IDE1LjU5OEMxNi43MDQ5IDE1LjU5OCAxNy45OTg2IDE0LjMxMzYgMTcuOTk4NiAxMi43MzU4VjguMzg2OTFDMTcuOTk4NiA2Ljc5OTA1IDE2LjcwNDkgNS41MjQ3MiAxNS4xMTU4IDUuNTI0NzJaIiBmaWxsPSJ1cmwoI3BhaW50MTVfcmFkaWFsXzIwMDIwXzE5OTMpIi8+CjxwYXRoIGQ9Ik0xNS4xMTU4IDUuNTI0NzJDMTMuNTI2NyA1LjUyNDcyIDEyLjIzMyA2LjgwOTE3IDEyLjIzMyA4LjM4NjkxVjEyLjczNThDMTIuMjMzIDE0LjMxMzYgMTMuNTI2NyAxNS41OTggMTUuMTE1OCAxNS41OThDMTYuNzA0OSAxNS41OTggMTcuOTk4NiAxNC4zMTM2IDE3Ljk5ODYgMTIuNzM1OFY4LjM4NjkxQzE3Ljk5ODYgNi43OTkwNSAxNi43MDQ5IDUuNTI0NzIgMTUuMTE1OCA1LjUyNDcyWiIgZmlsbD0idXJsKCNwYWludDE2X3JhZGlhbF8yMDAyMF8xOTkzKSIvPgo8cGF0aCBkPSJNMjQuNTQ1NSAxMy4yNTkxQzI2LjA5MjMgMTEuOTE1MyAyNy45NTc2IDEyLjI2MDIgMjguOTIwNSAxMy42OTY2QzMwLjQ0NTcgMTUuOTcxOSAyOC40NTk5IDE3Ljg1NzEgMjYuNTY0NiAxOS42NTY0QzI2LjA5MTIgMjAuMTA1OCAyNS42MjMzIDIwLjU0OTkgMjUuMjE3MyAyMC45OTM0QzI0LjMzMjggMjEuODE2MyAyMy42MTc0IDIyLjUyOTEgMjIuOTY0IDIzLjE4MDFDMjIuMjgxMiAyMy44NjA0IDIxLjY2NjIgMjQuNDczMSAyMC45OTY5IDI1LjA3MzRDMjAuNTUxMSAyNS40NzMyIDIwLjExMDcgMjUuODQxNyAxOS42Njg4IDI2LjE3N0wyMy4wOTU4IDE0LjI1MzJDMjMuMzQ4MiAxNC4zMzE0IDIzLjgwNjEgMTMuOTIwMiAyNC4yNjMyIDEzLjUwOThDMjQuMzU3OSAxMy40MjQ3IDI0LjQ1MjYgMTMuMzM5NyAyNC41NDU1IDEzLjI1OTFaIiBmaWxsPSJ1cmwoI3BhaW50MTdfcmFkaWFsXzIwMDIwXzE5OTMpIi8+CjxwYXRoIGQ9Ik0yNC41NDU1IDEzLjI1OTFDMjYuMDkyMyAxMS45MTUzIDI3Ljk1NzYgMTIuMjYwMiAyOC45MjA1IDEzLjY5NjZDMzAuNDQ1NyAxNS45NzE5IDI4LjQ1OTkgMTcuODU3MSAyNi41NjQ2IDE5LjY1NjRDMjYuMDkxMiAyMC4xMDU4IDI1LjYyMzMgMjAuNTQ5OSAyNS4yMTczIDIwLjk5MzRDMjQuMzMyOCAyMS44MTYzIDIzLjYxNzQgMjIuNTI5MSAyMi45NjQgMjMuMTgwMUMyMi4yODEyIDIzLjg2MDQgMjEuNjY2MiAyNC40NzMxIDIwLjk5NjkgMjUuMDczNEMyMC41NTExIDI1LjQ3MzIgMjAuMTEwNyAyNS44NDE3IDE5LjY2ODggMjYuMTc3TDIzLjA5NTggMTQuMjUzMkMyMy4zNDgyIDE0LjMzMTQgMjMuODA2MSAxMy45MjAyIDI0LjI2MzIgMTMuNTA5OEMyNC4zNTc5IDEzLjQyNDcgMjQuNDUyNiAxMy4zMzk3IDI0LjU0NTUgMTMuMjU5MVoiIGZpbGw9InVybCgjcGFpbnQxOF9yYWRpYWxfMjAwMjBfMTk5MykiLz4KPHBhdGggZD0iTTI0LjU0NTUgMTMuMjU5MUMyNi4wOTIzIDExLjkxNTMgMjcuOTU3NiAxMi4yNjAyIDI4LjkyMDUgMTMuNjk2NkMzMC40NDU3IDE1Ljk3MTkgMjguNDU5OSAxNy44NTcxIDI2LjU2NDYgMTkuNjU2NEMyNi4wOTEyIDIwLjEwNTggMjUuNjIzMyAyMC41NDk5IDI1LjIxNzMgMjAuOTkzNEMyNC4zMzI4IDIxLjgxNjMgMjMuNjE3NCAyMi41MjkxIDIyLjk2NCAyMy4xODAxQzIyLjI4MTIgMjMuODYwNCAyMS42NjYyIDI0LjQ3MzEgMjAuOTk2OSAyNS4wNzM0QzIwLjU1MTEgMjUuNDczMiAyMC4xMTA3IDI1Ljg0MTcgMTkuNjY4OCAyNi4xNzdMMjMuMDk1OCAxNC4yNTMyQzIzLjM0ODIgMTQuMzMxNCAyMy44MDYxIDEzLjkyMDIgMjQuMjYzMiAxMy41MDk4QzI0LjM1NzkgMTMuNDI0NyAyNC40NTI2IDEzLjMzOTcgMjQuNTQ1NSAxMy4yNTkxWiIgZmlsbD0idXJsKCNwYWludDE5X3JhZGlhbF8yMDAyMF8xOTkzKSIvPgo8ZGVmcz4KPGZpbHRlciBpZD0iZmlsdGVyMF9pXzIwMDIwXzE5OTMiIHg9IjIuNTM3NjYiIHk9IjIuOTc1MzQiIHdpZHRoPSIyNy42NzQ3IiBoZWlnaHQ9IjI1LjU0OTQiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0ic2hhcGUiLz4KPGZlQ29sb3JNYXRyaXggaW49IlNvdXJjZUFscGhhIiB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMCAwIDAgMTI3IDAiIHJlc3VsdD0iaGFyZEFscGhhIi8+CjxmZU9mZnNldCBkeD0iMC43NSIgZHk9Ii0wLjUiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMS41Ii8+CjxmZUNvbXBvc2l0ZSBpbjI9ImhhcmRBbHBoYSIgb3BlcmF0b3I9ImFyaXRobWV0aWMiIGsyPSItMSIgazM9IjEiLz4KPGZlQ29sb3JNYXRyaXggdHlwZT0ibWF0cml4IiB2YWx1ZXM9IjAgMCAwIDAgMC42MTU2ODYgMCAwIDAgMCAwLjM2ODYyNyAwIDAgMCAwIDAuNTU2ODYzIDAgMCAwIDEgMCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluMj0ic2hhcGUiIHJlc3VsdD0iZWZmZWN0MV9pbm5lclNoYWRvd18yMDAyMF8xOTkzIi8+CjwvZmlsdGVyPgo8ZmlsdGVyIGlkPSJmaWx0ZXIxX2ZfMjAwMjBfMTk5MyIgeD0iMS45MDg4MSIgeT0iNi40NjIyOCIgd2lkdGg9IjE2LjA5MTIiIGhlaWdodD0iMTIuMjYwMyIgZmlsdGVyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiBjb2xvci1pbnRlcnBvbGF0aW9uLWZpbHRlcnM9InNSR0IiPgo8ZmVGbG9vZCBmbG9vZC1vcGFjaXR5PSIwIiByZXN1bHQ9IkJhY2tncm91bmRJbWFnZUZpeCIvPgo8ZmVCbGVuZCBtb2RlPSJub3JtYWwiIGluPSJTb3VyY2VHcmFwaGljIiBpbjI9IkJhY2tncm91bmRJbWFnZUZpeCIgcmVzdWx0PSJzaGFwZSIvPgo8ZmVHYXVzc2lhbkJsdXIgc3RkRGV2aWF0aW9uPSIxIiByZXN1bHQ9ImVmZmVjdDFfZm9yZWdyb3VuZEJsdXJfMjAwMjBfMTk5MyIvPgo8L2ZpbHRlcj4KPGZpbHRlciBpZD0iZmlsdGVyMl9mXzIwMDIwXzE5OTMiIHg9IjYuMjQ4NiIgeT0iNi43OTAzNCIgd2lkdGg9IjIuMjY1NjIiIGhlaWdodD0iOC4zMTI1IiBmaWx0ZXJVbml0cz0idXNlclNwYWNlT25Vc2UiIGNvbG9yLWludGVycG9sYXRpb24tZmlsdGVycz0ic1JHQiI+CjxmZUZsb29kIGZsb29kLW9wYWNpdHk9IjAiIHJlc3VsdD0iQmFja2dyb3VuZEltYWdlRml4Ii8+CjxmZUJsZW5kIG1vZGU9Im5vcm1hbCIgaW49IlNvdXJjZUdyYXBoaWMiIGluMj0iQmFja2dyb3VuZEltYWdlRml4IiByZXN1bHQ9InNoYXBlIi8+CjxmZUdhdXNzaWFuQmx1ciBzdGREZXZpYXRpb249IjAuMzc1IiByZXN1bHQ9ImVmZmVjdDFfZm9yZWdyb3VuZEJsdXJfMjAwMjBfMTk5MyIvPgo8L2ZpbHRlcj4KPGZpbHRlciBpZD0iZmlsdGVyM19mXzIwMDIwXzE5OTMiIHg9IjExLjE4NjEiIHk9IjYuMzg0MDkiIHdpZHRoPSIyLjI2NTYyIiBoZWlnaHQ9IjguNzE4NzUiIGZpbHRlclVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgY29sb3ItaW50ZXJwb2xhdGlvbi1maWx0ZXJzPSJzUkdCIj4KPGZlRmxvb2QgZmxvb2Qtb3BhY2l0eT0iMCIgcmVzdWx0PSJCYWNrZ3JvdW5kSW1hZ2VGaXgiLz4KPGZlQmxlbmQgbW9kZT0ibm9ybWFsIiBpbj0iU291cmNlR3JhcGhpYyIgaW4yPSJCYWNrZ3JvdW5kSW1hZ2VGaXgiIHJlc3VsdD0ic2hhcGUiLz4KPGZlR2F1c3NpYW5CbHVyIHN0ZERldmlhdGlvbj0iMC4zNzUiIHJlc3VsdD0iZWZmZWN0MV9mb3JlZ3JvdW5kQmx1cl8yMDAyMF8xOTkzIi8+CjwvZmlsdGVyPgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50MF9yYWRpYWxfMjAwMjBfMTk5MyIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgyMi40MDg5IDE3LjQyMjgpIHJvdGF0ZSgxMzguMTA4KSBzY2FsZSgxNC4wMTE5IDEwLjQzNzcpIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0NDQTE4OSIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNDQ0ExODkiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50MV9yYWRpYWxfMjAwMjBfMTk5MyIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgyNC42NDU0IDkuNjg3NjQpIHJvdGF0ZSgtMTIzLjA0MSkgc2NhbGUoMi41NTM5MiAyLjcxNTk1KSI+CjxzdG9wIHN0b3AtY29sb3I9IiM4OTUyNjYiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjODk1MjY2IiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDJfcmFkaWFsXzIwMDIwXzE5OTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjIuMTk5OSAyLjE2MjM3KSByb3RhdGUoNzAuMzQ2Mikgc2NhbGUoNS4wNzQyNiAxNy4zMTQ3KSI+CjxzdG9wIHN0b3AtY29sb3I9IiNBNjgxNjkiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQTY4MTY5IiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDNfcmFkaWFsXzIwMDIwXzE5OTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjYuNzU3OCA2LjA5MTM4KSByb3RhdGUoMTUzLjg1KSBzY2FsZSgyLjU2NDU1IDIuMDQ5NjcpIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0NFQTY4RSIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNDRUE2OEUiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50NF9yYWRpYWxfMjAwMjBfMTk5MyIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgxOC41OTc3IDQuOTEyNSkgcm90YXRlKDQ3LjY2Mykgc2NhbGUoMi40MDE3MiAxMi4zNTg2KSI+CjxzdG9wIHN0b3AtY29sb3I9IiM4RTc0NjIiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOEU3NDYyIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDVfcmFkaWFsXzIwMDIwXzE5OTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTcuNjExNCA3Ljk4OTc3KSBzY2FsZSgxLjE0NDExIDMuMzUzNDMpIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzdBNTIzQyIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3QTUyM0MiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50Nl9yYWRpYWxfMjAwMjBfMTk5MyIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgyNy4yMjU2IDEyLjk4NzMpIHJvdGF0ZSgxNTUuNjA4KSBzY2FsZSgyNS4zNDA1IDI0Ljc3MDMpIj4KPHN0b3Agb2Zmc2V0PSIwLjkyNzA3IiBzdG9wLWNvbG9yPSIjOUU3MzZBIiBzdG9wLW9wYWNpdHk9IjAiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOUU3MzZBIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjxsaW5lYXJHcmFkaWVudCBpZD0icGFpbnQ3X2xpbmVhcl8yMDAyMF8xOTkzIiB4MT0iMy4xMDI4IiB5MT0iMTIuMDE0MiIgeDI9IjUuOTI2MzMiIHkyPSIxMi4wMTQyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiM5MTcxNUMiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOTE3MTVDIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9saW5lYXJHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDhfcmFkaWFsXzIwMDIwXzE5OTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMy4xMzI0NyA4LjYyMDk5KSByb3RhdGUoNDkuMzU2MSkgc2NhbGUoNy4wODkxMiA2LjE1ODc3KSI+CjxzdG9wIG9mZnNldD0iMC41NTE2OTYiIHN0b3AtY29sb3I9IiM5MDU5NkEiIHN0b3Atb3BhY2l0eT0iMCIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM5MDU5NkEiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDlfcmFkaWFsXzIwMDIwXzE5OTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoNi40ODM2IDExLjA0MjkpIHJvdGF0ZSg5MCkgc2NhbGUoMy43NDMwNiAxLjQ5ODc0KSI+CjxzdG9wIHN0b3AtY29sb3I9IiNCMjhDN0QiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQjI4QzdEIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDEwX2xpbmVhcl8yMDAyMF8xOTkzIiB4MT0iMi40Mjk3IiB5MT0iMTEuMDQyOSIgeDI9IjMuMDM5MjIiIHkyPSIxMS4wNDI5IiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiM5Qzc3NjYiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjOUM3NzY2IiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9saW5lYXJHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDExX2xpbmVhcl8yMDAyMF8xOTkzIiB4MT0iNy44OTMwNiIgeTE9IjExLjc4NjYiIHgyPSIxMC42NDQ2IiB5Mj0iMTEuNzg2NiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjOTE3MTVDIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzkxNzE1QyIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvbGluZWFyR3JhZGllbnQ+CjxyYWRpYWxHcmFkaWVudCBpZD0icGFpbnQxMl9yYWRpYWxfMjAwMjBfMTk5MyIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSg3LjkyMTk4IDcuOTY2NjgpIHJvdGF0ZSg1My4zODQ0KSBzY2FsZSg3LjU0NDI3IDYuMzQ4NzQpIj4KPHN0b3Agb2Zmc2V0PSIwLjU1MTY5NiIgc3RvcC1jb2xvcj0iIzkwNTk2QSIgc3RvcC1vcGFjaXR5PSIwIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzkwNTk2QSIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50MTNfcmFkaWFsXzIwMDIwXzE5OTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMTEuMTg3NiAxMC42OTMyKSByb3RhdGUoOTApIHNjYWxlKDQuMjEzNzUgMS40NjA1KSI+CjxzdG9wIHN0b3AtY29sb3I9IiNCMjhDN0QiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQjI4QzdEIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPGxpbmVhckdyYWRpZW50IGlkPSJwYWludDE0X2xpbmVhcl8yMDAyMF8xOTkzIiB4MT0iMTIuNzkyNCIgeTE9IjExLjY1NjciIHgyPSIxNS41ODczIiB5Mj0iMTEuNjU2NyIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjOTE3MTVDIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzkxNzE1QyIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvbGluZWFyR3JhZGllbnQ+CjxyYWRpYWxHcmFkaWVudCBpZD0icGFpbnQxNV9yYWRpYWxfMjAwMjBfMTk5MyIgY3g9IjAiIGN5PSIwIiByPSIxIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgZ3JhZGllbnRUcmFuc2Zvcm09InRyYW5zbGF0ZSgxNS42ODk1IDcuNjgzNjgpIHJvdGF0ZSg5MCkgc2NhbGUoNy45MTQzMiA2LjY4NjM2KSI+CjxzdG9wIG9mZnNldD0iMC42NjIyMjUiIHN0b3AtY29sb3I9IiM5MDU5NkEiIHN0b3Atb3BhY2l0eT0iMCIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM5MDU5NkEiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDE2X3JhZGlhbF8yMDAyMF8xOTkzIiBjeD0iMCIgY3k9IjAiIHI9IjEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDE2Ljc1NDEgOS41MjYyNCkgcm90YXRlKDkwKSBzY2FsZSg1LjA3NzI3IDIuMzE0NjMpIj4KPHN0b3Agc3RvcC1jb2xvcj0iI0NGQTY4OSIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNDRkE2ODkiIHN0b3Atb3BhY2l0eT0iMCIvPgo8L3JhZGlhbEdyYWRpZW50Pgo8cmFkaWFsR3JhZGllbnQgaWQ9InBhaW50MTdfcmFkaWFsXzIwMDIwXzE5OTMiIGN4PSIwIiBjeT0iMCIgcj0iMSIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiIGdyYWRpZW50VHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjMuOTY5OSAxMS43NzY3KSByb3RhdGUoMTA4LjA1MSkgc2NhbGUoNy45MDg1MyA0LjUyMzc1KSI+CjxzdG9wIHN0b3AtY29sb3I9IiM4NzYzNTEiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjODc2MzUxIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDE4X3JhZGlhbF8yMDAyMF8xOTkzIiBjeD0iMCIgY3k9IjAiIHI9IjEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDI4Ljc1MDMgMTQuMTY1NCkgcm90YXRlKDE0Ny4xMDgpIHNjYWxlKDMuMjU2MTcgMi41NTIxKSI+CjxzdG9wIHN0b3AtY29sb3I9IiNDRUE1OEYiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjQ0VBNThGIiBzdG9wLW9wYWNpdHk9IjAiLz4KPC9yYWRpYWxHcmFkaWVudD4KPHJhZGlhbEdyYWRpZW50IGlkPSJwYWludDE5X3JhZGlhbF8yMDAyMF8xOTkzIiBjeD0iMCIgY3k9IjAiIHI9IjEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiBncmFkaWVudFRyYW5zZm9ybT0idHJhbnNsYXRlKDIyLjEwNTEgMTUuODcyNSkgcm90YXRlKDE4LjcyNTgpIHNjYWxlKDEuMTgxMzQgNy4wNDYxNikiPgo8c3RvcCBvZmZzZXQ9IjAuNTIxMzg4IiBzdG9wLWNvbG9yPSIjQzI5QTg1Ii8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iI0MyOUE4NSIgc3RvcC1vcGFjaXR5PSIwIi8+CjwvcmFkaWFsR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+Cg==');
+const HAND = { cm: 18, gx: 26.4, gy: 11.15, rot: -28 * Math.PI / 180, dy: 0.2 };       // dy: 틈의 가운데가 꼭 집은 곳에 오게 (그림 단위)
+const HU = HAND.cm / 32, HEXT = { l: 4.4 * HU, r: 25.5 * HU, t: 14.1 * HU, b: 10.5 * HU };   // 집은 곳에서 손이 뻗은 범위(cm): 왼쪽 · 오른쪽 · 위 · 아래
+const HMIN = 3.2;                                                                      // 손 그림 배율(px/cm)의 최솟값: 아주 작은 화면에서만 실제보다 조금 크게
+const HC = document.createElement('canvas'), HX = HC.getContext('2d'); let hcN = 0;
 function drawPinchHand(x, y, hs) {
-  const X0 = -3.2, X1 = 21.6, Y0 = -3.0, Y1 = 6.2, dpr = D.dpr, k = hs * dpr;            // 손 그림 상자(cm). 따로 그린 뒤 그림자와 함께 얹는다
-  const W = Math.ceil((X1 - X0) * k), H = Math.ceil((Y1 - Y0) * k);
-  if (HC.width !== W || HC.height !== H) { HC.width = W; HC.height = H; } else { HX.setTransform(1, 0, 0, 1, 0, 0); HX.clearRect(0, 0, W, H); }
-  HX.setTransform(k, 0, 0, k, -X0 * k, -Y0 * k);
-  paintHand(HX, hs, dpr);
-  HX.globalCompositeOperation = 'destination-out';                                    // 손목 너머 아래팔은 어둠 속으로 사라지게
-  HX.fillStyle = lin(15.2, 0, 20.8, 0, [[0, 'rgba(0,0,0,0)'], [0.5, 'rgba(0,0,0,0.72)'], [1, '#000']]); HX.fillRect(15.2, Y0, X1 - 15.2, Y1 - Y0);
-  HX.globalCompositeOperation = 'source-over';
-  ctx.save(); ctx.shadowColor = A_(T.shadow, 0.45); ctx.shadowBlur = 14; ctx.shadowOffsetX = 6; ctx.shadowOffsetY = 9;   // 판 위에 떨어지는 그림자
-  ctx.drawImage(HC, x + X0 * hs, y + Y0 * hs, W / dpr, H / dpr);
+  const im = IMG.pinch; if (!im) return;                                               // 그림을 읽기 전에는 실만
+  const u = HU * hs, n = Math.max(8, Math.round(32 * u * D.dpr));
+  if (hcN !== n) { HC.width = HC.height = n; HX.clearRect(0, 0, n, n); HX.drawImage(im, 0, 0, n, n); hcN = n; }   // 크기가 바뀔 때만 다시 래스터화
+  ctx.save(); ctx.translate(x, y + HAND.dy * u); ctx.rotate(HAND.rot); ctx.scale(-1, 1);
+  ctx.shadowColor = A_(T.shadow, 0.45); ctx.shadowBlur = 14; ctx.shadowOffsetX = 6; ctx.shadowOffsetY = 9;   // 판 위에 떨어지는 그림자 (그림 모양 그대로)
+  ctx.drawImage(HC, -HAND.gx * u, -HAND.gy * u, 32 * u, 32 * u);
   ctx.restore();
 }
-function paintHand(ctx, hs, dpr) {                                                     // ctx: 손 전용 캔버스, 단위 cm
-  const sh = (fn, blur, oy, ox, a) => { ctx.save(); ctx.shadowColor = A_(T.shadow, a); ctx.shadowBlur = blur * dpr; ctx.shadowOffsetX = ox * dpr; ctx.shadowOffsetY = oy * dpr; fn(); ctx.restore(); };
-  const lw = 1 / hs, LX = -0.6, LY = -0.8;                                            // 빛: 왼쪽 위
-  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-  const grad = (cx0, cy0, r, stops) => lin(cx0 + LX * r, cy0 + LY * r, cx0 - LX * r, cy0 - LY * r, stops);
-  const shade = (p, cx0, cy0, r, mid = 0.45, dark = T['skin-lo']) => { ctx.fillStyle = grad(cx0, cy0, r, [[0, T['skin-hi']], [mid, T.skin], [1, dark]]); ctx.fill(p); };
-  const across = (p, a, b, r) => {                                                    // 손가락을 가로질러: 빛 쪽 가장자리는 밝게, 반대쪽은 어둡게
-    let nx = a[1] - b[1], ny = b[0] - a[0]; const l = Math.hypot(nx, ny) || 1; nx /= l; ny /= l; if (nx * LX + ny * LY < 0) { nx = -nx; ny = -ny; }
-    const cx0 = (a[0] + b[0]) / 2, cy0 = (a[1] + b[1]) / 2, k = r * 1.25;
-    ctx.fillStyle = lin(cx0 + nx * k, cy0 + ny * k, cx0 - nx * k, cy0 - ny * k, [[0, T['skin-hi']], [0.42, T.skin], [1, T['skin-lo']]]); ctx.fill(p);
-  };
-  const edge = (p, a = 0.7, w = 1) => { ctx.strokeStyle = T['skin-lo']; ctx.globalAlpha = a; ctx.lineWidth = w * lw; ctx.stroke(p); ctx.globalAlpha = 1; };
-  const crease = (x0, y0, cx0, cy0, x1, y1, a = 0.4) => { const p = new Path2D(); p.moveTo(x0, y0); p.quadraticCurveTo(cx0, cy0, x1, y1); edge(p, a, 0.85); };
-  const gloss = (cx0, cy0, rx, ry, rot, a) => { ctx.fillStyle = T.spec; ctx.globalAlpha = a; ctx.beginPath(); ctx.ellipse(cx0, cy0, rx, ry, rot, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1; };
-  // 뼈대: 관절 중심(cm)과 반지름. 손가락 굵기 ≈ 손바닥 너비의 1/4, 끝으로 갈수록 조금 가늘게.
-  const IDX = [[5.3, 0.45], [1.85, 0.72], [-0.25, 1.02], [-1.75, 1.42]], IDXr = [1.0, 0.9, 0.8, 0.72];  // 검지: 손등 쪽에서 보여 조금 짧아 보임
-  const THB = [[11.0, -0.35], [7.3, -1.1], [4.0, -0.85], [0.35, -0.2]], THBr = [1.4, 1.12, 0.98, 0.85];   // 엄지: 굵은 뿌리 + 두 마디
-  const CURL = [                                                                     // 새끼 · 약지 · 중지: 손바닥 쪽으로 말려 들어가 둘째 마디까지만 보임
-    [[[6.8, 3.6], [4.45, 3.9], [4.8, 4.7]], [0.8, 0.75, 0.68]],
-    [[[6.2, 2.75], [3.3, 3.1], [3.75, 4.05]], [0.9, 0.85, 0.76]],
-    [[[5.7, 1.75], [2.45, 2.15], [2.95, 3.25]], [0.96, 0.9, 0.8]]
-  ];
-  const idx = limb(IDX, IDXr), thb = limb(THB, THBr);
-  const curls = CURL.map(([q, r]) => [limb([q[0], q[1]], [r[0], r[1]]), limb([q[1], q[2]], [r[1], r[2]])]);   // 꺾인 손가락은 곧은 두 마디로 (윤곽이 꼬이지 않게)
-  const TOP = [[6.2, -0.52], [8.6, -1.0], [11.2, -1.12], [13.6, -0.95], [16.5, -1.1], [21.5, -1.5]];   // 손등 위 테두리 → 손목 → 아래팔
-  const BOT = [[21.5, 4.4], [16.5, 3.95], [14.0, 3.75], [11.4, 4.15], [8.9, 4.55], [7.3, 4.45]];        // 아래팔 → 손목 → 새끼손가락 쪽
-  const smooth = (p, pts, move) => { pts.forEach(([a, b], i) => { if (i === 0) { if (move) p.moveTo(a, b); else p.lineTo(a, b); return; } const [pa, pb] = pts[i - 1]; p.quadraticCurveTo(pa, pb, (pa + a) / 2, (pb + b) / 2); }); p.lineTo(...pts[pts.length - 1]); };
-  const back = new Path2D();                                                          // 손등 + 손목 + 아래팔 (한 덩어리)
-  back.moveTo(4.9, 0.0); back.quadraticCurveTo(5.3, -0.42, 6.2, -0.52);
-  smooth(back, TOP, false); smooth(back, BOT, false);
-  smooth(back, [[7.3, 4.45], [6.95, 4.05], [6.25, 3.62], [6.6, 3.15], [5.6, 2.75], [6.05, 2.25], [5.1, 1.75], [5.6, 1.12], [4.7, 0.5], [4.9, 0.0]], false); back.closePath();   // 너클을 따라 오목볼록
-  const backRim = new Path2D(); smooth(backRim, TOP, true); smooth(backRim, BOT, true);   // 겉 테두리 (손가락 뿌리 쪽은 선 없이)
-  // 엄지 (검지 뒤, 실 뒤)
-  across(thb, THB[0], THB[3], 1.15); edge(thb, 0.75);
-  gloss(5.6, -1.85, 1.9, 0.2, -0.08, 0.3);
-  crease(4.25, -0.25, 3.9, -0.9, 4.15, -1.6, 0.35);                                  // 엄지 마디 주름
-  // 엄지 위를 지나 검지 뒤로 들어가는 실 (엄지와 검지 사이에 끼어 있다)
-  ctx.strokeStyle = T.shadow; ctx.globalAlpha = 0.3; ctx.lineWidth = 2.4 * lw; ctx.beginPath(); ctx.moveTo(1.8 * lw, -1.2); ctx.lineTo(1.8 * lw, 0.4); ctx.stroke(); ctx.globalAlpha = 1;
-  ctx.strokeStyle = T['thread-lo']; ctx.lineWidth = 3 * lw; ctx.beginPath(); ctx.moveTo(0, -1.8); ctx.lineTo(0, 0.5); ctx.stroke();
-  ctx.strokeStyle = T.thread; ctx.lineWidth = 1.8 * lw; ctx.beginPath(); ctx.moveTo(-0.4 * lw, -1.8); ctx.lineTo(-0.4 * lw, 0.5); ctx.stroke();
-  // 느슨하게 접은 세 손가락 (먼 것부터)
-  curls.forEach((segs, i) => {
-    const q = CURL[i][0], r = CURL[i][1][0], F = new Path2D();
-    segs.forEach(p => F.addPath(p));
-    sh(() => { ctx.fillStyle = T.skin; ctx.fill(F); }, 4, 2, 1.5, 0.3);       // 아래 손가락에 지는 옅은 그림자
-    edge(F, 0.75, 2); segs.forEach(p => across(p, q[0], q[1], r));                  // 겉 테두리만 남기고 안쪽 이음매는 덮음
-    gloss(q[1][0] + 0.15, q[1][1] - 0.45, 0.55, 0.15, -0.12, 0.22);                  // 둘째 마디(너클) 위 빛
-  });
-  // 검지 (가장 앞)
-  sh(() => across(idx, IDX[0], IDX[3], 0.92), 4, 2, 1.5, 0.3); edge(idx, 0.75);
-  gloss(2.9, 0.15, 1.7, 0.18, 0.08, 0.35);
-  for (const [cx0, a] of [[1.68, 0.35], [2.0, 0.3]]) crease(cx0 + 0.12, 0.05, cx0 - 0.1, 0.75, cx0 + 0.08, 1.45, a);   // 둘째 마디 주름
-  crease(-0.1, 0.35, -0.28, 1.02, -0.14, 1.68, 0.32);
-  // 검지 손톱 (손등 쪽이 우리를 향함)
-  ctx.save(); ctx.translate(-1.72, 1.43); ctx.rotate(-0.26);
-  ctx.fillStyle = lin(-0.5, -0.45, 0.4, 0.45, [[0, T.spec], [0.35, T.nail], [1, T['skin-lo']]]);
-  ctx.beginPath(); ctx.roundRect(-0.62, -0.38, 1.2, 0.76, [0.38, 0.22, 0.22, 0.38]); ctx.fill();
-  ctx.strokeStyle = T['skin-lo']; ctx.globalAlpha = 0.65; ctx.lineWidth = 0.9 * lw; ctx.stroke(); ctx.globalAlpha = 1;
-  ctx.fillStyle = T.spec; ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.roundRect(-0.62, -0.38, 0.22, 0.76, [0.38, 0, 0, 0.38]); ctx.fill(); ctx.globalAlpha = 1;   // 손톱 끝 흰 부분
-  ctx.restore();
-  // 손등 (손가락 뿌리를 덮음). 손목을 지나면 어둠 속으로 사라짐
-  ctx.fillStyle = lin(8.6, -1.6, 10.2, 5.4, [[0, T['skin-hi']], [0.4, T.skin], [1, T['skin-lo']]]); ctx.fill(back);
-  edge(backRim, 0.75);
-  ctx.save(); ctx.clip(back);
-  for (const [kx, ky] of [[5.6, 1.12], [6.05, 2.25], [6.6, 3.15]]) { ctx.fillStyle = T['skin-lo']; ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.ellipse(kx + 0.15, ky, 0.5, 0.22, -0.2, 0, 2 * Math.PI); ctx.fill(); }   // 너클 사이 골
-  ctx.globalAlpha = 1;
-  for (const [kx, ky] of [[5.35, 0.35], [5.75, 1.6], [6.25, 2.6], [6.85, 3.45]]) gloss(kx, ky, 0.36, 0.15, -0.45, 0.14);   // 너클
-  ctx.restore();
+const CREDIT = '그림: Microsoft Fluent Emoji (MIT)';
+function creditBox() {                                                                 // 그림 출처 자리: 오른쪽 아래 구석 (아래 카드가 있으면 그 위)
+  ctx.font = `500 10.5px ${T.font}`;
+  const tw = ctx.measureText(CREDIT).width, x1 = D.w - 8; let y1 = D.h - 6;
+  for (const r of D.rects) if (r.pos === 'bottom' && r.r > x1 - tw - 12 && r.l < x1) y1 = Math.min(y1, r.t - 5);
+  return { l: x1 - tw - 10, r: x1 + 4, t: y1 - 16, b: y1, x1, y1 };
+}
+function credit() {                                                                    // 작고 흐리게
+  const c = creditBox();
+  ctx.save(); ctx.globalAlpha = 0.6; ctx.fillStyle = T.surface; ctx.beginPath(); ctx.roundRect(c.l, c.t, c.r - c.l, 16, 8); ctx.fill();
+  ctx.globalAlpha = 0.9; ctx.fillStyle = T.muted; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText(CREDIT, c.x1 - 3, c.y1 - 7.5); ctx.restore();
 }
 
 /* ---------- 배치 ---------- */
 function geo() {
-  const w = D.w, h = D.h, narrow = w < 720;
-  const x0 = S.build ? -9 : -3, x1 = S.build ? 67 : 63, s = w / (x1 - x0);
-  const floorY = Math.min(h - (narrow ? 120 : 116), D.botTop - 52);
-  const top = (narrow ? D.roBottom : Math.min(D.roBottom, h * 0.42)) + 8, avail = floorY - top;
+  const w = D.w, h = D.h, narrow = w < 720, ph = PHONE.matches;
+  const x0 = S.build ? -9 : -3, x1 = S.build ? (ph ? Math.max(67, (60 * w + 720) / (w - 80)) : 67) : 63, s = w / (x1 - x0);   // 휴대폰 세로: 고정된 끝의 받침대까지 들어오게
+  const floorY = ph ? D.botTop - 50 : Math.min(h - (narrow ? 120 : 116), D.botTop - 52);   // 휴대폰: 자는 설명 바로 위까지 내려서 높이를 아낀다
+  const top = (ph ? Math.max(D.roBottom, D.pbBottom) : narrow ? D.roBottom : Math.min(D.roBottom, h * 0.42)) + 8, avail = floorY - top;
   let E = Math.max(1, (0.15 * h) / (2 * A * s));
   if (2.4 * 2 * A * s * E + 40 > avail) E = Math.max(0.5, (avail - 40) / (2.4 * 2 * A * s));
   const cy = top + avail * 0.5;
-  return { w, h, s, E, floorY, cy, narrow, X: x => (x - x0) * s, Y: (y, c = cy) => c - y * s * E, toX: px => px / s + x0 };
+  return { w, h, s, E, floorY, cy, narrow, ph, X: x => (x - x0) * s, Y: (y, c = cy) => c - y * s * E, toX: px => px / s + x0 };
 }
 function drawRuler(G, from, to) {
   const { X, floorY, s } = G;
@@ -645,7 +624,10 @@ function drawWaves() {
       ctx.beginPath(); ctx.moveTo(0, cc); ctx.lineTo(w, cc); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
       glowLine(sampled(fn, xa, xb, G, cc), col, 3.6);
       if (S.crests) crestMarks(G, fn === red ? 1 : -1, cc, col);
-      label(`${dir > 0 ? '' : '← '}${txt}${dir > 0 ? ' →' : ''}`, dir > 0 ? X(2) : X(58), cc - A * s * G.E - 28, col, dir > 0 ? 'left' : 'right');
+      const t = `${dir > 0 ? '' : '← '}${txt}${dir > 0 ? ' →' : ''}`, ly = cc - A * s * G.E - 28;
+      let lx = dir > 0 ? X(2) : X(58), al = dir > 0 ? 'left' : 'right';
+      if (G.ph && hits(labelBox(t, lx, ly, 16, al), cards())) { lx = w / 2; al = 'center'; }   // 휴대폰 가로: 카드에 닿으면 두 카드 사이로
+      label(t, lx, ly, col, al);
     }
     return;
   }
@@ -706,12 +688,16 @@ function drawNodes(G, a, b, amp) {
     ctx.strokeStyle = T.anti; ctx.globalAlpha = 0.5; ctx.setLineDash([4, 5]); ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(X(x), Y(amp) - 6); ctx.lineTo(X(x), Y(-amp) + 6); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
   });
-  const labY = Math.min(Y(-amp) + 30, G.floorY - 58);
-  ns.forEach((x, i) => { if (X(x) > 30 && X(x) < D.w - 30 && (i % 2 === 0 || G.s > 14)) label('마디', X(x), labY, T.nodal, 'center', 15); });
-  antis.forEach((x, i) => { if (i % 2 === 0 || G.s > 14) label('배', X(x), Y(amp) - 28, T.anti, 'center', 15); });
+  let labY = Math.min(Y(-amp) + 30, G.floorY - 58), brY = Math.min(labY + 34, G.floorY - 16);
+  const tight = G.ph && labY < Y(-amp) + 30, every = G.s > (G.ph ? 9 : 14);   // 휴대폰 가로: 높이가 모자라 '마디'를 골 바로 아래, λ/2 괄호는 그 줄에
+  if (tight) { labY = Math.min(Y(-amp) + 14, G.floorY - 14); brY = labY + 30 <= G.floorY - 14 ? labY + 30 : labY; }
+  const i0 = Math.max(0, Math.floor(ns.length / 2) - 1), inl = tight && brY === labY && ns.length >= 3;
+  if (inl) hBracket(X(ns[i0]), X(ns[i0 + 1]), brY, T.nodal, `λ/2 = ${half.toFixed(0)} cm`);   // 괄호 양 끝이 곧 마디
+  ns.forEach((x, i) => { if (X(x) > 30 && X(x) < D.w - 30 && (i % 2 === 0 || every) && !(inl && (i === i0 || i === i0 + 1))) label('마디', X(x), labY, T.nodal, 'center', 15); });
+  const okA = G.ph ? antis.filter(x => !hits(labelBox('배', X(x), Y(amp) - 28, 15, 'center'), cards())) : antis;   // 휴대폰: 카드에 가리는 이름표는 빼고
+  okA.forEach((x, i) => { if (i % 2 === 0 || every) label('배', X(x), Y(amp) - 28, T.anti, 'center', 15); });
   if (ns.length >= 3) {
-    const i0 = Math.max(0, Math.floor(ns.length / 2) - 1);
-    hBracket(X(ns[i0]), X(ns[i0 + 1]), Math.min(labY + 34, G.floorY - 16), T.nodal, `λ/2 = ${half.toFixed(0)} cm`);
+    if (!inl) hBracket(X(ns[i0]), X(ns[i0 + 1]), brY, T.nodal, `λ/2 = ${half.toFixed(0)} cm`);
     if (antis.length) vArrow(X(antis[Math.min(antis.length - 1, i0 + 1)]) + 18, Y(0), Y(amp), T.anti, `2A = ${2 * A} cm`, 'right');
   }
 }
@@ -735,7 +721,12 @@ function drawDriver(G) {
   const shTop = Math.min(yr, topY - 20);
   ctx.fillStyle = metalGrad(x - 3.5, x + 3.5); ctx.fillRect(x - 3.5, shTop, 7, topY - 20 - shTop + 1);
   ctx.strokeStyle = T.spec; ctx.globalAlpha = 0.6; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x - 1.5, shTop); ctx.lineTo(x - 1.5, topY - 20); ctx.stroke(); ctx.globalAlpha = 1;
-  label('진동 발생기', x + 12, by - 16, T.ink, 'left', 15);
+  driverLabel(G);
+}
+function driverLabel(G) {
+  const { x, by, bx, bw, bh } = driverGeo(G), peak = 2 * A * G.s * G.E;
+  if (G.ph && by - 30 < G.cy + peak) label('진동 발생기', bx + bw + 8, by + bh / 2, T.ink, 'left', 14);   // 휴대폰 가로: 실이 지나가는 높이면 상자 오른쪽 옆에
+  else label('진동 발생기', x + 12, by - 16, T.ink, 'left', 15);
 }
 function drawDriverClip(G) {                                            // 실을 묶는 집게 (실 위)
   const x = G.X(0), yr = G.Y(red(0) + blue(0));
@@ -744,7 +735,9 @@ function drawDriverClip(G) {                                            // 실�
 }
 // 고정된 끝: 받침대 · 쇠막대 · 죔쇠(보스헤드와 나비나사) · 실을 감은 가로 막대
 function drawClamp(G, front) {
-  const { X, Y, s } = G, x = X(LF), y = Y(0), rodX = x + Math.max(30, 2.2 * s), rr = Math.max(6, 0.45 * s), topY = Math.max(78, y - 150);
+  const { X, Y, s } = G, x = X(LF), y = Y(0), rodX = x + Math.max(30, 2.2 * s), rr = Math.max(6, 0.45 * s), ro = D.rects[0];
+  let topY = Math.max(78, y - 150);
+  if (ro && rodX + rr > ro.l && rodX - rr < ro.r) topY = Math.min(y - 24, Math.max(topY, ro.b + 8));   // 쇠막대 끝이 측정값 카드에 가리지 않게
   if (!front) {
     const bw = Math.max(90, 6 * s), bh = 15;
     ctx.fillStyle = T.shadow; ctx.globalAlpha = 0.25; ctx.filter = 'blur(6px)'; ctx.beginPath(); ctx.ellipse(rodX + 8, G.floorY + 2, bw * 0.55, 6, 0, 0, 2 * Math.PI); ctx.fill(); ctx.filter = 'none'; ctx.globalAlpha = 1;
@@ -769,6 +762,7 @@ function drawClamp(G, front) {
    실을 세로로 늘어뜨리고 아래 끝에 전동기·전지 끼우개를 매단다. 손가락으로 위쪽을 집어 길이 L을 바꾼다. */
 function mgeo() {
   const w = D.w, h = D.h, packCm = 7.6 * PK;
+  if (PHONE.matches) return mgeoPhone(w, h, packCm);
   let best = null;
   for (let f = 0.3; f <= 0.66 + 1e-9; f += 0.02) {
     const cx = w * f;
@@ -780,10 +774,10 @@ function mgeo() {
         if (r.l < cx + 160 && r.r > cx + 20) botH = Math.min(botH, r.t - 6);        // 가장 낮게 내려온 손
       }
     }
-    let bot = botP, s = 2.4, hs = 3.2;
+    let bot = botP, s = 2.4, hs = HMIN;
     for (let it = 0; it < 6; it++) {
-      s = Math.max(2.4, (bot - top - 40) / (LMAX + 2 + packCm)); hs = Math.max(3.2, s);   // 손은 자·실과 같은 축척 (아주 좁은 화면에서만 조금 크게)
-      const handLow = bot - (packCm + LMIN) * s + 6.3 * hs;                // 접은 손가락 끝까지 집은 곳 아래 약 6 cm
+      s = Math.max(2.4, (bot - top - 40) / (LMAX + 2 + packCm)); hs = Math.max(HMIN, s);   // 손은 자·실과 같은 축척 (아주 좁은 화면에서만 조금 크게)
+      const handLow = bot - (packCm + LMIN) * s + HEXT.b * hs;              // 손바닥 아래 끝: 집은 곳 아래 약 6 cm
       if (handLow > botH + 0.5) bot -= handLow - botH; else break;
     }
     const score = bot - top - Math.abs(f - 0.47) * 60;
@@ -792,20 +786,58 @@ function mgeo() {
   const { cx, top, bot, s, hs } = best;
   const yA = bot - packCm * s;                                           // 실이 전지 끼우개에 묶인 곳 (L의 0점)
   const E = clamp(22 / (AMAX * s), 1, 3.2);                              // 실의 흔들림만 보기 좋게 키움
-  return { w, h, cx, top, bot, s, E, yA, hs, Yc: L => yA - L * s, Xd: d => cx + d * s * E };
+  return { w, h, cx, top, bot, s, E, yA, hs, rx: cx - 72, rw: 30, fs: 16, phone: false, Yc: L => yA - L * s, Xd: d => cx + d * s * E };
+}
+// 휴대폰: 세로로 긴 장치를 무대 높이에 꽉 차게. 재생 막대·측정값 카드(위)와 설명·그림 출처(아래)를 피하는 자리(cx) 가운데 배율이 가장 큰 곳.
+//   위쪽 = L이 가장 클 때의 자 끝과 손,  아래쪽 = 전선 · 전지 끼우개 · 그 오른쪽의 '전동기' 이름표.
+//   'L =' 이름표와 마디·배 이름표는 카드에 닿으면 비켜 놓으므로(아래 함수들) 자리만 화면 안에 들어오면 된다.
+function mgeoPhone(w, h, packCm) {
+  const fs = 14, rOff = 64, rw = 30, cb = creditBox();
+  ctx.font = `700 ${fs}px ${T.font}`;
+  const wL = ctx.measureText('L = 66.0 cm').width + 20, wM = ctx.measureText('전동기 100 Hz').width + 20;
+  ctx.font = `700 ${fs - 1}px ${T.font}`;
+  const wB = ctx.measureText('λ/2 = 20 cm').width + 20;
+  const lim = (l, r, pos, v) => {
+    for (const q of pos === 'top' ? D.rects : D.rects.concat([{ ...cb, pos: 'bottom' }])) if (q.pos === pos && q.l < r && q.r > l) v = pos === 'top' ? Math.max(v, q.b + 6) : Math.min(v, q.t - 6);
+    return v;
+  };
+  const fit = (cx, s) => {
+    const hs = Math.max(HMIN, s), E = clamp(22 / (AMAX * s), 1, 3.2), mx = cx + 1.6 * PK * s + A0 * s * E + 10;
+    const top = lim(cx - rOff, cx + HEXT.r * hs + 4, 'top', 8), bot = lim(cx - 8 * s - 2, mx + wM, 'bottom', h - 6);
+    const out = Math.max(0, wL + 8 + rOff - cx, cx + AMAX * s * E + 18 + wB - w, mx + wM - w);   // 무대 밖으로 나가는 폭
+    return { hs, E, mx, bot, out, s: Math.max(1.2, (bot - top - Math.max(HEXT.t * hs, 4 * s + 2)) / (packCm + LMAX)) };
+  };
+  let best = null;
+  for (let f = 0.2; f <= 0.8 + 1e-9; f += 0.01) {
+    const cx = Math.round(w * f); let s = 3, q;
+    for (let it = 0; it < 6; it++) { q = fit(cx, s); s = q.s; }
+    q = fit(cx, s);
+    const score = Math.min(s, q.s) - q.out * 0.5 - Math.abs(f - 0.5) * 0.4;
+    if (!best || score > best.score) best = { cx, s: Math.min(s, q.s), score };
+  }
+  const { cx, s } = best, { hs, E, mx, bot } = fit(cx, s), yA = bot - packCm * s;
+  return { w, h, cx, bot, s, E, yA, hs, mx, rx: cx - rOff, rw, fs, phone: true, Yc: L => yA - L * s, Xd: d => cx + d * s * E };
+}
+// 이름표가 상자들(카드 · 손 · 다른 이름표)과 겹치는지
+const hits = (b, boxes) => boxes.some(q => b.l < q.r && b.r > q.l && b.t < q.b && b.b > q.t);
+const cards = () => [D.rects[0], D.pb].filter(Boolean);                // 측정값 카드 · 재생 막대(지금 크기)
+function labelBox(text, x, y, size, align) {
+  ctx.font = `700 ${size}px ${T.font}`;
+  const w = ctx.measureText(text).width + 20, h = size + 11, l = align === 'right' ? x - w : align === 'center' ? x - w / 2 : x;
+  return { l, r: l + w, t: y - h / 2, b: y + h / 2 };
 }
 function drawMotorScene() {
-  const G = mgeo(), { cx, s, E, yA, Yc, Xd } = G, L = S.L, yF = Yc(L);
+  const G = mgeo(), { cx, s, E, yA, Yc, Xd, rx, rw } = G, L = S.L, yF = Yc(L);
   background();
   // 검은 배경판 (교과서 사진처럼)
-  const bx0 = Math.max(0, cx - 150), bx1 = Math.min(D.w, cx + Math.max(130, 25 * G.hs));     // 손목 뒤 아래팔이 사라질 자리까지
+  const bx0 = Math.max(0, cx - 150), bx1 = Math.min(D.w, cx + Math.max(130, 25 * G.hs));     // 손 오른쪽까지 넉넉히
   shadowed(() => { ctx.fillStyle = lin(bx0, 0, bx1, D.h, [[0, T['board-hi']], [0.45, T.board], [1, T.board]]); ctx.fillRect(bx0, -10, bx1 - bx0, D.h + 20); }, 24, 0, 8, 0.3);
   ctx.save(); ctx.beginPath(); ctx.rect(bx0, 0, bx1 - bx0, D.h); ctx.clip();
   ctx.strokeStyle = T['board-hi']; ctx.globalAlpha = 0.22; ctx.lineWidth = 1;
   for (let x = bx0 + 6; x < bx1; x += 7) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x + Math.sin(x) * 2, D.h); ctx.stroke(); }
   ctx.restore(); ctx.globalAlpha = 1;
   // 세로 자 (0 = 실을 묶은 곳)
-  const rx = cx - 72, rw = 30, rTop = Yc(LMAX + 4), rBot = yA + 10;
+  const rTop = Yc(LMAX + 4), rBot = yA + 10;
   shadowed(() => { ctx.fillStyle = lin(rx, 0, rx + rw, 0, [[0, T.wood], [1, T['wood-lo']]]); ctx.beginPath(); ctx.roundRect(rx, rTop, rw, rBot - rTop, 3); ctx.fill(); }, 8, 3, 3, 0.35);
   ctx.strokeStyle = T.spec; ctx.globalAlpha = 0.35; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(rx + 1, rTop + 3); ctx.lineTo(rx + 1, rBot - 3); ctx.stroke(); ctx.globalAlpha = 1;
   ctx.strokeStyle = T['wood-ink']; ctx.fillStyle = T['wood-ink']; ctx.lineWidth = 1; ctx.beginPath();
@@ -814,12 +846,16 @@ function drawMotorScene() {
   ctx.font = `600 13px ${T.mono}`; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   for (let c = 0; c <= LMAX; c += 10) ctx.fillText(String(c), rx + 3, Yc(c));
   ctx.font = `600 11px ${T.mono}`; ctx.fillText('cm', rx + 3, rTop + 9);
-  // 손가락 위로 이어지는 실
+  // 손가락 위로 이어지는 실 (검지 뒤로 지나간다)과 자를 읽는 선 (손끝에서 끝나게 손보다 먼저)
   ctx.save(); ctx.lineCap = 'round';
   ctx.strokeStyle = T['thread-lo']; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(cx, -4); ctx.lineTo(cx, yF); ctx.stroke();
   ctx.strokeStyle = T.thread; ctx.lineWidth = 1.8; ctx.beginPath(); ctx.moveTo(cx - 0.4, -4); ctx.lineTo(cx - 0.4, yF); ctx.stroke();
   ctx.restore();
-  // 진동하는 실
+  ctx.strokeStyle = T.thread; ctx.globalAlpha = 0.5; ctx.setLineDash([4, 5]); ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(rx + rw + 2, yF); ctx.lineTo(cx - 6, yF); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
+  if (S.nodes && G.phone) drawMotorNodesBack(G);
+  drawPinchHand(cx, yF, G.hs);                                           // 엄지와 검지 사이 틈 = 집은 곳(고정된 끝, 마디)
+  // 진동하는 실 (손 앞: 엄지 앞을 지나 아래로)
   const n = Math.max(160, Math.round(L * s * 1.2)), xs = i => L * i / n;
   const curve = p => { ctx.beginPath(); for (let i = 0; i <= n; i++) { const x = xs(i), X = Xd(yMotorAt(x, p)), Y = Yc(x); i ? ctx.lineTo(X, Y) : ctx.moveTo(X, Y); } };
   if (!S.view) {                                                         // 눈으로 보면: 빠른 진동이 양 끝이 밝은 흐릿한 띠로 보인다
@@ -843,12 +879,17 @@ function drawMotorScene() {
   // 전지 끼우개와 전동기 (아래 끝에 매달림)
   if (S.view) drawPack(G, Xd(yMotorAt(0, phi())), 1, phi());
   else { const a = A0 * s * E; drawPack(G, cx - a, 0.28, null); drawPack(G, cx + a, 0.28, null); drawPack(G, cx, 0.9, null); }   // 빠르게 떨리는 모습
-  drawPinchHand(cx, yF, G.hs);
-  // 읽는 선과 이름표
-  ctx.strokeStyle = T.thread; ctx.globalAlpha = 0.5; ctx.setLineDash([4, 5]); ctx.lineWidth = 1.5;
-  ctx.beginPath(); ctx.moveTo(rx + rw + 2, yF); ctx.lineTo(cx - 6, yF); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
-  label(`L = ${L.toFixed(1)} cm`, rx - 8, yF, T.ink, 'right', 16);
-  label(`전동기 ${S.f} Hz`, rx - 8, yA + 3.4 * PK * s, T.ink, 'right', 15);
+  // 이름표
+  if (G.phone) {                                                         // 휴대폰: L이 아주 클 때 재생 막대에 닿으면 바로 아래로 비켜 놓음 · '전동기'는 전지 끼우개 오른쪽
+    let yl = yF; const bl = labelBox('L = 66.0 cm', rx - 8, yl, G.fs, 'right');
+    if (D.pb && hits(bl, [D.pb])) yl = Math.max(yl, D.pb.b + 6 + (bl.b - bl.t) / 2);
+    label(`L = ${L.toFixed(1)} cm`, rx - 8, yl, T.ink, 'right', G.fs);
+    label(`전동기 ${S.f} Hz`, G.mx, yA + 3.4 * PK * s, T.ink, 'left', G.fs - 1);
+  } else {
+    label(`L = ${L.toFixed(1)} cm`, rx - 8, yF, T.ink, 'right', G.fs);
+    label(`전동기 ${S.f} Hz`, rx - 8, yA + 3.4 * PK * s, T.ink, 'right', G.fs - 1);
+  }
+  credit();
 }
 // 전지 끼우개(검은 상자) 앞에 붙은 소형 전동기와 납작한 고무 편심추. spin = null이면 빠르게 돌아 흐릿하게 보임
 function drawPack(G, x, alpha, spin) {
@@ -887,27 +928,59 @@ function drawPack(G, x, alpha, spin) {
   }
   ctx.restore();
 }
-function drawMotorNodes(G) {
-  const { Yc, Xd, cx, s } = G, half = lam() / 2, amp = motorAmp(), L = S.L, ns = [], antis = [];
-  for (let m = 0; L - m * half >= -1e-6; m++) ns.push(L - m * half);   // 손가락(고정된 끝)부터 λ/2마다
+function motorNodes(G) {                                                // 손가락(고정된 끝)부터 λ/2마다 마디, 그 사이 가운데에 배
+  const half = lam() / 2, L = S.L, ns = [], antis = [];
+  for (let m = 0; L - m * half >= -1e-6; m++) ns.push(L - m * half);
   for (const x of ns) { const xa = x - half / 2; if (xa > 0) antis.push(xa); }
-  const lx = Xd(AMAX) + 20, crowd = half * s < 70;                       // 촘촘하면 이름표는 한 쌍만
-  ns.forEach(x => { if (x > 0.5) nodeRing(cx, Yc(x)); });
+  const ib = ns.length >= 2 && G.Yc(Math.max(0, ns[ns.length - 1])) - G.Yc(ns[ns.length - 2]) > 24 ? ns.length - 2 : -1;   // λ/2 괄호를 붙일 칸 (손에서 먼 쪽)
+  return { half, ns, antis, ib, amp: motorAmp(), crowd: half * G.s < 70, j: Math.max(1, Math.floor(ns.length / 2)) };   // 촘촘하면 이름표는 한 쌍만 · 가운데쯤 마디
+}
+function antiLines(G, amp, antis) {
+  const { Yc, Xd } = G;
   antis.forEach(x => {
     ctx.strokeStyle = T.anti; ctx.globalAlpha = 0.55; ctx.setLineDash([4, 5]); ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(Xd(-amp) - 6, Yc(x)); ctx.lineTo(Xd(amp) + 6, Yc(x)); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
   });
-  const j = Math.max(1, Math.floor(ns.length / 2));                     // 가운데쯤 마디 (손가락 제외)
+}
+// 휴대폰: 배의 점선과 λ/2 괄호는 손보다 먼저 그려, 손가락에서 시작하는 칸이면 괄호 끝이 손 밑으로 들어가게
+function drawMotorNodesBack(G) {
+  const { ns, antis, ib, amp } = motorNodes(G);
+  antiLines(G, amp, antis);
+  if (ib >= 0) vBracket(G.Xd(AMAX) + 8, G.Yc(ns[ib]), G.Yc(Math.max(0, ns[ib + 1])), T.nodal, '');
+}
+function drawMotorNodes(G) {
+  const { Yc, Xd, cx } = G, { half, ns, antis, ib, amp, crowd, j } = motorNodes(G), lx = Xd(AMAX) + 20;
+  ns.forEach((x, i) => { if (i > 0 && x > 0.5) nodeRing(cx, Yc(x)); });    // 손가락(집은 곳)의 마디는 손 그림이 보여 준다
+  if (G.phone) return motorNodeLabelsPhone(G, ns, antis, half, amp, crowd, j, ib);
+  antiLines(G, amp, antis);
   ns.forEach((x, i) => { if (i > 0 && x > 1.5 && (!crowd || i === j)) label('마디', lx, Yc(x), T.nodal, 'left', 15); });
   antis.forEach((x, i) => { if (!crowd || i === j - 1) label('배', lx, Yc(x), T.anti, 'left', 15); });
-  if (ns.length >= 2) {                                                  // 손에서 먼 쪽 한 칸에 λ/2 표시
-    const i = ns.length - 2, y0 = Yc(ns[i]), y1 = Yc(Math.max(0, ns[i + 1]));
-    if (y1 - y0 > 24) vBracket(lx + 74, y0, y1, T.nodal, `λ/2 = ${half.toFixed(0)} cm`);
-  }
+  if (ib >= 0) vBracket(lx + 74, Yc(ns[ib]), Yc(Math.max(0, ns[ib + 1])), T.nodal, `λ/2 = ${half.toFixed(0)} cm`);   // 손에서 먼 쪽 한 칸에 λ/2 표시
   if (antis.length && amp > 0.3) {                                       // 맨 아래 배에서 진폭
     const ya = Yc(antis[antis.length - 1]);
     hArrow(cx, Xd(amp), ya, T.anti);
     label(`진폭 ${amp.toFixed(1)} cm`, lx, ya + 30, T.anti, 'left', 14);
+  }
+}
+// 휴대폰: 이름표를 실 오른쪽 한 줄에 모으고(λ/2 괄호 바로 옆), 카드·손·다른 이름표에 닿으면 손 오른쪽이나 위아래로 비키고, 자리가 없으면 뺀다
+function motorNodeLabelsPhone(G, ns, antis, half, amp, crowd, j, ib) {
+  const { Yc, Xd, cx, hs, s, yA } = G, lx = Xd(AMAX) + 18, fs = G.fs - 1, yF = Yc(S.L);
+  const hand = { l: cx - HEXT.l * hs, r: cx + HEXT.r * hs, t: yF - HEXT.t * hs, b: yF + HEXT.b * hs + 2 };
+  const boxes = [D.rects[0], D.pb, creditBox(), hand, labelBox(`전동기 ${S.f} Hz`, G.mx, yA + 3.4 * PK * s, G.fs - 1, 'left')].filter(Boolean);   // 측정값 카드 · 재생 막대 · 그림 출처 · 손 · '전동기'
+  const put = (text, y, col, alts = [0]) => {
+    for (const d of alts) for (const x of [lx, hand.r + 6]) {
+      const b = labelBox(text, x, y + d, fs, 'left');
+      if (b.t < 4 || b.b > D.h - 4 || b.r > D.w - 4 || hits(b, boxes)) continue;
+      boxes.push(b); label(text, x, y + d, col, 'left', fs); return;
+    }
+  };
+  if (ib >= 0) put(`λ/2 = ${half.toFixed(0)} cm`, (Yc(ns[ib]) + Yc(Math.max(0, ns[ib + 1]))) / 2, T.nodal, [0, 12, -12]);
+  ns.forEach((x, i) => { if (i > 0 && x > 1.5 && (!crowd || i === j)) put('마디', Yc(x), T.nodal); });
+  antis.forEach((x, i) => { if (i !== ib && (!crowd || i === j - 1)) put('배', Yc(x), T.anti); });
+  if (antis.length && amp > 0.3) {                                       // 맨 아래 배에서 진폭
+    const ya = Yc(antis[antis.length - 1]);
+    hArrow(cx, Xd(amp), ya, T.anti);
+    put(`진폭 ${amp.toFixed(1)} cm`, ya, T.anti, [30, -30, 54, -54]);
   }
 }
 
@@ -957,16 +1030,16 @@ function readout() {
   let h;
   if (S.mode === 'motor') {
     const half = V / S.f / 2, n = S.L / half, amp = motorAmp(), nn = Math.round(n), clear = nn >= 1 && Math.abs(n - nn) < 0.06 && amp > 0.55 * AMAX;
-    h = `<div class="ro"><span>진동수 f</span><b>${S.f} Hz</b></div>
+    h = `<div class="ro ro-opt"><span>진동수 f</span><b>${S.f} Hz</b></div>
       <div class="ro opt"><span>실 위 파동의 속력</span><b>${V / 100} m/s</b></div>
       <div class="ro"><span>파장 λ = v/f</span><b>${(V / S.f).toFixed(0)} cm</b></div>
       <div class="ro"><span>L ÷ (λ/2)</span><b>${n.toFixed(2)}</b></div>
       <div class="ro-sep"></div>
       <div class="ro-cap">배의 진폭</div>
-      <div class="ro-db"><b>${amp.toFixed(1)}</b><small>cm</small><span class="state" data-s="${clear ? 'plus' : 'minus'}">${clear ? `정상파 · 배 ${nn}개` : '약함'}</span></div>`;
+      <div class="ro-db"><b>${amp.toFixed(1)}</b><small>cm</small><span class="state" data-s="${clear ? 'plus' : 'minus'}">${clear ? `<span class="ro-x">정상파 · </span>배 ${nn}개` : '약함'}</span></div>`;
   } else if (S.build) {                                                  // 반사가 되풀이되며 자라는 모습을 그대로 보여 줌
     const ph = phaseB(), aw = goB(0, 1, true) * Math.exp(-AL * LF / 2), an = antiB(), full = an > 0.96 * 2 * A;   // 보낸 파동: 실 가운데에서의 진폭
-    h = `<div class="ro"><span>파장 λ</span><b>${LAM} cm</b></div>
+    h = `<div class="ro ro-opt"><span>파장 λ</span><b>${LAM} cm</b></div>
       <div class="ro hi"><span>보낸 파동의 진폭</span><b>${aw.toFixed(1)} cm</b></div>
       <div class="ro nd"><span>마디 사이 λ/2</span><b>${ph > 1 ? `${LAM / 2} cm` : '—'}</b></div>
       <div class="ro-sep"></div>
@@ -974,14 +1047,14 @@ function readout() {
       <div class="ro-db"><b>${ph > 1 ? an.toFixed(1) : '—'}</b><small>${ph > 1 ? 'cm' : ''}</small><span class="state" data-s="plus" ${full ? '' : 'hidden'}>2A</span></div>`;
   } else {
     const done = built();
-    h = `<div class="ro"><span>파장 λ</span><b>${LAM} cm</b></div>
+    h = `<div class="ro ro-opt"><span>파장 λ</span><b>${LAM} cm</b></div>
       <div class="ro hi"><span>각 파동의 진폭 A</span><b>${A} cm</b></div>
       <div class="ro nd"><span>마디 사이 λ/2</span><b>${done && !S.split ? `${LAM / 2} cm` : '—'}</b></div>
       <div class="ro-sep"></div>
       <div class="ro-cap">합성파 진폭 (배)</div>
       <div class="ro-db"><b>${S.split ? '—' : done ? 2 * A : '…'}</b><small>${!S.split && done ? 'cm' : ''}</small><span class="state" data-s="plus" ${!S.split && done ? '' : 'hidden'}>2A</span></div>`;
   }
-  if (h !== lastRO) { $('#ro').innerHTML = h; lastRO = h; measureRO(); }
+  if (h !== lastRO) { const ro = $('#ro'); ro.dataset.mode = S.mode; ro.innerHTML = h; lastRO = h; measureRO(); }
 }
 
 /* ---------- 동기화 ---------- */
@@ -1002,7 +1075,8 @@ function sync() {
   $('#sndBtn').setAttribute('aria-pressed', String(S.sound));
   $('#Lr').value = S.L; $('#LOut').textContent = `${S.L.toFixed(1)} cm`;
   $('#graphCard').hidden = !S.graph;
-  $('#gTitle').textContent = S.mode === 'motor' ? '손가락 위치 L에 따른 배의 진폭 (지나간 자리만)' : '주기 T 동안의 모습';
+  $('#gTitle').textContent = S.mode === 'motor' ? (PHONE.matches ? 'L에 따른 배의 진폭' : '손가락 위치 L에 따른 배의 진폭 (지나간 자리만)') : '주기 T 동안의 모습';
+  stage.dataset.mode = S.mode;                                           // 휴대폰 가로: 전동기 장면에서만 그래프 카드를 작게 살림 (CSS)
   $('#gUnit').textContent = S.mode === 'motor' ? 'cm' : '';
   updateCaption(); measureRO();
   lastRO = ''; readout();
@@ -1024,6 +1098,7 @@ function updateBars() {
 }
 
 /* ---------- 이벤트 ---------- */
+PHONE.addEventListener('change', () => sync());                         // 휴대폰 세로·가로가 바뀌면 그래프 제목 등 다시
 $('#presets').innerHTML = PRESETS.map((p, i) => `<button class="chip" data-p="${i}" title="${i + 1}"><b>${i + 1}</b>${p.label}</button>`).join('');
 $('#presets').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) applyPreset(+b.dataset.p); });
 $$('[data-tg]').forEach(b => b.addEventListener('click', () => { const kk = b.dataset.tg; S[kk] = !S[kk]; if (kk === 'sweep' && S.sweep && S.L >= LMAX - 0.5) S.L = LMIN; sync(); }));

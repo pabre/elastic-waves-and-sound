@@ -157,6 +157,67 @@ h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white
   .rec { top: auto; bottom: 64px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- PHONE v1: 휴대폰 세로·가로 ---------- */
+.presets, .dock { scrollbar-width: none; }
+.presets::-webkit-scrollbar, .dock::-webkit-scrollbar { display: none; }
+@media (max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape) {
+  html, body { height: 100%; }
+  body { overscroll-behavior: none; }
+  .app { height: 100vh; height: 100dvh; min-height: 0; gap: 6px;
+         padding: max(6px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) max(6px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+  .topbar { flex: 0 0 auto; gap: 6px 8px; }
+  .brand { gap: 6px; }
+  .tag { font-size: 11px; padding: 1px 6px; }
+  h1 { font-size: 16px; }
+  .presets { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 4px; padding: 1px 0;
+             -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent); mask-image: linear-gradient(90deg, #000 90%, transparent); }
+  .chip { flex: 0 0 auto; font-size: 13px; padding: 3px 9px 3px 3px; min-height: 30px; }
+  .chip b { width: 22px; height: 22px; font-size: 11px; }
+  .tools { gap: 4px; }
+  .tbtn { padding: 5px 9px; font-size: 13px; min-height: 30px; }
+  .stage { height: auto; flex: 1 1 0; min-height: 0; border-radius: 12px; container-type: size; }
+  .glass { border-radius: 11px; }
+  .playbar { top: 6px; left: 6px; padding: 4px; gap: 4px; }
+  .pbtn { padding: 6px 11px; font-size: 14px; min-height: 34px; }
+  .timenote { display: none; }
+  .playbar .seg { display: flex; padding: 2px; }                 /* 느린 화면(½×, ¼×)은 휴대폰에서도 남긴다 */
+  .playbar .seg button { padding: 5px 7px; font-size: 13px; min-height: 30px; }
+  .rec { top: 6px; bottom: auto; left: 64px; transform: none; padding: 5px 10px; gap: 7px; font-size: 13px; }   /* 위치는 JS가 재생 막대 옆(가로)·아래(세로)로 맞춤 */
+  .rec i { width: 8px; height: 8px; }
+  .rec small { font-size: 11px; }
+  .readout { top: 6px; right: 6px; width: auto; min-width: 118px; max-width: 46%; padding: 6px 9px; gap: 1px; }
+  .ro { font-size: 12px; gap: 6px; } .ro b { font-size: 14px; }
+  .ro-db b { font-size: 24px; } .ro-db small, .ro-sub { font-size: 11px; }
+  .ro-db .what { display: inline; font-size: 11px; }
+  .ro-sep { margin: 3px 0; }
+  .ro-opt { display: none !important; }
+  .bottom { left: 6px; right: 6px; bottom: 6px; gap: 6px; }
+  .caption { font-size: 13.5px; padding: 6px 11px; line-height: 1.35; }
+  .graph-card { display: block; width: 100%; padding: 4px 6px 2px; border-radius: 11px; }     /* 그래프 장면(4)을 위해 휴대폰에서도 보인다 */
+  .graph-card .gt { font-size: 11px; padding: 0 2px; }
+  #graph { height: 170px; height: clamp(140px, 30cqh, 210px); }
+  .lbl { font-size: 13px; padding: 1px 8px; } .lbl.muted { font-size: 12px; } .lbl.mono { font-size: 14px; }
+  .dock { flex: 0 0 auto; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 6px; }
+  .dg { flex: 0 0 auto; padding: 4px 9px; gap: 7px; border-radius: 10px; flex-wrap: nowrap; }
+  .dg > span { font-size: 11px; }
+  .seg button, .tg { padding: 7px 10px; font-size: 13px; }
+}
+@media (max-width: 600px) and (orientation: portrait) {
+  .brand { flex: 1 1 auto; min-width: 0; }
+  .presets { order: 3; flex: 1 0 100%; }          /* 장면 버튼: 둘째 줄, 옆으로 밀기 */
+  .tag { display: none; }                          /* 제목과 도구 단추를 한 줄에 (단원 표시는 생략) */
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .topbar { flex-wrap: nowrap; }                   /* 한 줄: 제목 · 장면 버튼(옆으로 밀기) · 도구 */
+  .presets { flex: 1 1 0; min-width: 0; }
+  .caption { font-size: 13px; max-width: 58%; }
+  .readout { max-width: 32%; }
+  .stage.g-on .readout { display: none; }         /* 그래프를 켜면 오른쪽 칸 전체를 그래프에 (값은 그래프 위 λ·T 표시로) */
+  .stage.g-on .caption { max-width: 54%; }
+  .graph-card { width: 44%; }
+  #graph { height: 200px; height: calc(100cqh - 38px); }
+}
 </style>
 
 <div class="app" id="app">
@@ -213,6 +274,7 @@ h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const $ = s => document.querySelector(s);
 const TAU = 2 * Math.PI;
+const PHQ = matchMedia('(max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape)');   // CSS의 PHONE v1과 같은 조건
 
 /* ---------- 용수철 (m 단위, x축을 따라 바닥의 모눈종이 위에 놓임) ---------- */
 // 금속 슬링키: 200감기, 감기 사이 3 cm(전체 6 m, 화면에는 앞 3 m 정도), 지름 6.8 cm, 납작한 철사(폭 5.2 mm, 두께 2.2 mm)
@@ -358,7 +420,7 @@ function initThree() {
   renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
-  V3.renderer = renderer;
+  V3.renderer = renderer; V3.small = PHQ.matches;           // 휴대폰: 그림자 지도를 작게 (기기 배율은 위에서 2로 제한)
   const scene = new THREE.Scene();
   scene.environment = makeEnv(renderer);
   const camera = new THREE.PerspectiveCamera(36, 16 / 9, 0.05, 40);
@@ -376,7 +438,7 @@ function initThree() {
   };
   const hemi = new THREE.HemisphereLight(0xffffff, 0x9a8a76, 0.58); scene.add(hemi);
   const sun = new THREE.DirectionalLight(0xfff8f0, 1.05);
-  sun.position.set(0.9, 5.5, 2.4); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  sun.position.set(0.9, 5.5, 2.4); sun.castShadow = true; sun.shadow.mapSize.set(V3.small ? 1024 : 2048, V3.small ? 1024 : 2048);
   Object.assign(sun.shadow.camera, { left: -2.1, right: 2.1, top: 0.9, bottom: -0.9, near: 2, far: 9 });
   sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.002; sun.shadow.radius = 2.5;
   sun.target.position.set(1.55, 0, 0); scene.add(sun, sun.target);
@@ -467,8 +529,62 @@ function theme3D() {
   M.arrow1.color = C(T.s1); M.arrow2.color = C(T.s2); M.ruler.color = C(T.tape); M.rulerTip.color = C(T.ink);
   V3.hemi.intensity = T.dark ? 0.38 : 0.58;
 }
+/* ---------- 휴대폰: 무대 위 카드(재생 막대·측정값·설명·그래프)를 피한 영역에 장치를 맞춘다 ---------- */
+function stageBoxes() {                                   // 무대 기준 카드 위치 (보이는 것만)
+  const s = $('#stage').getBoundingClientRect();
+  const R = el => { if (!el || el.offsetParent === null) return null; const r = el.getBoundingClientRect(); return r.width > 0 ? { l: r.left - s.left, t: r.top - s.top, r: r.right - s.left, b: r.bottom - s.top } : null; };
+  return { W: s.width, H: s.height, pb: R($('.playbar')), ro: R($('#readout')), rec: R($('#recBadge')), cap: R($('#caption')), gc: R($('#graphCard')) };
+}
+function placeRec() {                                     // 촬영 배지: 세로 화면은 재생 막대 아래, 가로 화면은 재생 막대 오른쪽
+  const el = $('#recBadge'), pb = $('.playbar');
+  if (!PHQ.matches) { el.style.left = el.style.top = ''; return; }
+  const tall = innerHeight > innerWidth;
+  el.style.left = (tall ? pb.offsetLeft : pb.offsetLeft + pb.offsetWidth + 6) + 'px';
+  el.style.top = (tall ? pb.offsetTop + pb.offsetHeight + 6 : pb.offsetTop) + 'px';
+}
+function camPhone(name) {
+  const B = stageBoxes(), W = B.W, H = B.H, pad = 8, tall = H > W, top = name === 'top';
+  if (!W || !H) return null;
+  // 비어 있는 영역: 세로 화면은 위 카드들 아래 ~ 설명·그래프 위, 가로 화면은 재생 막대 아래 ~ 설명 위 (오른쪽 위 측정값 카드 밑으로는 용수철의 먼 끝만 지나감)
+  const R = { l: pad, r: W - pad, t: Math.max(B.pb ? B.pb.b : 0, B.rec ? B.rec.b : 0, tall && B.ro ? B.ro.b : 0) + pad, b: H - pad };
+  if (B.cap) R.b = Math.min(R.b, B.cap.t - pad);
+  if (B.gc) { if (tall) R.b = Math.min(R.b, B.gc.t - pad); else R.r = Math.min(R.r, B.gc.l - pad); }
+  if (R.b - R.t < 80) R.b = R.t + 80;
+  // 비어 있는 영역의 가로세로 비에 따라 보는 방향을 돌린다: 넓으면 데스크톱과 같은 옆모습, 좁고 길면 손잡이 뒤에서 (용수철이 화면 아래에서 위로), 그 사이는 비스듬히
+  const a = (R.r - R.l) / (R.b - R.t), k = Math.max(0, Math.min(1, Math.log(2.4 / a) / Math.log(2.4 / 0.8)));
+  const az = top ? (a < 1 ? Math.PI / 2 : 0) : k * Math.PI / 2, rot = az > 1.05;
+  const xe = az > 0.2 ? 2.7 : top ? 3.3 : 3.1, A = 0.11, P = [];
+  const add = (x, y, z, p = 0) => P.push([x, y, z, p]);
+  for (const x of [0, xe]) for (const z of [-A, A]) { add(x, 0, z); add(x, Y0 + RR, z); }
+  if (rot) add(HANDLE_X, 0.15, -0.1, 18); else add(HANDLE_X, 0.25, 0, 22);   // 손잡이와 이름표
+  add(HANDLE_X, 0, 0);
+  if (top) { add(-0.05, 0, -0.22); add(-0.05, 0, 0.22); add(Math.min(xe, 3.35), 0, -0.22); add(Math.min(xe, 3.35), 0, 0.22); add(0, 0, TAPE_Z - 0.03); add(xe, 0, TAPE_Z - 0.03); }
+  else { add(0, 0, TAPE_Z - 0.03); add(xe, 0, TAPE_Z - 0.03); add(XP, 0.17, 0, 12); }
+  if (S.arrows && !top) { add(0.5, 0.02, 0.33, 18); add(1.2, 0.02, 0.33, 18); add(XP, 0.24, 0, 14); }
+  if (S.ruler) { add(0.5, 0.05, 0.23, 14); add(2, 0.05, 0.23, 14); }
+  const el0 = Math.atan2(CAMS.side.pos[1] - CAMS.side.tgt[1], CAMS.side.pos[2] - CAMS.side.tgt[2]), el = el0 + (0.95 - el0) * k;
+  const dir = top ? (rot ? new THREE.Vector3(-0.0006, 1, 0) : new THREE.Vector3(0, 1, 0.0006))
+    : new THREE.Vector3(-Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el));
+  dir.normalize();
+  const c = new THREE.PerspectiveCamera(V3.camera.fov, W / H, 0.05, 40), tanH = Math.tan(c.fov * Math.PI / 360);
+  const tgt = new THREE.Vector3(xe / 2, 0, 0), p = new THREE.Vector3(), rx = new THREE.Vector3(), uy = new THREE.Vector3();
+  let D = 3;
+  for (let it = 0; it < 24; it++) {                          // 크기(거리)와 위치(표적)를 번갈아 맞춤
+    c.position.copy(dir).multiplyScalar(D).add(tgt); c.lookAt(tgt); c.updateMatrixWorld(); c.updateProjectionMatrix();
+    let x0 = 1e9, x1 = -1e9, y0 = 1e9, y1 = -1e9;
+    for (const q of P) { p.set(q[0], q[1], q[2]).project(c); const sx = (p.x + 1) / 2 * W, sy = (1 - p.y) / 2 * H; x0 = Math.min(x0, sx - q[3]); x1 = Math.max(x1, sx + q[3]); y0 = Math.min(y0, sy - q[3]); y1 = Math.max(y1, sy + q[3]); }
+    const s = Math.min((R.r - R.l) / (x1 - x0), (R.b - R.t) / (y1 - y0)), wpp = 2 * D * tanH / H;
+    rx.setFromMatrixColumn(c.matrixWorld, 0); uy.setFromMatrixColumn(c.matrixWorld, 1);
+    tgt.addScaledVector(rx, -((R.l + R.r) / 2 - (x0 + x1) / 2) * wpp).addScaledVector(uy, ((R.t + R.b) / 2 - (y0 + y1) / 2) * wpp);
+    D = Math.max(0.9, Math.min(9, D / Math.pow(s, 0.9)));
+  }
+  V3.rot = rot;
+  return { pos: dir.clone().multiplyScalar(D).add(tgt), tgt };
+}
 function camFor(name) {
   const cam = V3.camera, asp = cam.aspect, tanH = Math.tan(cam.fov * Math.PI / 360);
+  V3.rot = false;
+  if (PHQ.matches) { const v = camPhone(name); if (v) return v; }
   if (name === 'top') {                                   // 손잡이부터 3.2 m가 화면 폭에 들어오게, 용수철은 화면 가운데보다 조금 아래
     const hFull = 1.82 / (tanH * asp), h = Math.max(1.9, Math.min(3.6, hFull)), half = h * tanH * asp;
     const cx = hFull > h ? HANDLE_X - 0.14 + half : 1.5;
@@ -489,6 +605,8 @@ function camFor(name) {
 }
 function goView(instant) {
   if (!V3.ok) return;
+  if (PHQ.matches) { updateReadout(); placeRec(); }          // 카드 크기가 정해진 뒤에 비어 있는 영역을 잰다
+  V3.controls.maxDistance = PHQ.matches ? 9 : 7;
   const v = camFor(S.top ? 'top' : 'side'); V3.userMoved = false;
   if (instant || reduce) { V3.camera.position.copy(v.pos); V3.controls.target.copy(v.tgt); V3.controls.update(); V3.cam = { t: 1 }; return; }
   const vt = Math.abs(V3.camera.position.y - v.pos.y) > 0.4;
@@ -498,6 +616,9 @@ function size3D() {
   if (!V3.ok) return;
   const r = $('#stage').getBoundingClientRect(); if (!r.width) return;
   V3.renderer.setSize(r.width, r.height, false); V3.camera.aspect = r.width / r.height; V3.camera.updateProjectionMatrix();
+  const shape = PHQ.matches + '|' + (r.width > r.height);   // 휴대폰을 돌리면 손으로 돌려 둔 시점도 새로 맞춘다
+  if (shape !== V3.shape) { if (V3.shape && PHQ.matches) V3.userMoved = false; V3.shape = shape; for (const k in LBL) LBL[k]._w = 0; }
+  placeRec();
   if (!V3.userMoved && V3.cam.t >= 1) goView(true);
 }
 const LBL = {};
@@ -509,10 +630,22 @@ function label(id, show, xyz, text, cls = '', anchor = 'c') {
   const v = V3.tmp.set(xyz[0], xyz[1], xyz[2]).project(V3.camera);
   if (v.z > 1 || v.z < -1 || Math.abs(v.x) > 1.05 || Math.abs(v.y) > 1.05) { el.hidden = true; return; }
   const r = lblRect || $('#gl').getBoundingClientRect();
-  el.hidden = false; if (el.textContent !== text) el.textContent = text;
+  el.hidden = false; if (el.textContent !== text) { el.textContent = text; el._w = 0; }
   const tx = anchor === 'l' ? '0' : anchor === 'r' ? '-100%' : '-50%', ty = anchor === 'b' ? '-100%' : anchor === 't' ? '0' : '-50%';
-  el.style.transform = `translate(${((v.x + 1) / 2 * r.width).toFixed(1)}px, ${((1 - v.y) / 2 * r.height).toFixed(1)}px) translate(${anchor === 'b' || anchor === 't' ? '-50%' : tx}, ${ty})`;
+  let sx = (v.x + 1) / 2 * r.width, sy = (1 - v.y) / 2 * r.height;
+  if (OVL) {                                                 // 휴대폰: 무대 가장자리에서는 안쪽으로 밀고, 카드(재생 막대·측정값·설명·그래프)나 다른 이름표에 걸리면 숨김
+    if (!el._w) { el._w = el.offsetWidth; el._h = el.offsetHeight; }
+    const w = el._w, h = el._h;
+    let x0 = anchor === 'l' ? sx : anchor === 'r' ? sx - w : sx - w / 2, y0 = anchor === 'b' ? sy - h : anchor === 't' ? sy : sy - h / 2;
+    const nx = Math.max(3, Math.min(r.width - w - 3, x0)), ny = Math.max(3, Math.min(r.height - h - 3, y0));
+    sx += nx - x0; sy += ny - y0; x0 = nx; y0 = ny;
+    const hit = o => x0 < o.r + 3 && x0 + w > o.l - 3 && y0 < o.b + 3 && y0 + h > o.t - 3;
+    if (OVL.some(hit) || PLACED.some(hit)) { el.hidden = true; return; }
+    PLACED.push({ l: x0, r: x0 + w, t: y0, b: y0 + h });   // 이름표끼리도 겹치지 않게 (먼저 놓인 것이 우선)
+  }
+  el.style.transform = `translate(${sx.toFixed(1)}px, ${sy.toFixed(1)}px) translate(${anchor === 'b' || anchor === 't' ? '-50%' : tx}, ${ty})`;
 }
+let OVL = null; const PLACED = [];
 function setArrow(a, show, x, y, z, len, rotY) {         // len: 전체 길이 (양쪽 화살촉이면 가운데 기준)
   a.g.visible = show; if (!show) return;
   const L = Math.max(0.1, Math.abs(len)), head = 0.05;
@@ -595,16 +728,29 @@ function update3D(dt) {
       if (st[i] > 0.12 && st[i] >= st[i - 1] && st[i] >= st[i + 1] && st[i] >= st[i - 2] && st[i] >= st[i + 2]) sparse.push(axisAt(i).x);
     }
   }
-  const crowded = dense.length + sparse.length > 0;
+  const crowded = dense.length + sparse.length > 0, ph = PHQ.matches, rot = ph && V3.rot;   // rot: 휴대폰 세로 — 용수철이 화면 아래에서 위로 뻗음
+  if (ph) { const B = stageBoxes(); OVL = [B.pb, B.ro, B.rec, B.cap, B.gc].filter(Boolean); } else OVL = null;
+  PLACED.length = 0;
+  const pk = pulsePeak(), pz = S.dir === 'T' ? ampNow() : 0;
+  if (rot) {                                                 // 이름표를 용수철 옆으로 (위쪽은 용수철이 이어지는 방향)
+    label('hand', true, [h.x + HANDLE_X, 0.12, h.z - 0.08], S.mode === 'hand' ? '손잡이를 끌어 흔들기' : '손잡이', 'muted', 'r');
+    label('rib', true, [rp.x, 0.11, rp.z - 0.08], '리본', 'rib', 'r');
+    label('tape', !S.top, [2.35, 0.01, TAPE_Z - 0.05], '줄자 (cm)', 'muted', 'r');
+    label('trav', showAr, [1.2, 0.03, 0.32], '진행 방향', 's1', 'b');
+    label('vib', showAr, S.dir === 'T' ? [XP + 0.06, 0.19, 0] : [XP - 0.24, 0.19, -0.08], '진동 방향', 's2', S.dir === 'T' ? 'b' : 'r');
+    label('rul', !!S.ruler, [(S.rulerA + S.rulerB) / 2, 0.05, 0.23], `${Math.round(Math.abs(S.rulerB - S.rulerA) * 100)} cm`, 'mono', 'l');
+    for (let j = 0; j < 6; j++) { label('d' + j, j < dense.length, [dense[j] || 0, 0.05, 0.09], '밀', 'hi', 'l'); label('s' + j, j < sparse.length, [sparse[j] || 0, 0.05, 0.09], '소', 'lo', 'l'); }
+    label('pulse', pk !== null && pk < 3.2, [pk || 0, 0.05, pz + 0.07], '펄스', 'accent', 'l');
+    return;
+  }
   label('hand', true, [h.x + HANDLE_X, 0.25, h.z], S.mode === 'hand' ? '손잡이를 끌어 흔들기' : '손잡이', 'muted', 'b');
   label('rib', true, crowded || S.top ? [rp.x, 0.0, rp.z + 0.13] : [rp.x - 0.05, 0.11, rp.z - 0.07], '리본', 'rib', crowded || S.top ? 't' : 'r');
-  label('tape', !S.top, [3.12, 0.01, TAPE_Z - 0.06], '줄자 (cm)', 'muted');
-  label('trav', showAr, [1.18, 0.03, 0.32], '진행 방향', 's1', 'l');
+  label('tape', !S.top, ph ? [2.7, 0.01, TAPE_Z - 0.06] : [3.12, 0.01, TAPE_Z - 0.06], '줄자 (cm)', 'muted');
+  label('trav', showAr, ph ? [0.46, 0.03, 0.32] : [1.18, 0.03, 0.32], '진행 방향', 's1', ph ? 'r' : 'l');   // 휴대폰: 화살표 꼬리 쪽 (리본 이름표와 겹치지 않게)
   label('vib', showAr, S.dir === 'T' ? [XP + 0.05, 0.19, A + 0.08] : [XP + A + 0.1, 0.19, 0], '진동 방향', 's2', 'l');
   label('rul', !!S.ruler, [(S.rulerA + S.rulerB) / 2, 0.05, 0.19], `${Math.round(Math.abs(S.rulerB - S.rulerA) * 100)} cm`, 'mono', 'b');
   for (let j = 0; j < 6; j++) { label('d' + j, j < dense.length, [dense[j] || 0, 0.12, 0], '밀', 'hi', 'b'); label('s' + j, j < sparse.length, [sparse[j] || 0, 0.12, 0], '소', 'lo', 'b'); }
-  const pk = pulsePeak();
-  label('pulse', pk !== null && pk < 3.2, [pk || 0, 0.16, S.dir === 'T' ? ampNow() : 0], '펄스', 'accent', 'b');
+  label('pulse', pk !== null && pk < 3.2, [pk || 0, 0.16, pz], '펄스', 'accent', 'b');
 }
 function pulsePeak() {
   if (S.mode !== 'pulse' || S.pulseT < 0) return null;
@@ -648,10 +794,10 @@ function drawGraph() {
   const dpr = Math.min(2, devicePixelRatio || 1), w = r.width, h = r.height;
   if (gcv.width !== Math.round(w * dpr) || gcv.height !== Math.round(h * dpr)) { gcv.width = Math.round(w * dpr); gcv.height = Math.round(h * dpr); }
   const c = gctx; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
-  const A = ampNow(), ym = A * 1.6, Lp = 42, Rp = 8, ph = (h - 46) / 2, tz = S.t0;
+  const A = ampNow(), ym = A * 1.6, Lp = 42, Rp = 8, ph = (h - 46) / 2, tz = S.t0, nw = w < 440;   // nw: 휴대폰처럼 좁은 그래프 — 축 이름을 줄임
   const panels = [
     { top: 2, name: '(가) 위치에 따른 변위', xl: '위치 x (cm)', x0: 0, x1: XMAX, f: x => disp(x), col: T.s1 },
-    { top: 2 + ph + 24, name: '(나) 리본(점 P)의 시간에 따른 변위', xl: '흔들기 시작 후 시간 t (s)', x0: S.t - 3, x1: S.t, f: tt => disp(XP, tt), col: T.ribbon }
+    { top: 2 + ph + 24, name: nw ? '(나) 리본(점 P)의 변위' : '(나) 리본(점 P)의 시간에 따른 변위', xl: nw ? '시간 t (s)' : '흔들기 시작 후 시간 t (s)', x0: S.t - 3, x1: S.t, f: tt => disp(XP, tt), col: T.ribbon }
   ];
   panels.forEach((p, k) => {
     const pw = w - Lp - Rp, mid = p.top + 15 + (ph - 15) / 2, half = (ph - 15) / 2 - 2;
@@ -726,7 +872,7 @@ function applyPreset(i) {
   S.freezeAt = p.rulerFit && !reduce ? 2.5 : 0;            // 파동이 2.5 m까지 퍼지면 영상을 멈추고 자를 마루에 맞춤
   if (p.rulerFit) { S.rulerA = 0.45; S.rulerB = 0.45 + lam(); }
   else { S.rulerA = 1.0; S.rulerB = 1.6; }
-  goView(false); sync();
+  sync(); goView(false);                                   // 카드(설명·그래프)를 먼저 바꾼 뒤 시점을 맞춤
 }
 const setTxt = (el, s) => { if (el.textContent !== s) el.textContent = s; };
 function sync() {
@@ -741,9 +887,9 @@ function sync() {
   $('#capBtn').setAttribute('aria-pressed', String(S.cap));
   const cap = S.preset >= 0 ? PRESETS[S.preset].cap : '';
   setTxt($('#caption'), cap); $('#caption').hidden = !S.cap || !cap;
-  $('#graphCard').hidden = !S.graph;
+  $('#graphCard').hidden = !S.graph; $('#stage').classList.toggle('g-on', !!S.graph);
   setTxt($('#graphNote'), S.dir === 'L' ? '종파: 세로축 = 앞뒤 변위' : '세로축 = 좌우 변위');
-  $('#recBadge').hidden = !S.top;
+  $('#recBadge').hidden = !S.top; placeRec();
   $('#sndBtn').setAttribute('aria-pressed', String(S.sound));
   const sb = $('#shakeBtn'); sb.hidden = S.mode === 'hand';
   setTxt(sb, S.mode === 'pulse' ? '펄스 보내기' : S.shaking ? '멈추기' : '흔들기');
@@ -752,17 +898,17 @@ function sync() {
 let lastRO = '';
 function updateReadout() {
   const v = vel(), L = lam(), rows = [];
-  const hand = S.mode === 'hand';
+  const hand = S.mode === 'hand', pk = pulsePeak(), pul = S.mode === 'pulse' && pk !== null;
+  const opt = pul ? ' ro-opt' : '';                        // 좁은 화면: 펄스가 가는 동안은 f·λ 대신 x·t를 보인다
   rows.push(`<div class="ro"><span>${MEDN[S.med]}</span><b>${S.dir === 'T' ? '횡파' : '종파'}</b></div>`);
-  rows.push(`<div class="ro s2"><span>진동수 f</span><b>${hand ? '—' : S.f + ' Hz'}</b></div>`);
+  rows.push(`<div class="ro s2${opt}"><span>진동수 f</span><b>${hand ? '—' : S.f + ' Hz'}</b></div>`);
   rows.push(`<div class="ro ro-opt"><span>주기 T = 1/f</span><b>${hand ? '—' : (1 / S.f).toFixed(2) + ' s'}</b></div>`);
-  rows.push(`<div class="ro s1"><span>파장 λ</span><b>${hand ? '—' : Math.round(L * 100) + ' cm'}</b></div>`);
+  rows.push(`<div class="ro s1${opt}"><span>파장 λ</span><b>${hand ? '—' : Math.round(L * 100) + ' cm'}</b></div>`);
   if (S.ruler) rows.push(`<div class="ro ro-opt"><span>자로 잰 길이</span><b>${Math.round(Math.abs(S.rulerB - S.rulerA) * 100)} cm</b></div>`);
   rows.push('<div class="ro-sep"></div>');
-  const pk = pulsePeak();
-  if (S.mode === 'pulse' && pk !== null) {
+  if (pul) {
     const tt = S.t - S.pulseT - 1 / (4 * S.f);
-    rows.push(`<div class="ro ro-opt"><span>펄스 위치 x</span><b>${Math.round(pk * 100)} cm</b></div><div class="ro ro-opt"><span>걸린 시간 t</span><b>${tt.toFixed(2)} s</b></div>`);
+    rows.push(`<div class="ro"><span>펄스 위치 x</span><b>${Math.round(pk * 100)} cm</b></div><div class="ro"><span>걸린 시간 t</span><b>${tt.toFixed(2)} s</b></div>`);
     rows.push(`<div class="ro-db"><b>${Math.round(v * 100)}</b><small>cm/s</small><span class="what">속력 x/t</span></div>`);
   } else {
     rows.push(`<div class="ro-db"><b>${Math.round(v * 100)}</b><small>cm/s</small><span class="what">파동의 속력</span></div>`);
@@ -812,7 +958,7 @@ function beat(tb) {
 /* ---------- 이벤트 ---------- */
 $('#presets').innerHTML = PRESETS.map((p, i) => `<button class="chip" data-p="${i}" title="${i + 1}"><b>${i + 1}</b>${p.label}</button>`).join('');
 $('#presets').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) applyPreset(+b.dataset.p); });
-document.querySelectorAll('[data-tg]').forEach(b => b.addEventListener('click', () => { const k = b.dataset.tg; setS({ [k]: !S[k] }); if (k === 'trail') trailK = 0; if (k === 'ruler' && S.ruler && !S.run) snapRuler(); if (k === 'graph' && !S.top && !V3.userMoved) goView(false); }));
+document.querySelectorAll('[data-tg]').forEach(b => b.addEventListener('click', () => { const k = b.dataset.tg; setS({ [k]: !S[k] }); if (k === 'trail') trailK = 0; if (k === 'ruler' && S.ruler && !S.run) snapRuler(); if ((k === 'graph' && !S.top || PHQ.matches && (k === 'graph' || k === 'arrows' || k === 'ruler')) && !V3.userMoved) goView(false); }));
 document.querySelectorAll('[data-seg]').forEach(sg => sg.addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return; const k = sg.dataset.seg, raw = b.dataset.v;
   const v = k === 'f' || k === 'med' || k === 'speed' ? +raw : raw;
@@ -824,7 +970,7 @@ $('#playBtn').addEventListener('click', () => { S.freezeAt = 0; setS({ run: !S.r
 $('#shakeBtn').addEventListener('click', () => { S.freezeAt = 0; startShake(); });
 $('#sndBtn').addEventListener('click', toggleSound);
 $('#viewBtn').addEventListener('click', () => { S.top = !S.top; goView(false); sync(); });
-$('#capBtn').addEventListener('click', () => setS({ cap: !S.cap }));
+$('#capBtn').addEventListener('click', () => { setS({ cap: !S.cap }); if (PHQ.matches && !V3.userMoved) goView(false); });
 $('#fsBtn').addEventListener('click', () => {
   const el = $('#app');
   try { if (document.fullscreenElement) document.exitFullscreen?.()?.catch?.(() => {}); else el.requestFullscreen?.()?.catch?.(() => {}); } catch (err) {}
@@ -840,11 +986,17 @@ document.addEventListener('keydown', e => {
 // 손잡이 끌기, 자 끝 끌기
 const gl = $('#gl');
 let drag = null;
+function nearPx(e, x, y, z, tol) {                        // 손가락: 화면에서 tol px 안이면 잡은 것으로
+  if (!tol) return false;
+  const r = gl.getBoundingClientRect(), v = V3.tmp.set(x, y, z).project(V3.camera);
+  return Math.hypot((v.x + 1) / 2 * r.width - (e.clientX - r.left), (1 - v.y) / 2 * r.height - (e.clientY - r.top)) < tol;
+}
 gl.addEventListener('pointerdown', e => {
   if (!V3.ok) return;
-  const ray = setRay(e);
+  const ray = setRay(e), tol = e.pointerType === 'touch' || PHQ.matches ? 26 : 0, hx = V3.handle.position;
   if (S.ruler) { const hit = ray.intersectObjects([V3.tipA, V3.tipB, V3.lineA, V3.lineB]); if (hit.length) { drag = hit[0].object === V3.tipA || hit[0].object === V3.lineA ? 'A' : 'B'; S.rulerTo = null; } }
-  if (!drag && ray.intersectObject(V3.handle, true).length) { drag = 'hand'; S.freezeAt = 0; if (S.mode !== 'hand') setS({ mode: 'hand' }); dragHand = true; if (!S.run) setS({ run: true }); }
+  if (!drag && S.ruler && tol) { const a = nearPx(e, S.rulerA, 0.03, 0.19, tol), b = nearPx(e, S.rulerB, 0.03, 0.19, tol); if (a || b) { drag = a ? 'A' : 'B'; S.rulerTo = null; } }
+  if (!drag && (ray.intersectObject(V3.handle, true).length || nearPx(e, hx.x, 0.1, hx.z, tol) || nearPx(e, hx.x, 0.2, hx.z, tol))) { drag = 'hand'; S.freezeAt = 0; if (S.mode !== 'hand') setS({ mode: 'hand' }); dragHand = true; if (!S.run) setS({ run: true }); }
   if (drag) { V3.controls.enabled = false; gl.setPointerCapture(e.pointerId); e.preventDefault(); e.stopImmediatePropagation(); }
 }, { capture: true });
 gl.addEventListener('pointermove', e => {
@@ -880,7 +1032,7 @@ function advance(dt) {
 }
 let last = performance.now(), fr = 0;
 function loop(now) {
-  const raw = Math.min(0.5, (now - last) / 1000); last = now;
+  const raw = Math.max(0, Math.min(0.5, (now - last) / 1000)); last = now;   // 첫 프레임 시각이 시작 시각보다 앞설 수 있음
   advance(Math.min(0.1, raw));
   update3D(raw);
   if (S.graph) drawGraph();

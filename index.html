@@ -67,6 +67,16 @@ section { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px;
 .meta { display: flex; gap: 10px; font: 500 12px var(--mono); color: var(--muted); }
 .meta .go { margin-left: auto; color: var(--accent); font-family: var(--font); font-weight: 700; }
 @media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
+.credit { margin: 0; font-size: 12px; color: var(--muted); }
+/* 휴대폰: 단축키 안내는 터치 화면에서 쓸모없음, 여백을 줄여 카드가 바로 보이게 */
+@media (hover: none) and (pointer: coarse) { .keys { display: none; } }
+@media (max-width: 600px) {
+  .wrap { padding-block: 18px 28px; gap: 22px; }
+  .eyebrow { font-size: 12px; }
+  .card { padding: 14px; gap: 12px; grid-template-columns: 52px minmax(0, 1fr); }
+  .icon { width: 52px; height: 52px; }
+  .icon svg { width: 34px; height: 34px; }
+}
 </style>
 
 <div class="wrap">
@@ -147,4 +157,6 @@ section { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px;
       </a>
     </div>
   </section>
+
+  <p class="credit">그림 출처: 손·사람·헤드폰 Microsoft Fluent Emoji (MIT) · 귀 단면 Chittka &amp; Brockmann, Wikimedia Commons (CC BY 2.5)</p>
 </div>

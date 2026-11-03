@@ -172,6 +172,67 @@ h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white
   .playbar .pbtn.snd { padding: 7px 10px; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* ---------- PHONE v1: 휴대폰 세로·가로 ---------- */
+.presets, .dock { scrollbar-width: none; }
+.presets::-webkit-scrollbar, .dock::-webkit-scrollbar { display: none; }
+@media (max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape) {
+  html, body { height: 100%; }
+  body { margin: 0; overscroll-behavior: none; }
+  .app { height: 100vh; height: 100dvh; min-height: 0; gap: 6px;
+         padding: max(6px, env(safe-area-inset-top, 0px)) max(8px, env(safe-area-inset-right, 0px)) max(6px, env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+  .topbar { flex: 0 0 auto; gap: 6px 8px; }
+  .brand { gap: 6px; }
+  .tag { font-size: 11px; padding: 1px 6px; }
+  h1 { font-size: 16px; }
+  .presets { flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 4px; padding: 1px 0;
+             -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent); mask-image: linear-gradient(90deg, #000 90%, transparent); }
+  .chip { flex: 0 0 auto; font-size: 13px; padding: 3px 9px 3px 3px; min-height: 30px; }
+  .chip b { width: 22px; height: 22px; font-size: 11px; }
+  .tools { gap: 4px; }
+  .tbtn { padding: 5px 9px; font-size: 13px; min-height: 30px; }
+  .stage { height: auto; flex: 1 1 0; min-height: 0; border-radius: 12px; }
+  .glass { border-radius: 11px; }
+  .playbar { top: 6px; left: 6px; padding: 4px; gap: 4px; }
+  .pbtn { padding: 6px 11px; font-size: 14px; min-height: 34px; }
+  .playbar .seg, .timenote { display: none; }
+  .playbar .pbtn.snd { padding: 6px 11px; }
+  /* 측정값 카드: 두 칸 격자로 낮게 (f · y / dB / λ · v) */
+  .readout { top: 6px; right: 6px; width: auto; min-width: 118px; max-width: 46%; padding: 6px 10px; display: grid; grid-template-columns: auto auto; column-gap: 14px; row-gap: 1px; align-items: baseline; }
+  .readout > .ro-db, .readout > .meter, .readout > .ro-sep, .readout > .ro-sub, .readout > .ro.e { grid-column: 1 / -1; }
+  .ro { font-size: 12px; gap: 6px; } .ro b { font-size: 14px; } .ro.v b { font-size: 14px; }
+  .ro.fq span, .ro.wl span, .ro.l span { font-size: 0; }
+  .ro.fq span::before { content: "f"; font-size: 12px; } .ro.wl span::before { content: "y"; font-size: 12px; } .ro.l span::before { content: "λ"; font-size: 12px; }
+  .ro-db b { font-size: 24px; } .ro-db small, .ro-sub { font-size: 11px; }
+  .state { font-size: 12px; padding: 1px 7px; }
+  .meter { display: none; }
+  .ro-sep { margin: 3px 0; }
+  .ro-sub, .ro-opt { display: none !important; }
+  .bottom { left: 6px; right: 6px; bottom: 6px; gap: 6px; }
+  .caption { font-size: 13.5px; padding: 6px 11px; line-height: 1.35; }
+  .dock { flex: 0 0 auto; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; gap: 6px; }
+  .dg { flex: 0 0 auto; padding: 4px 9px; gap: 7px; border-radius: 10px; min-height: 0; }
+  .dg.slider { flex: 0 0 auto; width: min(76vw, 300px); }
+  .dg.slider output { font-size: 15px; }
+  .seg button, .tg { padding: 7px 10px; font-size: 13px; }
+  .seg button.num { padding: 7px 8px; font-size: 13px; }
+}
+@media (max-width: 600px) and (orientation: portrait) {
+  .brand { flex: 1 1 auto; min-width: 0; }
+  .presets { order: 3; flex: 1 0 100%; }          /* 장면 버튼: 둘째 줄, 옆으로 밀기 */
+  .tag { display: none; }                          /* 제목과 도구 단추를 한 줄에 (단원 표시는 생략) */
+}
+@media (max-height: 500px) and (orientation: landscape) {
+  .topbar { flex-wrap: nowrap; }                   /* 한 줄: 제목 · 장면 버튼(옆으로 밀기) · 도구 */
+  .presets { flex: 1 1 0; min-width: 0; }
+  /* 오른쪽 칸 하나에 재생 막대 · 측정값 · 설명을 쌓고, 나머지 폭은 장치와 깊이별 소리 크기 그래프에 */
+  .stage { --rc: clamp(190px, 29vw, 250px); }
+  .playbar { left: auto; right: 6px; }
+  .readout { top: 56px; width: var(--rc); max-width: none; grid-template-columns: 1fr 1fr; }
+  .readout > .ro:not(.e) { justify-content: flex-start; }   /* 이름과 값을 붙여서 (f 512 Hz · y 0.030 m) */
+  .bottom { left: auto; width: var(--rc); }
+  .caption { font-size: 12.5px; max-width: none; width: 100%; padding: 5px 10px; line-height: 1.32; }
+}
 </style>
 
 <div class="app" id="app">
@@ -303,6 +364,7 @@ function resize() {
 }
 new ResizeObserver(resize).observe(stage);
 const O = { ro: null, pb: null, capH: 46 };
+const PHQ = matchMedia('(max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape)');   // CSS의 PHONE v1과 같은 조건
 function measure() {                                  // 무대 위 카드를 피해 그린다 (설명 줄은 숨겨도 자리를 둔다)
   const s = stage.getBoundingClientRect();
   const rel = el => { const r = el.getBoundingClientRect(); return { l: r.left - s.left, t: r.top - s.top, r: r.right - s.left, b: r.bottom - s.top }; };
@@ -345,7 +407,48 @@ function metalH(y0, y1) { const g = ctx.createLinearGradient(0, y0, 0, y1); g.ad
 function darkH(y0, y1) { const g = ctx.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, T['stand-1']); g.addColorStop(1, T['stand-2']); return g; }
 
 /* ---------- 장면 배치 ---------- */
+// 휴대폰: 세로는 높이를 다 써서 관을 길게 (오른쪽에 깊이를 맞춘 소리 크기 그래프), 가로는 오른쪽 칸(재생 막대·측정값·설명)을 뺀 폭에
+// 돋보기 · 장치 · 그래프를 나란히. 두 폰은 작게(숫자만), 이름표는 줄인다.
+function geoPhone() {
+  const w = D.w, h = D.h, land = w > h, PT = 50, below = 0.11, RH = RES.H - RES.h0 - YMIN;   // RH: 물통이 맨 위일 때 관 입구보다 높이 올라온 길이
+  const colR = land ? Math.min(O.ro.l, O.pb.l) - 10 : w - 6;                  // 그래프 오른쪽 끝
+  const benchY = land ? h - 22 : h - 12 - O.capH - 8, B = benchY - 18;
+  const top0 = land ? 6 : O.pb.b + 8;                                          // 폰 위쪽 끝이 올 수 있는 가장 높은 곳
+  const pw = land ? clamp(h * 0.12, 28, 34) : clamp(w * 0.1, 34, 40), ph = pw * 1.85;
+  const ZR = land ? clamp(h * 0.22, 44, 58) : 0, rk = land ? 1 : 0.75;          // 세로 화면은 물통을 조금 홀쭉하게 그려 그래프 폭을 번다
+  const zx = land ? zoomK * (2 * ZR + 14) : 0, lo = land ? 14 : 6;           // lo: 눈금 숫자와 관 사이 (가로: 0.0이 발생기 폰 밑에 가리지 않게 더 띄움)
+  const lay = ppm => {
+    const tw = S.r * XT * ppm, wall = Math.max(2, 0.0022 * XT * ppm), rw = RES.R * ppm * rk;
+    const tx = Math.max(8 + zx + 24 + lo + tw + wall, 6 + 0.72 * pw);       // (돋보기 칸) · 눈금 숫자 다음에 관
+    const rod = tx + tw + wall + 38;                                          // 관과 막대 사이: 마디·배 알약 자리
+    const gx = tx - 0.72 * pw, mx = Math.max(gx + pw + 8, rod + 34 - pw), rx = Math.max(rod + 18, mx + pw + 10) + rw;
+    const px0 = rx + rw + 22, px1 = colR;
+    return { ppm, tw, wall, rw, tx, rod, gx, mx, rx, px0, px1 };
+  };
+  // 세로 위치: 관 입구 ytop ≥ (폰 · 물통 꼭대기 · 그래프 머리)가 들어갈 자리, 관 아래 + 받침이 책상 위에
+  const cons = L => {
+    const c = [[top0 + ph, GAP], [top0, RH + 0.01]];
+    if (!land && L.px0 - 22 < O.ro.r) {                                       // 세로: 측정값 카드 아래로 물통 · 그래프
+      if (L.rx + L.rw > O.ro.l - 4) c.push([O.ro.b + 8, RH + 0.01]);
+      if (L.px1 > O.ro.l) c.push([O.ro.b + 6 + PT, 0]);
+    } else c.push([6 + PT, 0]);
+    return c;
+  };
+  let L = lay(200);
+  for (let it = 0; it < 3; it++) {
+    const ppm = Math.max(60, Math.min(...cons(L).map(([a, b]) => (B - a) / (b + TUBE + below))));
+    L = lay(ppm);
+  }
+  const ppm = L.ppm, ytop = B - (TUBE + below) * ppm, ybot = ytop + TUBE * ppm, Y = z => ytop + z * ppm;
+  const py = Y(-GAP) - ph, armY = py + ph * 0.58;
+  const pwid = L.px1 - L.px0;
+  const zc = land ? { R: ZR, cx: 8 + ZR, cy: Math.max(ytop - 12, ZR + 11) }
+    : (R => ({ R, cx: L.px1 - R - 6, cy: Math.min(Y(0.93), benchY - R - 44) }))(clamp(pwid / 2 + 4, 52, 66));   // 세로: 그래프 아래쪽(깊은 곳)에 돋보기, 그래프 오른쪽 끝에 맞춤
+  return { ...L, w, h, narrow: true, phone: true, land, lo, benchY, ytop, ybot, Y, pw, ph, py, armY, ZR: zc.R, zc,
+    panel: pwid > 100, pillR: true, meter: true, resPill: false, ypills: false, zoomOK: true, PT, pnar: pwid < 260 };
+}
 function geo() {
+  if (PHQ.matches) return geoPhone();
   const w = D.w, h = D.h, narrow = w < 640 || O.ro.l < 600;
   const benchY = h - 12 - O.capH - 8, top0 = O.pb.b + 12, below = 0.11, resUp = RES.H - RES.h0 - YMIN + 0.01;
   const avail = benchY - 18 - top0;
@@ -370,7 +473,8 @@ function geo() {
   const { ppm } = L, ytop = benchY - 18 - (TUBE + below) * ppm, ybot = ytop + TUBE * ppm, Y = z => ytop + z * ppm;
   const py = Y(-GAP) - ph, armY = py + ph * 0.58;                       // 폰 위쪽 끝, 거치대 가로 막대 높이
   const px0 = L.rx + L.rw + (narrow ? 44 : 92), px1 = O.ro.l - 14;
-  return { ...L, w, h, narrow, benchY, ytop, ybot, Y, pw, ph, py, armY, ZR, px0, px1, panel: !narrow && px1 - px0 > 200 };
+  return { ...L, w, h, narrow, benchY, ytop, ybot, Y, pw, ph, py, armY, ZR, px0, px1, panel: !narrow && px1 - px0 > 200,
+    pillR: narrow, meter: !narrow, resPill: !narrow, ypills: !narrow, zoomOK: !narrow, PT: 52, pnar: false };
 }
 
 /* ---------- 그리기 ---------- */
@@ -464,9 +568,9 @@ function drawTube(g) {
     if (!big && !mid && ppm * 0.01 < 2.6) continue;
     const yy = Y(c2 / 100), len = big ? Math.min(12, tw * 1.1) : mid ? Math.min(8, tw * 0.75) : Math.min(4, tw * 0.4);
     ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x0 + len, yy); ctx.stroke();
-    if (big && c2 % every === 0) ctx.fillText((c2 / 100).toFixed(1), x0 - wall - 6, yy);
+    if (big && c2 % every === 0) ctx.fillText((c2 / 100).toFixed(1), x0 - wall - (g.lo || 6), yy);
   }
-  ctx.font = `500 13px ${T.font}`; ctx.fillStyle = T.muted; ctx.fillText('m', x0 - wall - 6, ybot + 0.06 * ppm);
+  ctx.font = `500 13px ${T.font}`; ctx.fillStyle = T.muted; ctx.fillText('m', x0 - wall - (g.lo || 6), ybot + 0.06 * ppm);
   // 공명 위치 표시 (고무 밴드)
   [...marks].sort((a, b) => a - b).forEach((v, i) => {
     const yy = Y(v), bw = 2 * (tw + wall) + 6, age = flashMark.y === v ? (performance.now() - flashMark.t) / 700 : 9;
@@ -477,10 +581,14 @@ function drawTube(g) {
   });
   // 마디·배
   if (S.wave && A > 0.6) {
-    const lx = g.narrow ? x1 + wall + 14 : x0 - wall - 64, ps = g.narrow ? 12 : 15;
-    pill('N', lx, ys, T.nodal, 'center', ps);
-    for (let j = 0; j < 8; j++) { const z = S.y - (2 * j + 1) * lam() / 4; if (z < -e - 0.01) break; pill('A', lx, Y(Math.max(z, -e)), T.anti, 'center', ps); }
-    for (let j = 1; j < 8; j++) { const z = S.y - j * lam() / 2; if (z < 0) break; pill('N', lx, Y(z), T.nodal, 'center', ps); }
+    const lx = g.phone ? x1 + wall + 17 : g.narrow ? x1 + wall + 14 : x0 - wall - 64, ps = g.pillR ? 12 : 15;
+    const tag = g.phone && lam() / 4 * ppm < 26 ? (t, y, c) => {     // 가로 휴대폰: 마디·배 사이가 좁으면 알약 대신 글자만
+      ctx.font = `800 12px ${T.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+      ctx.strokeStyle = rgba(T.surface, 0.95); ctx.lineWidth = 3.5; ctx.strokeText(t, lx - 4, y); ctx.fillStyle = c; ctx.fillText(t, lx - 4, y);
+    } : (t, y, c) => pill(t, lx, y, c, 'center', ps);
+    tag('N', ys, T.nodal);
+    for (let j = 0; j < 8; j++) { const z = S.y - (2 * j + 1) * lam() / 4; if (z < -e - 0.01) break; tag('A', Y(Math.max(z, -e)), T.anti); }
+    for (let j = 1; j < 8; j++) { const z = S.y - j * lam() / 2; if (z < 0) break; tag('N', Y(z), T.nodal); }
   }
 }
 function drawReservoir(g) {
@@ -513,8 +621,9 @@ function drawReservoir(g) {
   ctx.fillStyle = metalH(yc - 3.5, yc + 3.5); ctx.fillRect(g.rod + 12, yc - 3.5, x0 - g.rod - 12 - 3, 7);
   boss(g.rod, yc);
   if (drag) { ctx.strokeStyle = T.accent; ctx.lineWidth = 2; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.roundRect(x0 - 10, yt - 12, 2 * rw + 20, yb - yt + 24, 12); ctx.stroke(); ctx.setLineDash([]); }
-  if (!g.narrow) pill('물통 ↕', x1 + 10, yt + 16, T.ink, 'left', 14);
-  return { x0: x0 - 12, x1: x1 + (g.narrow ? 12 : 84), y0: yt - 14, y1: yb + 14 };
+  if (g.resPill) pill('물통 ↕', x1 + 10, yt + 16, T.ink, 'left', 14);
+  const m = g.phone ? 18 : 12;                         // 휴대폰: 손가락으로 잡기 쉽게 넉넉히
+  return { x0: x0 - m, x1: x1 + (g.resPill ? 84 : m), y0: yt - 14, y1: yb + 14 };
 }
 function grip(x, y, w, h) {                            // 스마트폰 거치대: 폰 양옆을 무는 고무 턱 (몸체는 폰 뒤에 있다)
   const jy = y + h * 0.58, jh = Math.max(14, h * 0.2);
@@ -529,7 +638,7 @@ function drawPhones(g) {                               // 관 입구 위의 스�
   shadowed(() => { ctx.fillStyle = metalH(armY - 3.5, armY + 3.5); ctx.fillRect(ax0, armY - 3.5, rod - ax0, 7); }, 4, 2, 3, 0.25);
   boss(rod, armY);
   phone(gx, py, pw, ph, 'gen'); grip(gx, py, pw, ph);
-  if (!g.narrow) { phone(mx, py, pw, ph, 'meter'); grip(mx, py, pw, ph); }
+  if (g.meter) { phone(mx, py, pw, ph, 'meter'); grip(mx, py, pw, ph); }
   ctx.strokeStyle = T.accent; ctx.lineWidth = 2;                              // 스피커 구멍에서 관 속으로 퍼져 들어가는 소리
   for (let j = 0; j < 3; j++) { const p = ((theta * 1.2 / (2 * Math.PI) + j / 3) % 1); ctx.globalAlpha = 0.9 * (1 - p * p); ctx.beginPath(); ctx.ellipse(tx, by + 2 + p * (GAP * ppm + 14), Math.max(4, tw * (0.55 + p * 0.5)), 1.5 + p * 2.5, 0, 0, Math.PI); ctx.stroke(); }
   ctx.globalAlpha = 1;
@@ -558,7 +667,7 @@ function phone(x, y, w, h, kind) {                     // 스마트폰 앞면: �
   if (compact) {                                       // 작은 폰: 숫자 하나와 단위만 (발생기는 파형도)
     const num = String(kind === 'meter' ? Math.round(dBat(S.y)) : S.f);
     fitFont(num, sw - 4, 600, Math.round(sw * 0.42), T.mono); ctx.fillStyle = T.ink; ctx.fillText(num, cx, sy + sh * 0.32);
-    ctx.font = `500 8px ${T.font}`; ctx.fillStyle = T.muted; ctx.fillText(kind === 'meter' ? 'dB' : 'Hz', cx, sy + sh * 0.32 + sw * 0.36);
+    ctx.font = `500 ${PH ? 11 : 8}px ${T.font}`; ctx.fillStyle = T.muted; ctx.fillText(kind === 'meter' ? 'dB' : 'Hz', cx, sy + sh * 0.32 + sw * (PH ? 0.42 : 0.36));
     if (kind !== 'meter') wave(sy + sh * 0.68, sw * 0.76, sh * 0.045);
   } else if (kind === 'meter') {                       // 위에서부터: 앱 이름 · 바늘 게이지와 dB · 최근 6초 기록
     const d = dBat(S.y);
@@ -602,7 +711,7 @@ function phoneEdge(x, yb, w, r, s) {                   // 폰 아래 모서리 �
   for (let i = 0; i < 5; i++) dot(x + w * (0.64 + i * 0.04), 0.85 * s);
   ctx.fill();
 }
-const zoomAt = g => ({ R: g.ZR, cx: 22 + g.ZR, cy: g.ytop - 12 });   // 돋보기: 관 왼쪽 칸, 관 입구 높이
+const zoomAt = g => g.zc || { R: g.ZR, cx: 22 + g.ZR, cy: g.ytop - 12 };   // 돋보기: 관 왼쪽 칸, 관 입구 높이 (휴대폰은 geoPhone이 정함)
 function zoomLink(g, ring) {                           // 돋보기와 본 그림의 관 입구를 잇는 점선 (선은 눈금 · 알약 뒤, 고리는 관 위 · 폰 뒤)
   const { cx, cy, R } = zoomAt(g), mx = g.tx, my = g.ytop, mr = g.tw + g.wall + 7, ang = Math.atan2(cy - my, cx - mx);
   ctx.strokeStyle = rgba(T.ink, 0.45); ctx.lineWidth = 1.4; ctx.setLineDash([4, 4]); ctx.beginPath();
@@ -638,16 +747,18 @@ function drawZoom(g) {                                 // 끝보정 돋보기: �
   const rg = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R); rg.addColorStop(0, T['metal-hi']); rg.addColorStop(0.5, T['metal-lo']); rg.addColorStop(1, T['stand-1']);
   ctx.strokeStyle = rg; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(cx, cy, R + 1.5, 0, 2 * Math.PI); ctx.stroke();
   ctx.strokeStyle = rgba(T['glass-hi'], 0.55); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R - 6, Math.PI * 1.1, Math.PI * 1.45); ctx.stroke();
-  pill(`e ≈ 0.6r = ${(e * 100).toFixed(1)} cm`, cx, cy + R + 22, T.hi, 'center', 14);
-  pill('A', cx - R + 18, ya, T.anti, 'center', 14);
+  if (g.phone) pill(`e = ${(e * 100).toFixed(1)} cm`, cx, cy + R + 20, T.hi, 'center', 12);   // 휴대폰: 짧게
+  else pill(`e ≈ 0.6r = ${(e * 100).toFixed(1)} cm`, cx, cy + R + 22, T.hi, 'center', 14);
+  pill('A', cx - R + 18, ya, T.anti, 'center', g.phone ? 12 : 14);
 }
 function drawPanel(g) {                         // 수면 깊이에 맞춘 소리 크기 그래프
-  const { px0, px1, ytop, ybot, Y } = g, top = ytop - 52, bot = ybot + 14, Lp = 16, Rp = 16, V0 = 60, V1 = 90;
-  shadowed(() => { ctx.fillStyle = rgba(T.surface, 0.92); ctx.beginPath(); ctx.roundRect(px0, top, px1 - px0, bot - top, 16); ctx.fill(); }, 24, 4, 10, 0.18);
-  ctx.strokeStyle = T.line; ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(px0 + 0.5, top + 0.5, px1 - px0 - 1, bot - top - 1, 16); ctx.stroke();
+  const { px0, px1, ytop, ybot, Y } = g, ph = g.phone, nar = g.pnar, fs = ph ? 12 : 14;   // 휴대폰: 글씨 12 px, 좁은 그래프는 제목을 줄이고 점선 설명을 아래로
+  const top = ytop - g.PT, bot = ybot + (nar && prev ? 30 : 14), Lp = ph ? 10 : 16, Rp = ph ? 10 : 16, V0 = 60, V1 = 90, rr = ph ? 11 : 16;
+  shadowed(() => { ctx.fillStyle = rgba(T.surface, 0.92); ctx.beginPath(); ctx.roundRect(px0, top, px1 - px0, bot - top, rr); ctx.fill(); }, ph ? 14 : 24, 4, ph ? 6 : 10, 0.18);
+  ctx.strokeStyle = T.line; ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(px0 + 0.5, top + 0.5, px1 - px0 - 1, bot - top - 1, rr); ctx.stroke();
   const X = v => px0 + Lp + (clamp(v, V0, V1) - V0) / (V1 - V0) * (px1 - px0 - Lp - Rp);
-  ctx.font = `700 14px ${T.font}`; ctx.fillStyle = T.muted; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillText('관 입구의 소리 크기 (dB)', px0 + 14, top + 10);
-  ctx.font = `500 14px ${T.mono}`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+  ctx.font = `700 ${fs}px ${T.font}`; ctx.fillStyle = T.muted; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillText(nar ? '소리 크기 (dB)' : '관 입구의 소리 크기 (dB)', px0 + (ph ? 10 : 14), top + (ph ? 8 : 10));
+  ctx.font = `500 ${fs}px ${T.mono}`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
   for (let v = V0; v <= V1; v += 5) { ctx.strokeStyle = v % 10 ? rgba(T.line, 0.55) : T.line; ctx.beginPath(); ctx.moveTo(X(v), ytop - 6); ctx.lineTo(X(v), ybot); ctx.stroke(); if (v % 10 === 0) { ctx.fillStyle = T.muted; ctx.fillText(v, X(v), ytop - 8); } }
   ctx.strokeStyle = rgba(T.line, 0.75);
   for (let z = 0; z <= 1.2001; z += 0.1) { ctx.beginPath(); ctx.moveTo(px0 + Lp, Y(z)); ctx.lineTo(px1 - Rp, Y(z)); ctx.stroke(); }
@@ -663,22 +774,27 @@ function drawPanel(g) {                         // 수면 깊이에 맞춘 소�
     pts.forEach(([mm, v], i) => { if (i && mm - pts[i - 1][0] <= 3) ctx.lineTo(X(v), Y(mm / 1000)); else ctx.moveTo(X(v), Y(mm / 1000)); });
     ctx.stroke(); ctx.restore();
   };
-  if (prev) { line(prev.map, true); ctx.font = `600 14px ${T.font}`; ctx.fillStyle = T.muted; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; ctx.fillText(`점선 ${prev.label}`, px1 - 14, top + 10); }
+  if (prev) { line(prev.map, true); ctx.font = `600 ${fs}px ${T.font}`; ctx.fillStyle = T.muted; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; ctx.fillText(`점선 ${prev.label}`, px1 - (ph ? 10 : 14), nar ? ybot + 9 : top + 10); }
   line(trace, false);
-  if (!trace.size) { ctx.font = `500 15px ${T.font}`; ctx.fillStyle = T.muted; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('물통을 내리면 기록됩니다', (px0 + px1) / 2, (ytop + ybot) / 2); }
+  if (!trace.size) {
+    ctx.font = `500 ${ph ? 13 : 15}px ${T.font}`; ctx.fillStyle = T.muted; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (nar) { ctx.fillText('물통을 내리면', (px0 + px1) / 2, (ytop + ybot) / 2 - 9); ctx.fillText('기록됩니다', (px0 + px1) / 2, (ytop + ybot) / 2 + 9); }
+    else ctx.fillText('물통을 내리면 기록됩니다', (px0 + px1) / 2, (ytop + ybot) / 2);
+  }
   [...marks].sort((a, b) => a - b).forEach((v, i) => {
     ctx.strokeStyle = rgba(T.band, 0.9); ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(g.tx + g.tw + g.wall + 40, Y(v)); ctx.lineTo(px1 - Rp, Y(v)); ctx.stroke(); ctx.setLineDash([]);
-    pill(`${i < 3 ? `y${'₁₂₃'[i]} = ` : ''}${m3(v)} m`, px1 - Rp - 6, Y(v) - 15, T.s2, 'right', 14);
+    pill(`${i < 3 ? `y${'₁₂₃'[i]} = ` : ''}${m3(v)} m`, px1 - Rp - (ph ? 2 : 6), Y(v) - (ph ? 13 : 15), T.s2, 'right', ph ? 12 : 14);
   });
   const ys = Y(S.y), d = dBat(S.y);
   ctx.strokeStyle = rgba(T.ink, 0.45); ctx.lineWidth = 1.2; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(g.rx + g.rw + 6, ys); ctx.lineTo(X(d), ys); ctx.stroke(); ctx.setLineDash([]);
   ctx.fillStyle = T.ink; ctx.beginPath(); ctx.arc(X(d), ys, 6, 0, 2 * Math.PI); ctx.fill(); ctx.strokeStyle = T.surface; ctx.lineWidth = 2; ctx.stroke();
 }
 const HIT = { res: null, tube: null };
+let PH = false;                                       // 이번 그림이 휴대폰 배치인가 (폰 화면 글씨 크기)
 function draw() {
   ctx.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); ctx.globalAlpha = 1; ctx.setLineDash([]); ctx.filter = 'none';
   measure();
-  const g = geo(), zoom = zoomK > 0.02 && !g.narrow;
+  const g = geo(), zoom = zoomK > 0.02 && g.zoomOK; PH = !!g.phone;
   const faded = fn => { ctx.save(); ctx.globalAlpha = zoomK; fn(); ctx.restore(); };   // 돋보기는 칸이 열리면서 나타난다
   drawRoom(g); drawStand(g);
   if (g.panel) drawPanel(g);
@@ -686,7 +802,7 @@ function draw() {
   if (zoom) faded(() => zoomLink(g, false));
   drawTube(g);
   tubeClamp(g, 0.22); tubeClamp(g, 1.08);
-  if (!g.narrow) [...marks].sort((a, b) => a - b).slice(0, 3).forEach((v, i) => pill(`y${'₁₂₃'[i]}`, g.tx + g.tw + g.wall + 24, g.Y(v), T.s2, 'center', 14));   // 공명 위치 이름표는 관 집게 위에
+  if (g.ypills) [...marks].sort((a, b) => a - b).slice(0, 3).forEach((v, i) => pill(`y${'₁₂₃'[i]}`, g.tx + g.tw + g.wall + 24, g.Y(v), T.s2, 'center', 14));   // 공명 위치 이름표는 관 집게 위에
   if (zoom) faded(() => zoomLink(g, true));
   drawPhones(g);
   HIT.tube = { x0: g.tx - g.tw - 24, x1: g.tx + g.tw + 24, y0: g.ytop - 4, y1: g.ybot };
@@ -730,7 +846,7 @@ let lastRO = '';
 function updateReadout() {
   const d = dBat(S.y), A = ampAt(S.y), me = measured(), ys = me.ys;
   const yv = i => ys[i] !== undefined ? `${m3(ys[i])} m` : '—';
-  let h = `<div class="ro"><span>진동수 f</span><b>${S.f} Hz</b></div><div class="ro"><span>수면 위치 y</span><b>${m3(S.y)} m</b></div>
+  let h = `<div class="ro fq"><span>진동수 f</span><b>${S.f} Hz</b></div><div class="ro wl"><span>수면 위치 y</span><b>${m3(S.y)} m</b></div>
     <div class="ro-db"><b>${Math.round(d)}</b><small>dB</small>${A > 0.8 ? '<span class="state" data-s="plus">공명</span>' : ''}</div><div class="meter"><i style="width:${clamp((d - 40) / 50 * 100, 0, 100)}%"></i></div>
     <div class="ro-sep"></div>
     <div class="ro y ro-opt"><span>y₁</span><b>${yv(0)}</b></div><div class="ro y ro-opt"><span>y₂</span><b>${yv(1)}</b></div><div class="ro y ro-opt"><span>y₃</span><b>${yv(2)}</b></div>
@@ -853,7 +969,7 @@ applyPreset(clamp(startP, 0, PRESETS.length - 1)); zoomK = S.endc ? 1 : 0;
 document.fonts?.ready.then(() => { lastRO = ''; updateReadout(); });
 let last = performance.now(), tick = 0, lastHist = 0;
 function loop(now) {
-  const raw = Math.min(0.5, (now - last) / 1000), dt = Math.min(0.05, raw); last = now;
+  const raw = Math.max(0, Math.min(0.5, (now - last) / 1000)), dt = Math.min(0.05, raw); last = now;   // 첫 프레임 시각이 시작 시각보다 앞설 수 있음
   if (S.run) theta += 2 * Math.PI * FD * S.speed * dt;
   const zt = S.endc ? 1 : 0; zoomK = reduce || Math.abs(zt - zoomK) < 0.003 ? zt : zoomK + (zt - zoomK) * Math.min(1, raw * 5);
   if (S.lowering) { lowerTick(raw); if ((tick % 3) === 0) { $('#y').value = S.y; $('#yOut').textContent = `${m3(S.y)} m`; } }
