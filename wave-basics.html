@@ -1,0 +1,892 @@
+<title>파동 표현 실험실</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* TEACHER-DEMO v3 — 교사용 시연 도구
+   Layout: 얇은 상단 바(수업 순서 장면 칩) / 화면을 채우는 3D 교실 바닥(슬링키) + 유리 카드 측정값 / 아래 조작 독 */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --ink: #141c25;
+  --muted: #5a6573;
+  --line: #d3dae2;
+  --accent: #0b6b70;
+  --accent-ink: #ffffff;
+  --s1: #0a7f86;
+  --s2: #d06a14;
+  --hi: #e2553f;
+  --lo: #2c6fd4;
+  --minus: #6a3fd6;
+  --stage: #dfe5ea;
+  --wall: #eef1f3;
+  --floor-a: #c9a375;
+  --floor-b: #b98f60;
+  --grout: #8a6a46;
+  --paper: #ecefe7;
+  --paper-line: #9fc7b6;
+  --paper-bold: #4f907a;
+  --skirting: #c9cdd1;
+  --steel: #b9c1c9;
+  --paint: #3a434d;
+  --wood: #b98b5a;
+  --ribbon: #d8323a;
+  --tape: #f1d36b;
+  --tape-ink: #3f320c;
+  --phone: #1d232a;
+  --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+    --accent: #3fc0b5; --accent-ink: #0d1116; --s1: #3fc6c4; --s2: #f5a04c; --hi: #ff7461; --lo: #5d9cff; --minus: #b08cff;
+    --stage: #12171d; --wall: #1a2028; --floor-a: #3b3229; --floor-b: #342c24; --grout: #231d17;
+    --paper: #b9bdb5; --paper-line: #8aa89c; --paper-bold: #5d8a79; --skirting: #2b3138;
+    --steel: #a3acb5; --paint: #2a3138; --wood: #8a6642; --ribbon: #ff4f57; --tape: #d6b955; --tape-ink: #2a2108; --phone: #0b0e11;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+  --accent: #3fc0b5; --accent-ink: #0d1116; --s1: #3fc6c4; --s2: #f5a04c; --hi: #ff7461; --lo: #5d9cff; --minus: #b08cff;
+  --stage: #12171d; --wall: #1a2028; --floor-a: #3b3229; --floor-b: #342c24; --grout: #231d17;
+  --paper: #b9bdb5; --paper-line: #8aa89c; --paper-bold: #5d8a79; --skirting: #2b3138;
+  --steel: #a3acb5; --paint: #2a3138; --wood: #8a6642; --ribbon: #ff4f57; --tape: #d6b955; --tape-ink: #2a2108; --phone: #0b0e11;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app {
+  min-height: 100vh; display: flex; flex-direction: column; gap: 10px;
+  padding-block: 10px 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg);
+}
+.app:fullscreen { padding-block: 12px; }
+
+/* 상단 바 */
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tag { font: 500 12px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; white-space: nowrap; }
+h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 520px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px 4px 4px; cursor: pointer; font-size: 13.5px; font-weight: 500; white-space: nowrap; transition: background .15s, border-color .15s; }
+.chip b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font: 600 12px var(--mono); }
+.chip:hover { border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.chip[aria-pressed="true"] b { background: var(--accent); color: var(--accent-ink); }
+.tools { display: flex; gap: 6px; margin-left: auto; }
+.tbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 6px 12px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.tbtn:hover { border-color: var(--muted); }
+.tbtn[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+
+/* 무대 */
+.stage { position: relative; flex: 1 1 auto; height: clamp(420px, calc(100vh - 200px), 1100px); border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--stage); }
+.app:fullscreen .stage { height: auto; }
+#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+.glass { background: color-mix(in srgb, var(--surface) 86%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid color-mix(in srgb, var(--line) 85%, transparent); border-radius: 14px; box-shadow: 0 8px 28px rgb(10 20 30 / .10); }
+.readout { position: absolute; top: 12px; right: 12px; width: 236px; padding: 12px 14px; display: flex; flex-direction: column; gap: 3px; }
+.ro { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 13px; color: var(--muted); }
+.ro b { font: 500 18px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ro.s1 span, .ro.s1 b { color: var(--s1); } .ro.s2 span, .ro.s2 b { color: var(--s2); } .ro.hi span, .ro.hi b { color: var(--hi); }
+.ro-sep { height: 1px; background: var(--line); margin: 6px 0; }
+.ro-db { display: flex; align-items: baseline; gap: 6px; }
+.ro-db b { font: 600 38px var(--mono); line-height: 1; font-variant-numeric: tabular-nums; }
+.ro-db small { color: var(--muted); font-size: 14px; }
+.ro-db .what { margin-left: auto; font-size: 13px; color: var(--muted); }
+.ro-sub { text-align: right; font: 500 12px var(--mono); color: var(--muted); }
+
+.playbar { position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; padding: 6px; }
+.timenote { font-size: 12px; color: var(--muted); padding: 0 8px 0 4px; white-space: nowrap; }
+.rec { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); padding: 6px 14px; display: flex; gap: 10px; align-items: center; font: 600 15px var(--mono); }
+.rec i { width: 10px; height: 10px; border-radius: 50%; background: var(--hi); display: inline-block; }
+.rec.paused i { background: var(--muted); }
+.rec small { font: 500 12px var(--font); color: var(--muted); }
+@media (min-width: 900px) and (min-height: 560px) {
+  html, body { height: 100%; }
+  .app { height: 100%; min-height: 0; }
+  .stage { height: auto; flex: 1 1 0; min-height: 360px; }
+}
+/* wrap-reverse에서는 교차축이 뒤집히므로 flex-start = 아래쪽 맞춤 */
+.bottom { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap-reverse; justify-content: space-between; align-items: flex-start; gap: 10px; pointer-events: none; }
+.bottom > * { pointer-events: auto; }
+.caption { padding: 9px 16px; font-size: 18px; font-weight: 500; max-width: 720px; text-wrap: balance; }
+.graph-card { width: min(520px, 100%); padding: 8px 10px 4px; margin-left: auto; }
+.graph-card .gt { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); padding: 0 2px 2px; }
+#graph { display: block; width: 100%; height: 236px; }
+
+.labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.lbl { position: absolute; left: 0; top: 0; white-space: nowrap; font-weight: 700; font-size: 16px; padding: 2px 10px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 90%, transparent); box-shadow: 0 2px 8px rgb(0 0 0 / .12); color: var(--ink); }
+.lbl.muted { color: var(--muted); font-weight: 500; font-size: 15px; } .lbl.s1 { color: var(--s1); } .lbl.s2 { color: var(--s2); } .lbl.hi { color: var(--hi); } .lbl.lo { color: var(--lo); }
+.lbl.accent { color: var(--accent); } .lbl.rib { color: var(--ribbon); } .lbl.mono { font-family: var(--mono); font-size: 17px; }
+.nogl { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--muted); font-size: 16px; }
+
+/* 조작 독 */
+.dock { display: flex; flex-wrap: wrap; gap: 8px; }
+.dg { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 7px 12px; display: flex; align-items: center; gap: 10px; min-width: 0; flex-wrap: wrap; }
+.dg > span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.seg { display: flex; gap: 3px; background: var(--surface-2); border-radius: 9px; padding: 3px; }
+.seg button, .tg { border: 0; background: transparent; border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / .14); }
+.seg.num button { font-family: var(--mono); }
+.tgs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tg { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); }
+.tg[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.tg .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.pbtn { border: 0; border-radius: 9px; padding: 7px 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--accent-ink); white-space: nowrap; }
+.pbtn.alt { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+.pbtn[aria-pressed="true"].snd { background: var(--hi); color: var(--accent-ink); border-color: var(--hi); }
+
+@media (max-width: 720px) {
+  h1 { font-size: 18px; }
+  .readout { width: 150px; padding: 8px 10px; }
+  .ro-opt { display: none !important; }
+  .ro b { font-size: 15px; } .ro-db b { font-size: 28px; } .ro-db .what { display: none; }
+  .caption { font-size: 15px; }
+  .graph-card { display: none; }
+  .stage { height: clamp(380px, 62vh, 700px); }
+  .playbar .seg, .timenote { display: none; }
+  .rec { top: auto; bottom: 64px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand"><span class="tag">Ⅲ-02 탄성파</span><h1>용수철 파동</h1></div>
+    <nav class="presets" id="presets" aria-label="수업 장면"></nav>
+    <div class="tools">
+      <button class="tbtn" id="viewBtn" aria-pressed="false" title="T">스마트폰 촬영</button>
+      <button class="tbtn" id="capBtn" aria-pressed="true">설명</button>
+      <button class="tbtn" id="fsBtn" title="F">전체 화면</button>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-label="3D 교실 바닥. 바닥에 놓인 긴 용수철과 리본, 줄자. 손잡이를 끌어 흔들 수 있고, 빈 곳을 끌면 시점이 돌아갑니다.">
+    <canvas id="gl" tabindex="0"></canvas>
+    <div class="labels" id="labels"></div>
+    <div class="glass playbar">
+      <button class="pbtn alt" id="playBtn" title="Space">❚❚</button>
+      <div class="seg num" data-seg="speed"><button data-v="1" title="실제 빠르기">1×</button><button data-v="0.5" title="2배 느리게">½×</button><button data-v="0.25" title="4배 느리게">¼×</button></div>
+      <span class="timenote" id="timenote"></span>
+    </div>
+    <div class="glass rec" id="recBadge" hidden><i></i><span id="recTime">00:00.00</span><small>스마트폰 촬영</small></div>
+    <div class="glass readout" id="readout" aria-live="polite"></div>
+    <div class="bottom">
+      <div class="glass caption" id="caption"></div>
+      <div class="glass graph-card" id="graphCard">
+        <div class="gt"><span id="graphTitle">파동의 표현 (그림 Ⅲ-7)</span><span id="graphNote"></span></div>
+        <canvas id="graph"></canvas>
+      </div>
+    </div>
+    <div class="nogl" id="nogl" hidden>이 기기에서는 3D 화면을 표시할 수 없습니다.<br>인터넷 연결과 브라우저의 그래픽 가속 설정을 확인해 주세요.</div>
+  </section>
+
+  <div class="dock">
+    <div class="dg"><span>흔드는 방향</span><div class="seg" data-seg="dir"><button data-v="T">좌우 · 횡파</button><button data-v="L">앞뒤 · 종파</button></div></div>
+    <div class="dg"><span>메트로놈</span><div class="seg num" data-seg="f"><button data-v="1">1 Hz</button><button data-v="2">2 Hz</button><button data-v="3">3 Hz</button></div><button class="pbtn alt snd" id="sndBtn" aria-pressed="false" title="메트로놈 소리 (첫 박 강세)">소리</button></div>
+    <div class="dg"><div class="seg" data-seg="mode"><button data-v="auto">계속 흔들기</button><button data-v="pulse">펄스 하나</button><button data-v="hand">손으로</button></div><button class="pbtn" id="shakeBtn">흔들기</button></div>
+    <div class="dg"><span>용수철</span><div class="seg" data-seg="med"><button data-v="0">부드러운</button><button data-v="1">보통</button><button data-v="2">단단한</button></div></div>
+    <div class="dg"><div class="tgs">
+      <button class="tg" data-tg="trail"><i class="dot" style="background:var(--ribbon)"></i>리본 자취</button>
+      <button class="tg" data-tg="arrows"><i class="dot" style="background:var(--s2)"></i>방향</button>
+      <button class="tg" data-tg="dense"><i class="dot" style="background:var(--hi)"></i>밀·소</button>
+      <button class="tg" data-tg="ruler"><i class="dot" style="background:var(--tape)"></i>자</button>
+      <button class="tg" data-tg="graph">그래프</button>
+    </div></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(() => {
+'use strict';
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const TAU = 2 * Math.PI;
+
+/* ---------- 용수철 (m 단위, x축을 따라 바닥의 모눈종이 위에 놓임) ---------- */
+// 금속 슬링키: 200감기, 감기 사이 3 cm(전체 6 m, 화면에는 앞 3 m 정도), 지름 6.8 cm, 납작한 철사(폭 5.2 mm, 두께 2.2 mm)
+const N = 200, SP = 0.03, RR = 0.034, BW = 0.0026, BT = 0.0011, PAPER_Y = 0.0008, Y0 = RR + BT + PAPER_Y;
+const SEG = 18, RAD = 6, NS = N * SEG + 1;                                  // 감기 하나를 18조각, 철사 단면 6각
+const XP = 1.5, IP = Math.round(XP / SP);                                   // 리본을 맨 고리 (150 cm)
+const SPEEDS = [0.6, 0.9, 1.2], MEDN = ['부드러운 용수철', '보통 용수철', '단단한 용수철'];   // 매질에 따른 파동의 속력 (m/s)
+const XMAX = 3.0;                                                            // 그래프로 보여 줄 구간 0~300 cm
+const TAPE_Z = -0.27, HANDLE_X = -0.06;
+
+/* ---------- 상태 ---------- */
+const BASE = { dir: 'T', f: 1, mode: 'auto', med: 1, trail: false, arrows: false, dense: false, ruler: false, graph: false };
+const S = { ...BASE, run: !reduce, speed: reduce ? 0.25 : 1, cap: true, top: false, preset: 0, shaking: false, sound: false, rulerA: 1.0, rulerB: 1.45, t: 0, t0: 0, pulseT: -1, freezeAt: 0 };
+
+/* ---------- 손이 만든 진동의 기록 → 파동 ---------- */
+// x 위치의 변위 s(x, t) = u(t − x/v)  (u: 손잡이 변위의 기록, v: 파동의 속력). 끝에서의 반사는 무시.
+const DT = 1 / 240, NB = 8192, buf = new Float32Array(NB);
+let bStart = 0, bEnd = -1, phase = 0, stopping = false, handPos = 0, handTarget = 0, dragHand = false, cycles = 0, beatN = 0;
+const beats = [];                                                            // 이번 프레임에 손이 끝에 닿은 시각 (메트로놈 박자)
+const vel = () => SPEEDS[S.med];
+const lam = () => vel() / S.f;
+// 횡파: 빨리 흔들수록 손이 작게 움직임 (기울기 ≤ 1), 종파: 고리가 서로 겹치지 않도록 (변형률 ≤ 0.5)
+const ampNow = () => S.dir === 'T' ? Math.min(0.10, 0.16 * lam()) : Math.min(0.07, 0.5 * vel() / (TAU * S.f));
+function resetWave() { bStart = bEnd + 1; phase = 0; stopping = false; S.pulseT = -1; trailK = 0; }
+function srcValue(tau) {
+  if (S.mode === 'hand') {                                  // 손으로 끌기: 포인터를 부드럽게 따라감
+    handPos += (handTarget - handPos) * (1 - Math.exp(-DT / (dragHand ? 0.035 : 0.12)));
+    return handPos;
+  }
+  if (S.mode === 'pulse') {                                 // 반 파장 펄스 (마루 하나)
+    if (S.pulseT < 0) return 0;
+    const d = tau - S.pulseT, dur = 1 / (2 * S.f);
+    return d >= 0 && d <= dur ? ampNow() * Math.sin(Math.PI * d / dur) : 0;
+  }
+  if (!S.shaking && !stopping) return 0;
+  const prev = phase; phase += TAU * S.f * DT;
+  if (Math.floor((phase - Math.PI / 2) / TAU) > Math.floor((prev - Math.PI / 2) / TAU)) beats.push(tau);   // 손이 끝에 닿는 순간 = 박자
+  if (Math.floor(phase / TAU) > Math.floor(prev / TAU)) { cycles++; if (stopping) { stopping = false; phase = 0; return 0; } }
+  return ampNow() * Math.sin(phase);
+}
+function writeUntil(t) {
+  const iEnd = Math.floor(t / DT);
+  if (bEnd < 0) { bEnd = iEnd - 1; bStart = iEnd; }
+  for (let i = bEnd + 1; i <= iEnd; i++) buf[((i % NB) + NB) % NB] = srcValue(i * DT);
+  bEnd = iEnd; if (bEnd - bStart >= NB - 2) bStart = bEnd - NB + 2;
+}
+function u(tau) {
+  const fi = tau / DT; if (fi < bStart) return 0; if (fi >= bEnd) return buf[((bEnd % NB) + NB) % NB];
+  const i = Math.floor(fi), fr = fi - i;
+  return buf[((i % NB) + NB) % NB] * (1 - fr) + buf[(((i + 1) % NB) + NB) % NB] * fr;
+}
+const disp = (x, t = S.t) => u(t - x / vel());
+
+/* ---------- 테마 ---------- */
+const T = {};
+const TOK = ['surface', 'surface-2', 'ink', 'muted', 'line', 'accent', 's1', 's2', 'hi', 'lo', 'minus', 'stage', 'wall', 'floor-a', 'floor-b', 'grout', 'paper', 'paper-line', 'paper-bold', 'skirting', 'steel', 'paint', 'wood', 'ribbon', 'tape', 'tape-ink', 'phone'];
+function readTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of TOK) T[k] = cs.getPropertyValue('--' + k).trim();
+  T.font = getComputedStyle(document.body).fontFamily; T.mono = cs.getPropertyValue('--mono').trim();
+  const c = T.wall.replace('#', ''), n = parseInt(c.length === 3 ? c.split('').map(h => h + h).join('') : c, 16);
+  T.dark = ((n >> 16 & 255) + (n >> 8 & 255) + (n & 255)) / 3 < 110;
+}
+
+/* ---------- 3D ---------- */
+const V3 = { ok: false, userMoved: false, cam: { t: 1 } };
+const PHONE_Y = 2.25;
+const CAMS = {
+  side: { pos: [1.15, 1.05, 1.22], tgt: [1.15, 0.02, -0.14] },
+  top: { pos: [1.5, PHONE_Y, 0.0012], tgt: [1.5, 0, 0] }
+};
+function canvasTex(w, h, draw, repeat) {
+  const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding;
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(repeat[0], repeat[1]); }
+  if (V3.renderer) t.anisotropy = Math.min(8, V3.renderer.capabilities.getMaxAnisotropy());
+  return t;
+}
+let rng = 3;
+const rand = () => { rng = (rng * 16807) % 2147483647; return (rng - 1) / 2147483646; };
+function mixHex(a, b, k) {                       // 두 토큰 색 사이의 색
+  const p = h => { const v = parseInt(h.replace('#', ''), 16); return [v >> 16 & 255, v >> 8 & 255, v & 255]; };
+  const A = p(a), B = p(b); return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * k)).join(',')})`;
+}
+function floorDraw(x, w, h) {                    // 나뭇결 무늬 교실 바닥재 (판 폭 18 cm, 텍스처 한 장 = 2 m × 2 m)
+  rng = 3; const rows = 11, rh = h / rows;
+  for (let r = 0; r < rows; r++) {
+    let px = -rand() * w * 0.6;
+    while (px < w) {
+      const len = w * (0.3 + rand() * 0.35), tone = rand();
+      x.fillStyle = mixHex(T['floor-a'], T['floor-b'], tone); x.fillRect(px, r * rh, len, rh);
+      for (let g = 0; g < 14; g++) {             // 나뭇결
+        const y0 = r * rh + rand() * rh, amp = 1 + rand() * 3, fr = 0.004 + rand() * 0.01, ph = rand() * 6;
+        x.strokeStyle = rand() < 0.65 ? T.grout : '#ffffff'; x.globalAlpha = 0.04 + rand() * 0.08; x.lineWidth = 0.6 + rand() * 1.6;
+        x.beginPath(); for (let q = 0; q <= len; q += 10) { const yy = Math.min(r * rh + rh - 1, Math.max(r * rh + 1, y0 + Math.sin(q * fr + ph) * amp)); q ? x.lineTo(px + q, yy) : x.moveTo(px + q, yy); } x.stroke();
+      }
+      x.globalAlpha = 0.55; x.fillStyle = T.grout; x.fillRect(px, r * rh, 2, rh); x.globalAlpha = 1;
+      px += len;
+    }
+    x.globalAlpha = 0.6; x.fillStyle = T.grout; x.fillRect(0, r * rh, w, 2); x.globalAlpha = 1;
+  }
+}
+function paperDraw(x, w, h) {                    // 모눈종이 3.4 m × 0.44 m: 1 cm 가는 선, 5 cm 중간 선, 10 cm 굵은 선
+  x.fillStyle = T.paper; x.fillRect(0, 0, w, h);
+  const pxX = w / 340, pxZ = h / 44;
+  for (let c = 0; c <= 340; c++) { const k = c % 10 === 0 ? 2 : c % 5 === 0 ? 1 : 0; x.strokeStyle = k === 2 ? T['paper-bold'] : T['paper-line']; x.globalAlpha = k === 0 ? 0.55 : 0.9; x.lineWidth = k === 2 ? 2.4 : k === 1 ? 1.5 : 1; x.beginPath(); x.moveTo(c * pxX, 0); x.lineTo(c * pxX, h); x.stroke(); }
+  for (let c = 0; c <= 44; c++) { const k = c % 10 === 2 ? 2 : c % 5 === 2 ? 1 : 0; x.strokeStyle = k === 2 ? T['paper-bold'] : T['paper-line']; x.globalAlpha = k === 0 ? 0.55 : 0.9; x.lineWidth = k === 2 ? 2.4 : k === 1 ? 1.5 : 1; x.beginPath(); x.moveTo(0, c * pxZ); x.lineTo(w, c * pxZ); x.stroke(); }
+  x.globalAlpha = 1;
+}
+function tapeDraw(x, w, h) {                     // 줄자 0~320 cm
+  x.fillStyle = T.tape; x.fillRect(0, 0, w, h);
+  x.strokeStyle = T['tape-ink']; x.fillStyle = T['tape-ink'];
+  const pxcm = w / 320;
+  for (let c = 0; c <= 320; c++) {
+    const X = c * pxcm, len = c % 10 === 0 ? h * 0.5 : c % 5 === 0 ? h * 0.32 : h * 0.18;
+    x.lineWidth = c % 10 === 0 ? 3 : 1.5; x.beginPath(); x.moveTo(X, 0); x.lineTo(X, len); x.stroke();
+    if (c % 10 === 0 && c < 320) { x.font = `600 ${Math.round(h * 0.36)}px ${T.mono}`; x.textAlign = c === 0 ? 'left' : 'center'; x.textBaseline = 'bottom'; x.fillText(String(c), c === 0 ? X + 4 : X, h - 3); }
+  }
+}
+function makeEnv(renderer) {
+  const pm = new THREE.PMREMGenerator(renderer), env = new THREE.Scene();
+  const g = new THREE.SphereGeometry(10, 32, 16), cols = [], p = g.attributes.position;
+  for (let i = 0; i < p.count; i++) { const y = p.getY(i) / 10, l = 0.3 + 0.5 * Math.max(0, y); cols.push(l, l, l * 1.03); }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+  env.add(new THREE.Mesh(g, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide })));
+  const panel = (x, y, z, w, h, k) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(k, k, k), side: THREE.DoubleSide })); m.position.set(x, y, z); m.lookAt(0, 0, 0); env.add(m); };
+  panel(0, 8, 0, 10, 4, 2.4); panel(6, 3, 5, 3, 4, 1.4); panel(-7, 3, 2, 3, 4, 1.0);
+  for (let i = -2; i <= 2; i++) panel(i * 2.2, 7.5, -1, 0.5, 3.5, 3.2);       // 천장 형광등 줄
+  const tex = pm.fromScene(env, 0.035).texture; pm.dispose(); return tex;
+}
+function roundedBox(w, h, d, r) {
+  const s = new THREE.Shape(), x = -w / 2, y = -h / 2;
+  s.moveTo(x + r, y); s.lineTo(x + w - r, y); s.quadraticCurveTo(x + w, y, x + w, y + r); s.lineTo(x + w, y + h - r); s.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  s.lineTo(x + r, y + h); s.quadraticCurveTo(x, y + h, x, y + h - r); s.lineTo(x, y + r); s.quadraticCurveTo(x, y, x + r, y);
+  const g = new THREE.ExtrudeGeometry(s, { depth: d - 0.004, bevelEnabled: true, bevelThickness: 0.002, bevelSize: 0.002, bevelSegments: 2, curveSegments: 6 });
+  g.translate(0, 0, -(d - 0.004) / 2); return g;
+}
+function initThree() {
+  if (typeof THREE === 'undefined' || !THREE.OrbitControls) throw new Error('three');
+  const cv = $('#gl');
+  const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap;
+  V3.renderer = renderer;
+  const scene = new THREE.Scene();
+  scene.environment = makeEnv(renderer);
+  const camera = new THREE.PerspectiveCamera(36, 16 / 9, 0.05, 40);
+  const controls = new THREE.OrbitControls(camera, cv);
+  Object.assign(controls, { enablePan: true, screenSpacePanning: true, enableDamping: !reduce, dampingFactor: 0.08, minDistance: 0.8, maxDistance: 7, maxPolarAngle: 1.45, rotateSpeed: 0.6, zoomSpeed: 0.8 });
+  controls.addEventListener('start', () => { V3.userMoved = true; });
+  const std = o => new THREE.MeshStandardMaterial(Object.assign({ roughness: 0.6, metalness: 0 }, o));
+  const M = {
+    floor: std({ roughness: 0.55, envMapIntensity: 0.55 }), wall: std({ roughness: 0.95, envMapIntensity: 0.4 }), base: std({ roughness: 0.6 }),
+    paper: std({ roughness: 0.95, envMapIntensity: 0.25 }), tapeStrip: std({ roughness: 0.3, transparent: true, opacity: 0.45 }),
+    steel: std({ metalness: 0.9, roughness: 0.26 }), chrome: std({ metalness: 1, roughness: 0.18 }), wood: std({ roughness: 0.5 }), brass: std({ metalness: 0.9, roughness: 0.3 }), paint: std({ roughness: 0.45, metalness: 0.2 }),
+    ribbon: std({ roughness: 0.42, side: THREE.DoubleSide }), tape: std({ roughness: 0.45 }), caseY: std({ roughness: 0.4 }), phone: std({ roughness: 0.3, metalness: 0.3 }), lens: std({ roughness: 0.1, metalness: 0.6 }),
+    mark: new THREE.MeshBasicMaterial(), arrow1: new THREE.MeshBasicMaterial(), arrow2: new THREE.MeshBasicMaterial(), ruler: std({ roughness: 0.4 }), rulerTip: new THREE.MeshBasicMaterial(),
+    band: new THREE.MeshBasicMaterial({ transparent: true, opacity: 0.32, depthWrite: false, side: THREE.DoubleSide })
+  };
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x9a8a76, 0.58); scene.add(hemi);
+  const sun = new THREE.DirectionalLight(0xfff8f0, 1.05);
+  sun.position.set(0.9, 5.5, 2.4); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+  Object.assign(sun.shadow.camera, { left: -2.1, right: 2.1, top: 0.9, bottom: -0.9, near: 2, far: 9 });
+  sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.002; sun.shadow.radius = 2.5;
+  sun.target.position.set(1.55, 0, 0); scene.add(sun, sun.target);
+  const fill = new THREE.DirectionalLight(0xdfe8ff, 0.28); fill.position.set(-3, 3, 5); scene.add(fill);
+
+  const mesh = (geo, mat, x = 0, y = 0, z = 0, cast = true, parent = scene) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = cast; m.receiveShadow = true; parent.add(m); return m; };
+  // 교실 바닥(나뭇결 바닥재)과 벽, 걸레받이
+  const floor = mesh(new THREE.PlaneGeometry(14, 9), M.floor, 2, 0, 0, false); floor.rotation.x = -Math.PI / 2;
+  mesh(new THREE.PlaneGeometry(14, 3.2), M.wall, 2, 1.6, -2.6, false);
+  mesh(new THREE.BoxGeometry(14, 0.1, 0.02), M.base, 2, 0.05, -2.59, false);
+  // 모눈종이 (탐구 2: 모눈종이 위에 용수철) + 모서리 셀로판테이프
+  const paper = mesh(new THREE.PlaneGeometry(3.4, 0.44), M.paper, 1.65, PAPER_Y, 0, false); paper.rotation.x = -Math.PI / 2;
+  for (const [x, z] of [[-0.03, -0.2], [-0.03, 0.2], [3.33, -0.2], [3.33, 0.2], [1.65, -0.21], [1.65, 0.21]]) { const t = mesh(new THREE.PlaneGeometry(0.07, 0.03), M.tapeStrip, x, PAPER_Y + 0.0004, z, false); t.rotation.set(-Math.PI / 2, 0, x > 0 && x < 3 ? 0 : 0.6); }
+  // 줄자: 0 cm 쪽은 쇠고리, 끝쪽에 케이스
+  const tape = mesh(new THREE.PlaneGeometry(3.2, 0.04), M.tape, 1.6, 0.0014, TAPE_Z, false); tape.rotation.x = -Math.PI / 2;
+  mesh(new THREE.BoxGeometry(0.004, 0.012, 0.042), M.chrome, -0.002, 0.006, TAPE_Z, false);
+  const tcase = new THREE.Group(); scene.add(tcase); tcase.position.set(3.25, 0.042, TAPE_Z - 0.005);
+  mesh(roundedBox(0.084, 0.084, 0.04, 0.018), M.caseY, 0, 0, 0, true, tcase);
+  mesh(roundedBox(0.07, 0.07, 0.044, 0.014), M.paint, 0, 0, 0, true, tcase);
+  mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.046, 20), M.chrome, 0, 0, 0, false, tcase).rotation.x = Math.PI / 2;
+  mesh(new THREE.BoxGeometry(0.014, 0.008, 0.03), M.paint, -0.042, -0.036, 0, false, tcase);
+  // 슬링키: 이어진 나선(납작한 철사) — 매 프레임 꼭짓점 갱신
+  const sPos = new Float32Array(NS * RAD * 3), sNor = new Float32Array(NS * RAD * 3), sIdx = new Uint16Array((NS - 1) * RAD * 6);
+  for (let i = 0, k = 0; i < NS - 1; i++) for (let j = 0; j < RAD; j++) {
+    const a = i * RAD + j, b = i * RAD + (j + 1) % RAD, c = (i + 1) * RAD + j, d = (i + 1) * RAD + (j + 1) % RAD;
+    sIdx[k++] = a; sIdx[k++] = b; sIdx[k++] = c; sIdx[k++] = b; sIdx[k++] = d; sIdx[k++] = c;
+  }
+  const sGeo = new THREE.BufferGeometry();
+  sGeo.setAttribute('position', new THREE.BufferAttribute(sPos, 3).setUsage(THREE.DynamicDrawUsage)); sGeo.setAttribute('normal', new THREE.BufferAttribute(sNor, 3).setUsage(THREE.DynamicDrawUsage)); sGeo.setIndex(new THREE.BufferAttribute(sIdx, 1));
+  const slinky = new THREE.Mesh(sGeo, M.steel); slinky.castShadow = true; slinky.receiveShadow = true; slinky.frustumCulled = false; scene.add(slinky);
+  // 손잡이 (깎은 나무 손잡이 + 놋쇠 고리쇠 + 첫 고리에 거는 쇠막대)
+  const handle = new THREE.Group(); scene.add(handle);
+  const prof = [[0, 0.06], [0.011, 0.062], [0.016, 0.07], [0.017, 0.09], [0.015, 0.13], [0.0165, 0.17], [0.02, 0.185], [0.019, 0.2], [0.012, 0.208], [0, 0.21]].map(([a, b]) => new THREE.Vector2(a, b));
+  mesh(new THREE.LatheGeometry(prof, 28), M.wood, 0, 0, 0, true, handle);
+  mesh(new THREE.CylinderGeometry(0.0125, 0.0125, 0.02, 24), M.brass, 0, 0.055, 0, true, handle);
+  mesh(new THREE.CylinderGeometry(0.0045, 0.0045, Y0 + RR - 0.004, 10), M.chrome, 0, (Y0 + RR + 0.004) / 2, 0, true, handle);
+  const hookArm = mesh(new THREE.CylinderGeometry(0.0035, 0.0035, 0.07, 8), M.chrome, 0.035, Y0 + RR, 0, true, handle); hookArm.rotation.z = Math.PI / 2;
+  // 리본 (고리 꼭대기에 묶은 매듭 + V자로 벌어진 두 가닥)
+  const ribbon = new THREE.Group(); scene.add(ribbon); ribbon.scale.setScalar(1.35);
+  mesh(new THREE.SphereGeometry(0.0085, 16, 10), M.ribbon, 0, 0.003, 0, true, ribbon).scale.set(1.25, 0.7, 1.1);
+  for (const s of [-1, 1]) {
+    const g = new THREE.PlaneGeometry(0.013, 0.07, 1, 10); g.translate(0, 0.035, 0);
+    const tp = g.attributes.position;
+    for (let i = 0; i < tp.count; i++) { const f = tp.getY(i) / 0.07; tp.setX(i, tp.getX(i) * (1 - 0.25 * f) + s * 0.012 * f * f); tp.setZ(i, 0.004 * Math.sin(f * 5)); }
+    g.computeVertexNormals();
+    const tail = new THREE.Mesh(g, M.ribbon); tail.castShadow = true; tail.position.set(0, 0.004, 0); tail.rotation.z = -s * 0.55; ribbon.add(tail);
+  }
+  // 삼각대 + 스마트폰 (위에서 촬영) — 시점을 바꾸는 동안만 보임
+  const rig = new THREE.Group(); scene.add(rig); rig.position.set(1.5, 0, -1.45);
+  for (let k = 0; k < 3; k++) { const a = k * TAU / 3 + 0.3, leg = mesh(new THREE.CylinderGeometry(0.006, 0.008, 0.9, 10), M.paint, Math.cos(a) * 0.17, 0.43, Math.sin(a) * 0.17, true, rig); leg.rotation.set(-Math.sin(a) * 0.38, 0, Math.cos(a) * 0.38); }
+  mesh(new THREE.CylinderGeometry(0.012, 0.012, PHONE_Y - 0.86, 12), M.chrome, 0, 0.86 + (PHONE_Y - 0.86) / 2, 0, true, rig);
+  const boom = mesh(new THREE.CylinderGeometry(0.009, 0.009, 1.45, 12), M.chrome, 0, PHONE_Y + 0.02, 0.72, true, rig); boom.rotation.x = Math.PI / 2;
+  const phone = mesh(roundedBox(0.078, 0.16, 0.009, 0.01), M.phone, 0, PHONE_Y + 0.005, 1.45, true, rig); phone.rotation.x = Math.PI / 2;
+  mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.004, 16), M.lens, 0.02, PHONE_Y - 0.001, 1.39, false, rig);
+  // 자 (두 끝 표시 + 띠)
+  const ruler = new THREE.Group(); scene.add(ruler);
+  const rBar = mesh(new THREE.BoxGeometry(1, 0.004, 0.024), M.ruler, 0, 0.006, 0, false, ruler);
+  const tipA = mesh(new THREE.ConeGeometry(0.022, 0.05, 3), M.rulerTip, 0, 0.03, 0, true, ruler), tipB = mesh(new THREE.ConeGeometry(0.022, 0.05, 3), M.rulerTip, 0, 0.03, 0, true, ruler);
+  tipA.rotation.x = tipB.rotation.x = Math.PI;
+  const lineA = mesh(new THREE.BoxGeometry(0.003, 0.002, 0.34), M.rulerTip, 0, 0.004, -0.15, false, ruler), lineB = mesh(new THREE.BoxGeometry(0.003, 0.002, 0.34), M.rulerTip, 0, 0.004, -0.15, false, ruler);
+  ruler.position.z = 0.19;
+  // 방향 화살표 (입체: 원기둥 + 원뿔, 진동 방향은 양쪽 화살촉)
+  function arrow3(mat, both) {
+    const g = new THREE.Group();
+    const shaft = mesh(new THREE.CylinderGeometry(0.0065, 0.0065, 1, 14), mat, 0, 0, 0, false, g); shaft.rotation.z = -Math.PI / 2;
+    const heads = (both ? [1, -1] : [1]).map(s => { const h = mesh(new THREE.ConeGeometry(0.018, 0.05, 20), mat, 0, 0, 0, false, g); h.rotation.z = -s * Math.PI / 2; h.userData.s = s; return h; });
+    scene.add(g); return { g, shaft, heads, both };
+  }
+  const travel = arrow3(M.arrow1, false), vib = arrow3(M.arrow2, true);
+  // 리본 자취: 최근 3초 동안 리본이 움직인 범위 + 제자리 표시
+  const band = mesh(new THREE.PlaneGeometry(1, 1), M.band, 0, 0, 0, false); band.rotation.x = -Math.PI / 2; band.renderOrder = 2;
+  const homeMark = mesh(new THREE.BoxGeometry(0.005, 0.0016, 0.4), M.mark, XP, PAPER_Y + 0.0008, 0, false);
+
+  Object.assign(V3, { ok: true, scene, camera, controls, M, hemi, sun, fill, slinky, sGeo, sPos, sNor, handle, ribbon, rig, ruler, rBar, tipA, tipB, lineA, lineB, travel, vib, band, homeMark, tmp: new THREE.Vector3(), ray: new THREE.Raycaster(), floorPlane: new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), handPlane: new THREE.Plane(new THREE.Vector3(0, 1, 0), -Y0), Dd: new Float32Array(NS) });
+  theme3D();
+}
+function theme3D() {
+  if (!V3.ok) return;
+  const M = V3.M, C = c => new THREE.Color(c).convertSRGBToLinear();
+  V3.scene.background = C(T.stage);
+  const tex = (mat, t) => { if (mat.map) mat.map.dispose(); mat.map = t; mat.needsUpdate = true; };
+  tex(M.floor, canvasTex(1024, 1024, floorDraw, [7, 4.5]));
+  tex(M.paper, canvasTex(4096, 530, paperDraw));
+  tex(M.tape, canvasTex(4096, 52, tapeDraw));
+  M.wall.color = C(T.wall); M.base.color = C(T.skirting); M.steel.color = C(T.steel); M.chrome.color = C(T.steel); M.wood.color = C(T.wood); M.paint.color = C(T.paint);
+  M.brass.color = C(T.tape); M.tapeStrip.color = C(T.surface); M.caseY.color = C(T.tape);
+  M.ribbon.color = C(T.ribbon); M.phone.color = C(T.phone); M.lens.color = C(T.paint); M.mark.color = C(T.ribbon); M.band.color = C(T.ribbon);
+  M.arrow1.color = C(T.s1); M.arrow2.color = C(T.s2); M.ruler.color = C(T.tape); M.rulerTip.color = C(T.ink);
+  V3.hemi.intensity = T.dark ? 0.38 : 0.58;
+}
+function camFor(name) {
+  const cam = V3.camera, asp = cam.aspect, tanH = Math.tan(cam.fov * Math.PI / 360);
+  if (name === 'top') {                                   // 손잡이부터 3.2 m가 화면 폭에 들어오게, 용수철은 화면 가운데보다 조금 아래
+    const hFull = 1.82 / (tanH * asp), h = Math.max(1.9, Math.min(3.6, hFull)), half = h * tanH * asp;
+    const cx = hFull > h ? HANDLE_X - 0.14 + half : 1.5;
+    return { pos: new THREE.Vector3(cx, h, -0.13 * h / 2.15 + 0.0012), tgt: new THREE.Vector3(cx, 0, -0.13 * h / 2.15) };
+  }
+  const v = CAMS.side, k = asp < 1.7 ? Math.min(1.5, Math.pow(1.7 / asp, 0.85)) : 1;
+  const tgt = new THREE.Vector3(...v.tgt), pos = new THREE.Vector3(...v.pos).sub(tgt).multiplyScalar(k).add(tgt);
+  if (S.graph && asp > 1.2) { tgt.z += 0.5; pos.z += 0.5; }      // 그래프 카드가 아래를 가리므로 용수철을 화면 위쪽에
+  // 손잡이(x ≈ −6 cm)가 화면 왼쪽 끝에서 조금 안쪽(NDC −0.8)에 오도록 좌우로 옮김
+  const c = new THREE.PerspectiveCamera(cam.fov, asp, 0.05, 40), p = new THREE.Vector3();
+  for (let it = 0; it < 4; it++) {
+    c.position.copy(pos); c.lookAt(tgt); c.updateMatrixWorld(); c.updateProjectionMatrix();
+    p.set(HANDLE_X, 0.12, 0).applyMatrix4(c.matrixWorldInverse);
+    const ndc = (p.x / -p.z) / (tanH * asp), dx = (ndc + 0.8) * -p.z * tanH * asp;
+    pos.x += dx; tgt.x += dx;
+  }
+  return { pos, tgt };
+}
+function goView(instant) {
+  if (!V3.ok) return;
+  const v = camFor(S.top ? 'top' : 'side'); V3.userMoved = false;
+  if (instant || reduce) { V3.camera.position.copy(v.pos); V3.controls.target.copy(v.tgt); V3.controls.update(); V3.cam = { t: 1 }; return; }
+  const vt = Math.abs(V3.camera.position.y - v.pos.y) > 0.4;
+  V3.cam = { from: { pos: V3.camera.position.clone(), tgt: V3.controls.target.clone() }, to: v, t: 0, vertical: vt };
+}
+function size3D() {
+  if (!V3.ok) return;
+  const r = $('#stage').getBoundingClientRect(); if (!r.width) return;
+  V3.renderer.setSize(r.width, r.height, false); V3.camera.aspect = r.width / r.height; V3.camera.updateProjectionMatrix();
+  if (!V3.userMoved && V3.cam.t >= 1) goView(true);
+}
+const LBL = {};
+let lblRect = null;
+function label(id, show, xyz, text, cls = '', anchor = 'c') {
+  let el = LBL[id];
+  if (!el) { el = document.createElement('span'); el.className = 'lbl ' + cls; $('#labels').appendChild(el); LBL[id] = el; }
+  if (!show || !V3.ok) { el.hidden = true; return; }
+  const v = V3.tmp.set(xyz[0], xyz[1], xyz[2]).project(V3.camera);
+  if (v.z > 1 || v.z < -1 || Math.abs(v.x) > 1.05 || Math.abs(v.y) > 1.05) { el.hidden = true; return; }
+  const r = lblRect || $('#gl').getBoundingClientRect();
+  el.hidden = false; if (el.textContent !== text) el.textContent = text;
+  const tx = anchor === 'l' ? '0' : anchor === 'r' ? '-100%' : '-50%', ty = anchor === 'b' ? '-100%' : anchor === 't' ? '0' : '-50%';
+  el.style.transform = `translate(${((v.x + 1) / 2 * r.width).toFixed(1)}px, ${((1 - v.y) / 2 * r.height).toFixed(1)}px) translate(${anchor === 'b' || anchor === 't' ? '-50%' : tx}, ${ty})`;
+}
+function setArrow(a, show, x, y, z, len, rotY) {         // len: 전체 길이 (양쪽 화살촉이면 가운데 기준)
+  a.g.visible = show; if (!show) return;
+  const L = Math.max(0.1, Math.abs(len)), head = 0.05;
+  a.g.position.set(x, y, z); a.g.rotation.set(0, rotY + (len < 0 ? Math.PI : 0), 0);
+  if (a.both) { a.shaft.scale.y = L - 2 * head; a.shaft.position.x = 0; a.heads.forEach(h => { h.position.x = h.userData.s * (L / 2 - head / 2); }); }
+  else { a.shaft.scale.y = L - head; a.shaft.position.x = (L - head) / 2; a.heads[0].position.x = L - head / 2; }
+}
+/* 슬링키 꼭짓점: 축 C(x₀) = (x₀, Y0, s) (횡파) 또는 (x₀ + s, Y0, 0) (종파), 축 둘레를 RR 반지름으로 감음 */
+const CS = [], SN = [], CPH = [], SPH = [];
+for (let j = 0; j < RAD; j++) { CS.push(Math.cos(TAU * j / RAD)); SN.push(Math.sin(TAU * j / RAD)); }
+for (let i = 0; i < SEG; i++) { CPH.push(Math.cos(TAU * i / SEG)); SPH.push(Math.sin(TAU * i / SEG)); }
+function updateSlinky() {
+  const D = V3.Dd, P = V3.sPos, Nn = V3.sNor, dx = SP / SEG, tr = S.dir === 'T';
+  for (let i = 0; i < NS; i++) D[i] = disp(i * dx);
+  for (let i = 0; i < NS; i++) {
+    const x0 = i * dx, d = D[i], i0 = i > 0 ? i - 1 : 0, i1 = i < NS - 1 ? i + 1 : NS - 1, dd = (D[i1] - D[i0]) / ((i1 - i0) * dx);
+    let cx, cz, tx, tz;
+    if (tr) { cx = x0; cz = d; const n = Math.hypot(1, dd); tx = 1 / n; tz = dd / n; } else { cx = x0 + d; cz = 0; tx = 1; tz = 0; }
+    const cp = CPH[i % SEG], sp = SPH[i % SEG], rx = -sp * tz, ry = cp, rz = sp * tx;   // 바깥쪽 방향 r = cos φ·위 + sin φ·(t × 위)
+    const px = cx + RR * rx, py = Y0 + RR * ry, pz = cz + RR * rz;
+    for (let j = 0; j < RAD; j++) {
+      const c = CS[j], s = SN[j], o = (i * RAD + j) * 3;
+      P[o] = px + BW * c * tx + BT * s * rx; P[o + 1] = py + BT * s * ry; P[o + 2] = pz + BW * c * tz + BT * s * rz;
+      const nx = c / BW * tx + s / BT * rx, ny = s / BT * ry, nz = c / BW * tz + s / BT * rz, nl = 1 / Math.hypot(nx, ny, nz);
+      Nn[o] = nx * nl; Nn[o + 1] = ny * nl; Nn[o + 2] = nz * nl;
+    }
+  }
+  V3.sGeo.attributes.position.needsUpdate = true; V3.sGeo.attributes.normal.needsUpdate = true;
+}
+function axisAt(i) { const D = V3.Dd, x0 = i * SP, d = D[i * SEG]; return S.dir === 'T' ? { x: x0, z: d } : { x: x0 + d, z: 0 }; }
+let trailK = 0;
+function update3D(dt) {
+  if (!V3.ok) return;
+  const { camera, controls } = V3, c = V3.cam;
+  if (c.t < 1) {
+    c.t = Math.min(1, c.t + dt / 0.9); const k = c.t < 0.5 ? 4 * c.t ** 3 : 1 - (-2 * c.t + 2) ** 3 / 2;
+    camera.position.lerpVectors(c.from.pos, c.to.pos, k); controls.target.lerpVectors(c.from.tgt, c.to.tgt, k);
+  }
+  controls.update();
+  // 자 끝이 마루로 미끄러지듯 이동
+  if (S.rulerTo) { const k = reduce ? 1 : Math.min(1, dt / 0.12); S.rulerA += (S.rulerTo.a - S.rulerA) * k; S.rulerB += (S.rulerTo.b - S.rulerB) * k; if (Math.abs(S.rulerTo.a - S.rulerA) + Math.abs(S.rulerTo.b - S.rulerB) < 0.0005) { S.rulerA = S.rulerTo.a; S.rulerB = S.rulerTo.b; S.rulerTo = null; } }
+  updateSlinky();
+  const h = axisAt(0);
+  V3.handle.position.set(h.x + HANDLE_X, 0, h.z);
+  // 리본: IP번째 고리 꼭대기, 고리의 기울기를 따라 돎
+  const D = V3.Dd, iP = IP * SEG, dP = D[iP], sl = S.dir === 'T' ? (D[iP + 1] - D[iP - 1]) / (2 * SP / SEG) : 0;
+  const rp = S.dir === 'T' ? { x: XP, z: dP } : { x: XP + dP, z: 0 };
+  V3.ribbon.position.set(rp.x, Y0 + RR + BT, rp.z); V3.ribbon.rotation.y = -Math.atan(sl);
+  // 리본 자취 (최근 3초 동안 움직인 범위)
+  V3.band.visible = V3.homeMark.visible = !!S.trail;
+  if (S.trail) {
+    let lo = 0, hi = 0; for (let q = 0; q <= 90; q++) { const v = disp(XP, S.t - 3 * q / 90); if (v < lo) lo = v; if (v > hi) hi = v; }
+    trailK = Math.max(trailK, hi - lo);
+    const len = Math.max(0.004, hi - lo), mid = (hi + lo) / 2, yb = Y0 + RR + 0.002;
+    if (S.dir === 'T') { V3.band.position.set(XP, yb, mid); V3.band.scale.set(0.018, len + 0.02, 1); }
+    else { V3.band.position.set(XP + mid, yb, 0); V3.band.scale.set(len + 0.02, 0.018, 1); }
+  }
+  // 방향 화살표
+  const showAr = !!S.arrows, A = ampNow();
+  setArrow(V3.travel, showAr, 0.5, 0.012, 0.32, 0.62, 0);
+  if (S.dir === 'T') setArrow(V3.vib, showAr, XP, 0.19, rp.z * 0, 2 * A + 0.1, -Math.PI / 2);
+  else setArrow(V3.vib, showAr, XP, 0.19, 0, 2 * A + 0.1, 0);
+  // 자
+  V3.ruler.visible = !!S.ruler;
+  if (S.ruler) {
+    const a = Math.min(S.rulerA, S.rulerB), b = Math.max(S.rulerA, S.rulerB);
+    V3.rBar.scale.x = Math.max(0.002, b - a); V3.rBar.position.x = (a + b) / 2;
+    V3.tipA.position.x = S.rulerA; V3.tipB.position.x = S.rulerB; V3.lineA.position.x = S.rulerA; V3.lineB.position.x = S.rulerB;
+  }
+  V3.rig.visible = c.t < 1 && !!c.vertical;
+  V3.renderer.render(V3.scene, camera);
+  // 이름표
+  lblRect = $('#gl').getBoundingClientRect();
+  const dense = [], sparse = [];
+  if (S.dense && S.dir === 'L') {                    // 밀·소 (종파): 고리 간격이 가장 좁은 곳과 넓은 곳
+    const st = []; for (let i = 1; i < N - 1; i++) st[i] = (axisAt(i + 1).x - axisAt(i - 1).x) / (2 * SP) - 1;
+    for (let i = 3; i < N - 3; i++) {
+      const xi = i * SP; if (xi > 3.3) break;
+      if (st[i] < -0.12 && st[i] <= st[i - 1] && st[i] <= st[i + 1] && st[i] <= st[i - 2] && st[i] <= st[i + 2]) dense.push(axisAt(i).x);
+      if (st[i] > 0.12 && st[i] >= st[i - 1] && st[i] >= st[i + 1] && st[i] >= st[i - 2] && st[i] >= st[i + 2]) sparse.push(axisAt(i).x);
+    }
+  }
+  const crowded = dense.length + sparse.length > 0;
+  label('hand', true, [h.x + HANDLE_X, 0.25, h.z], S.mode === 'hand' ? '손잡이를 끌어 흔들기' : '손잡이', 'muted', 'b');
+  label('rib', true, crowded || S.top ? [rp.x, 0.0, rp.z + 0.13] : [rp.x - 0.05, 0.11, rp.z - 0.07], '리본', 'rib', crowded || S.top ? 't' : 'r');
+  label('tape', !S.top, [3.12, 0.01, TAPE_Z - 0.06], '줄자 (cm)', 'muted');
+  label('trav', showAr, [1.18, 0.03, 0.32], '진행 방향', 's1', 'l');
+  label('vib', showAr, S.dir === 'T' ? [XP + 0.05, 0.19, A + 0.08] : [XP + A + 0.1, 0.19, 0], '진동 방향', 's2', 'l');
+  label('rul', !!S.ruler, [(S.rulerA + S.rulerB) / 2, 0.05, 0.19], `${Math.round(Math.abs(S.rulerB - S.rulerA) * 100)} cm`, 'mono', 'b');
+  for (let j = 0; j < 6; j++) { label('d' + j, j < dense.length, [dense[j] || 0, 0.12, 0], '밀', 'hi', 'b'); label('s' + j, j < sparse.length, [sparse[j] || 0, 0.12, 0], '소', 'lo', 'b'); }
+  const pk = pulsePeak();
+  label('pulse', pk !== null && pk < 3.2, [pk || 0, 0.16, S.dir === 'T' ? ampNow() : 0], '펄스', 'accent', 'b');
+}
+function pulsePeak() {
+  if (S.mode !== 'pulse' || S.pulseT < 0) return null;
+  const tp = S.t - S.pulseT - 1 / (4 * S.f); if (tp < 0) return null;
+  return vel() * tp;
+}
+function setRay(e) { const r = $('#gl').getBoundingClientRect(); V3.ray.setFromCamera(new THREE.Vector2((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1), V3.camera); return V3.ray; }
+
+/* ---------- 자를 마루(횡파) 또는 밀(종파)에 맞추기 — 영상을 멈추고 재는 장면 ---------- */
+function crests() {
+  const L = lam(), front = S.mode === 'auto' ? vel() * Math.max(0, S.t - S.t0) : 3.2;
+  const x0 = 0.12, x1 = Math.min(3.05, front - 0.3 * L), n = 600, dx = (x1 - x0) / n, out = [];
+  if (x1 - x0 < L * 1.05) return out;
+  const tr = S.dir === 'T', f = tr ? (x => disp(x)) : (x => -(disp(x + 0.004) - disp(x - 0.004)) / 0.008);
+  const thr = 0.4 * (tr ? ampNow() : ampNow() * TAU / L);
+  let a = f(x0), b = f(x0 + dx);
+  for (let i = 1; i < n; i++) {
+    const c = f(x0 + (i + 1) * dx);
+    if (b > a && b >= c && b > thr) { const den = a - 2 * b + c; out.push(x0 + i * dx + (den ? 0.5 * (a - c) / den * dx : 0)); }
+    a = b; b = c;
+  }
+  return out;
+}
+function snapRuler() {
+  if (!S.ruler || S.mode === 'hand') return;
+  const xs = crests(); if (xs.length < 2) return;
+  const mid = (S.rulerA + S.rulerB) / 2; let best = null, bd = 1e9;
+  for (let i = 0; i < xs.length - 1; i++) { const m = (xs[i] + xs[i + 1]) / 2, d = Math.abs(m - mid); if (d < bd) { bd = d; best = i; } }
+  S.rulerTo = { a: Math.round(xs[best] * 100) / 100, b: Math.round(xs[best + 1] * 100) / 100 };
+}
+
+/* ---------- 그래프: (가) 위치에 따른 변위, (나) 점 P의 시간에 따른 변위 ---------- */
+const gcv = $('#graph'), gctx = gcv.getContext('2d');
+function extrema(f, a, b, n, sign) {                 // 구간에서 극대(sign=1)·극소(−1) 위치
+  const out = []; let prev = f(a), cur = f(a + (b - a) / n);
+  for (let i = 1; i < n; i++) { const nx = f(a + (b - a) * (i + 1) / n); if (sign * cur > sign * prev && sign * cur >= sign * nx && Math.abs(cur) > 0.5 * ampNow()) out.push(a + (b - a) * i / n); prev = cur; cur = nx; }
+  return out;
+}
+function drawGraph() {
+  const r = gcv.getBoundingClientRect(); if (!r.width) return;
+  const dpr = Math.min(2, devicePixelRatio || 1), w = r.width, h = r.height;
+  if (gcv.width !== Math.round(w * dpr) || gcv.height !== Math.round(h * dpr)) { gcv.width = Math.round(w * dpr); gcv.height = Math.round(h * dpr); }
+  const c = gctx; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+  const A = ampNow(), ym = A * 1.6, Lp = 42, Rp = 8, ph = (h - 46) / 2, tz = S.t0;
+  const panels = [
+    { top: 2, name: '(가) 위치에 따른 변위', xl: '위치 x (cm)', x0: 0, x1: XMAX, f: x => disp(x), col: T.s1 },
+    { top: 2 + ph + 24, name: '(나) 리본(점 P)의 시간에 따른 변위', xl: '흔들기 시작 후 시간 t (s)', x0: S.t - 3, x1: S.t, f: tt => disp(XP, tt), col: T.ribbon }
+  ];
+  panels.forEach((p, k) => {
+    const pw = w - Lp - Rp, mid = p.top + 15 + (ph - 15) / 2, half = (ph - 15) / 2 - 2;
+    const X = v => Lp + (v - p.x0) / (p.x1 - p.x0) * pw, Y = v => mid - v / ym * half;
+    c.font = `600 13px ${T.font}`; c.fillStyle = T.ink; c.textAlign = 'left'; c.textBaseline = 'top'; c.fillText(p.name, Lp, p.top);
+    c.font = `12px ${T.font}`; c.fillStyle = T.muted; c.textAlign = 'right'; c.fillText(p.xl, w - Rp, p.top);
+    c.strokeStyle = T.line; c.lineWidth = 1;
+    const off = k === 0 ? 0 : tz;                       // (나)는 흔들기 시작한 때를 0으로
+    for (let v = Math.ceil((p.x0 - off) / 0.5 - 1e-9) * 0.5 + off; v <= p.x1 + 1e-9; v += 0.5) {
+      const lab = k === 0 ? String(Math.round(v * 100)) : v - tz >= -1e-6 ? (Math.round((v - tz) * 10) / 10).toFixed(1) : '';
+      c.beginPath(); c.moveTo(X(v), mid - half); c.lineTo(X(v), mid + half); c.stroke(); c.fillStyle = T.muted; c.font = `11px ${T.mono}`; c.textAlign = 'center'; c.textBaseline = 'top'; c.fillText(lab, X(v), mid + half + 1);
+    }
+    c.strokeStyle = T.muted; c.beginPath(); c.moveTo(Lp, mid); c.lineTo(w - Rp, mid); c.stroke();
+    c.fillStyle = T.muted; c.font = `11px ${T.mono}`; c.textAlign = 'right'; c.textBaseline = 'middle';
+    c.fillText(`${Math.round(A * 100)}`, Lp - 4, Y(A)); c.fillText(`−${Math.round(A * 100)}`, Lp - 4, Y(-A)); c.fillText('cm', Lp - 4, mid);
+    c.strokeStyle = p.col; c.lineWidth = 2.8; c.lineJoin = 'round'; c.beginPath();
+    const n = 300;
+    for (let i = 0; i <= n; i++) { const v = p.x0 + (p.x1 - p.x0) * i / n, y = Y(p.f(v)); i ? c.lineTo(X(v), y) : c.moveTo(X(v), y); }
+    c.stroke();
+    if (k === 0) { c.strokeStyle = T.ribbon; c.setLineDash([3, 3]); c.beginPath(); c.moveTo(X(XP), mid - half); c.lineTo(X(XP), mid + half); c.stroke(); c.setLineDash([]); c.fillStyle = T.ribbon; c.beginPath(); c.arc(X(XP), Y(disp(XP)), 5, 0, TAU); c.fill(); }
+    else { c.fillStyle = T.ribbon; c.beginPath(); c.arc(X(p.x1), Y(disp(XP)), 5, 0, TAU); c.fill(); }
+    // 마루·골, 파장·주기·진폭 표시
+    const crest = extrema(p.f, p.x0, p.x1, 300, 1), trough = extrema(p.f, p.x0, p.x1, 300, -1);
+    c.font = `600 12px ${T.font}`; c.textAlign = 'center';
+    if (S.dir === 'T' && k === 0) {
+      crest.slice(2, 4).forEach(x => { c.fillStyle = T.ink; c.textBaseline = 'bottom'; c.fillText('마루', X(x), Y(p.f(x)) - 3); });
+      trough.slice(0, 3).forEach(x => { c.fillStyle = T.ink; c.textBaseline = 'top'; c.fillText('골', X(x), Y(p.f(x)) + 3); });
+    }
+    if (crest.length >= 2) {
+      const a = k === 0 ? crest[0] : crest[crest.length - 2], b = k === 0 ? crest[1] : crest[crest.length - 1], yb = mid - half + 4;
+      c.strokeStyle = T.ink; c.lineWidth = 1.4; c.beginPath(); c.moveTo(X(a), yb - 4); c.lineTo(X(a), yb + 4); c.moveTo(X(b), yb - 4); c.lineTo(X(b), yb + 4); c.moveTo(X(a), yb); c.lineTo(X(b), yb); c.stroke();
+      c.setLineDash([2, 3]); c.beginPath(); c.moveTo(X(a), yb); c.lineTo(X(a), Y(p.f(a))); c.moveTo(X(b), yb); c.lineTo(X(b), Y(p.f(b))); c.stroke(); c.setLineDash([]);
+      c.fillStyle = T.surface; const lab = k === 0 ? `파장 λ = ${Math.round((b - a) * 100)} cm` : `주기 T = ${(b - a).toFixed(2)} s`;
+      c.font = `700 13px ${T.font}`; const tw = c.measureText(lab).width + 8; c.fillRect((X(a) + X(b)) / 2 - tw / 2, yb - 9, tw, 17);
+      c.fillStyle = T.ink; c.textBaseline = 'middle'; c.fillText(lab, (X(a) + X(b)) / 2, yb);
+      if (k === 0) {                                     // 진폭
+        const xa = X(a) - 10; c.strokeStyle = T.s2; c.beginPath(); c.moveTo(xa, mid); c.lineTo(xa, Y(A)); c.moveTo(xa - 3, mid); c.lineTo(xa + 3, mid); c.moveTo(xa - 3, Y(A)); c.lineTo(xa + 3, Y(A)); c.stroke();
+        c.fillStyle = T.s2; c.textAlign = 'right'; c.fillText('진폭', xa - 4, (mid + Y(A)) / 2);
+      }
+    }
+  });
+}
+
+/* ---------- 상태와 화면 ---------- */
+function setS(patch) {
+  const reset = ('dir' in patch && patch.dir !== S.dir) || ('med' in patch && patch.med !== S.med) || ('mode' in patch && patch.mode !== S.mode);
+  const wasShaking = S.shaking, wasRun = S.run;
+  Object.assign(S, patch);
+  if (reset) { resetWave(); if (S.mode === 'auto' && wasShaking && !('shaking' in patch)) { S.shaking = true; S.t0 = S.t; } }
+  if ('run' in patch && wasRun && !S.run) snapRuler();     // 영상을 멈추면 자가 이웃한 마루에 맞춰짐
+  sync();
+}
+function startShake() { S.mode === 'pulse' ? sendPulse() : (S.shaking ? (S.shaking = false, stopping = true) : (S.shaking = true, stopping = false, S.t0 = S.t, cycles = 0, beatN = 0)); S.run = true; sync(); }
+function sendPulse() { S.pulseT = S.t + 0.05; S.run = true; sync(); }
+const PRESETS = [
+  { label: '리본은 어디로', cap: '파동이 지나가도 리본은 제자리에서 진동한다 — 매질은 이동하지 않는다', s: { trail: true }, top: false, shake: true },
+  { label: '횡파', cap: '좌우로 흔들면 진동 방향 ⟂ 진행 방향 — 횡파 (수면파, 지진파의 S파)', s: { arrows: true }, top: false, shake: true },
+  { label: '종파', cap: '앞뒤로 흔들면 진동 방향 ∥ 진행 방향 — 종파 (음파, 지진파의 P파)', s: { dir: 'L', arrows: true, dense: true }, top: false, shake: true },
+  { label: '파동의 표현', cap: '(가) 같은 순간의 모습 → 파장 λ   (나) 한 점의 시간 변화 → 주기 T', s: { graph: true }, top: false, shake: true },
+  { label: '파장 재기', cap: '스마트폰 영상을 멈추고 자로 이웃한 마루 사이를 잰다 — 파장 (탐구 2)', s: { f: 2, ruler: true }, top: true, shake: true, rulerFit: true },
+  { label: '진동수 바꾸기', cap: '같은 용수철: 진동수가 커지면 파장이 짧아지고, 속력 v = fλ는 일정하다', s: { f: 3, ruler: true }, top: true, shake: true, rulerFit: true },
+  { label: '용수철 바꾸기', cap: '단단한 용수철일수록 파동이 빠르다 — 같은 진동수에서 파장이 길어진다', s: { med: 2, f: 2, ruler: true }, top: true, shake: true, rulerFit: true },
+  { label: '펄스의 속력', cap: '빠르게 흔들어도 느리게 흔들어도 펄스의 속력은 같다', s: { mode: 'pulse', f: 1, ruler: true }, top: false, pulse: true }
+];
+function applyPreset(i) {
+  const p = PRESETS[i]; S.preset = i;
+  Object.assign(S, BASE, p.s, { shaking: false, rulerTo: null });
+  resetWave();
+  if (p.shake) { S.shaking = true; S.t0 = S.t; cycles = 0; beatN = 0; }
+  if (p.pulse) sendPulse();
+  S.run = true; S.top = !!p.top;
+  S.freezeAt = p.rulerFit && !reduce ? 2.5 : 0;            // 파동이 2.5 m까지 퍼지면 영상을 멈추고 자를 마루에 맞춤
+  if (p.rulerFit) { S.rulerA = 0.45; S.rulerB = 0.45 + lam(); }
+  else { S.rulerA = 1.0; S.rulerB = 1.6; }
+  goView(false); sync();
+}
+const setTxt = (el, s) => { if (el.textContent !== s) el.textContent = s; };
+function sync() {
+  $('#presets').querySelectorAll('.chip').forEach((b, i) => b.setAttribute('aria-pressed', String(i === S.preset)));
+  document.querySelectorAll('[data-tg]').forEach(b => b.setAttribute('aria-pressed', String(!!S[b.dataset.tg])));
+  document.querySelectorAll('[data-seg]').forEach(sg => sg.querySelectorAll('button').forEach(b => {
+    const k = sg.dataset.seg, v = b.dataset.v;
+    b.setAttribute('aria-pressed', String(String(S[k]) === v));
+  }));
+  setTxt($('#playBtn'), S.run ? '❚❚' : '▶');
+  $('#viewBtn').setAttribute('aria-pressed', String(S.top)); setTxt($('#viewBtn'), S.top ? '비스듬히 보기' : '스마트폰 촬영');
+  $('#capBtn').setAttribute('aria-pressed', String(S.cap));
+  const cap = S.preset >= 0 ? PRESETS[S.preset].cap : '';
+  setTxt($('#caption'), cap); $('#caption').hidden = !S.cap || !cap;
+  $('#graphCard').hidden = !S.graph;
+  setTxt($('#graphNote'), S.dir === 'L' ? '종파: 세로축 = 앞뒤 변위' : '세로축 = 좌우 변위');
+  $('#recBadge').hidden = !S.top;
+  $('#sndBtn').setAttribute('aria-pressed', String(S.sound));
+  const sb = $('#shakeBtn'); sb.hidden = S.mode === 'hand';
+  setTxt(sb, S.mode === 'pulse' ? '펄스 보내기' : S.shaking ? '멈추기' : '흔들기');
+  setTxt($('#timenote'), !S.run ? '일시정지 — 영상 멈춤' : S.speed === 1 ? '실제 빠르기' : S.speed === 0.5 ? '실제보다 2배 느림' : '실제보다 4배 느림');
+}
+let lastRO = '';
+function updateReadout() {
+  const v = vel(), L = lam(), rows = [];
+  const hand = S.mode === 'hand';
+  rows.push(`<div class="ro"><span>${MEDN[S.med]}</span><b>${S.dir === 'T' ? '횡파' : '종파'}</b></div>`);
+  rows.push(`<div class="ro s2"><span>진동수 f</span><b>${hand ? '—' : S.f + ' Hz'}</b></div>`);
+  rows.push(`<div class="ro ro-opt"><span>주기 T = 1/f</span><b>${hand ? '—' : (1 / S.f).toFixed(2) + ' s'}</b></div>`);
+  rows.push(`<div class="ro s1"><span>파장 λ</span><b>${hand ? '—' : Math.round(L * 100) + ' cm'}</b></div>`);
+  if (S.ruler) rows.push(`<div class="ro ro-opt"><span>자로 잰 길이</span><b>${Math.round(Math.abs(S.rulerB - S.rulerA) * 100)} cm</b></div>`);
+  rows.push('<div class="ro-sep"></div>');
+  const pk = pulsePeak();
+  if (S.mode === 'pulse' && pk !== null) {
+    const tt = S.t - S.pulseT - 1 / (4 * S.f);
+    rows.push(`<div class="ro ro-opt"><span>펄스 위치 x</span><b>${Math.round(pk * 100)} cm</b></div><div class="ro ro-opt"><span>걸린 시간 t</span><b>${tt.toFixed(2)} s</b></div>`);
+    rows.push(`<div class="ro-db"><b>${Math.round(v * 100)}</b><small>cm/s</small><span class="what">속력 x/t</span></div>`);
+  } else {
+    rows.push(`<div class="ro-db"><b>${Math.round(v * 100)}</b><small>cm/s</small><span class="what">파동의 속력</span></div>`);
+    rows.push(`<div class="ro-sub">${hand ? 'v는 용수철이 정한다' : `v = fλ = ${S.f} × ${Math.round(L * 100)}`}</div>`);
+  }
+  const html = rows.join('');
+  if (html !== lastRO) { $('#readout').innerHTML = html; lastRO = html; }
+  const tt = Math.max(0, S.t - S.t0), mm = Math.floor(tt / 60), ss = tt - mm * 60;
+  setTxt($('#recTime'), `${String(mm).padStart(2, '0')}:${ss.toFixed(2).padStart(5, '0')}`);
+  $('#recBadge').classList.toggle('paused', !S.run);
+}
+
+/* ---------- 메트로놈 소리 (버튼을 누를 때만 시작): 나무토막 '똑', 4박마다 첫 박 강세 ---------- */
+const AU = { ctx: null };
+function toggleSound() {
+  if (!AU.ctx) {
+    try {
+      AU.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      AU.out = AU.ctx.createGain(); AU.out.gain.value = 0.6; AU.out.connect(AU.ctx.destination);
+      const nb = AU.ctx.createBuffer(1, Math.round(AU.ctx.sampleRate * 0.03), AU.ctx.sampleRate), d = nb.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (AU.ctx.sampleRate * 0.004));
+      AU.noise = nb;
+    } catch (err) { AU.ctx = null; return; }
+  }
+  S.sound = !S.sound;
+  if (S.sound) { AU.ctx.resume().catch(() => {}); woodblock(true, AU.ctx.currentTime + 0.03); }
+  sync();
+}
+function woodblock(accent, when) {
+  const c = AU.ctx, t = Math.max(c.currentTime + 0.005, when), f0 = accent ? 1180 : 880, lv = accent ? 0.5 : 0.32;
+  for (const [mul, amp, dec] of [[1, 1, 0.05], [2.6, 0.42, 0.028], [4.3, 0.16, 0.018]]) {   // 나무토막의 세 고유 진동
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = 'sine'; o.frequency.setValueAtTime(f0 * mul * 1.03, t); o.frequency.exponentialRampToValueAtTime(f0 * mul, t + 0.015);
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(amp * lv, t + 0.0012); g.gain.exponentialRampToValueAtTime(0.0003, t + dec * 4);
+    o.connect(g).connect(AU.out); o.start(t); o.stop(t + dec * 4 + 0.02);
+  }
+  const n = c.createBufferSource(), bp = c.createBiquadFilter(), g = c.createGain();   // 두드리는 순간의 짧은 잡음
+  n.buffer = AU.noise; bp.type = 'bandpass'; bp.frequency.value = f0 * 2.4; bp.Q.value = 1.4; g.gain.value = lv * 0.9;
+  n.connect(bp).connect(g).connect(AU.out); n.start(t);
+}
+function beat(tb) {
+  const accent = beatN % 4 === 0; beatN++;
+  if (!AU.ctx || !S.sound) return;
+  woodblock(accent, AU.ctx.currentTime + 0.03 + (tb - S.t) / S.speed);   // 박자의 실제 시각에 맞춰 예약 (프레임 지터 없음)
+}
+
+/* ---------- 이벤트 ---------- */
+$('#presets').innerHTML = PRESETS.map((p, i) => `<button class="chip" data-p="${i}" title="${i + 1}"><b>${i + 1}</b>${p.label}</button>`).join('');
+$('#presets').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) applyPreset(+b.dataset.p); });
+document.querySelectorAll('[data-tg]').forEach(b => b.addEventListener('click', () => { const k = b.dataset.tg; setS({ [k]: !S[k] }); if (k === 'trail') trailK = 0; if (k === 'ruler' && S.ruler && !S.run) snapRuler(); if (k === 'graph' && !S.top && !V3.userMoved) goView(false); }));
+document.querySelectorAll('[data-seg]').forEach(sg => sg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; const k = sg.dataset.seg, raw = b.dataset.v;
+  const v = k === 'f' || k === 'med' || k === 'speed' ? +raw : raw;
+  if (k === 'speed') { S.speed = v; sync(); return; }
+  S.freezeAt = 0;
+  setS({ [k]: v });
+}));
+$('#playBtn').addEventListener('click', () => { S.freezeAt = 0; setS({ run: !S.run }); });
+$('#shakeBtn').addEventListener('click', () => { S.freezeAt = 0; startShake(); });
+$('#sndBtn').addEventListener('click', toggleSound);
+$('#viewBtn').addEventListener('click', () => { S.top = !S.top; goView(false); sync(); });
+$('#capBtn').addEventListener('click', () => setS({ cap: !S.cap }));
+$('#fsBtn').addEventListener('click', () => {
+  const el = $('#app');
+  try { if (document.fullscreenElement) document.exitFullscreen?.()?.catch?.(() => {}); else el.requestFullscreen?.()?.catch?.(() => {}); } catch (err) {}
+});
+document.addEventListener('fullscreenchange', () => { setTxt($('#fsBtn'), document.fullscreenElement ? '창 모드' : '전체 화면'); });
+document.addEventListener('keydown', e => {
+  if (e.target.matches?.('input, textarea, select') || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key === ' ') { e.preventDefault(); S.freezeAt = 0; setS({ run: !S.run }); }
+  else if (/^[1-9]$/.test(e.key) && +e.key <= PRESETS.length) applyPreset(+e.key - 1);
+  else if (e.key === 't' || e.key === 'T') $('#viewBtn').click();
+  else if (e.key === 'f' || e.key === 'F') $('#fsBtn').click();
+});
+// 손잡이 끌기, 자 끝 끌기
+const gl = $('#gl');
+let drag = null;
+gl.addEventListener('pointerdown', e => {
+  if (!V3.ok) return;
+  const ray = setRay(e);
+  if (S.ruler) { const hit = ray.intersectObjects([V3.tipA, V3.tipB, V3.lineA, V3.lineB]); if (hit.length) { drag = hit[0].object === V3.tipA || hit[0].object === V3.lineA ? 'A' : 'B'; S.rulerTo = null; } }
+  if (!drag && ray.intersectObject(V3.handle, true).length) { drag = 'hand'; S.freezeAt = 0; if (S.mode !== 'hand') setS({ mode: 'hand' }); dragHand = true; if (!S.run) setS({ run: true }); }
+  if (drag) { V3.controls.enabled = false; gl.setPointerCapture(e.pointerId); e.preventDefault(); e.stopImmediatePropagation(); }
+}, { capture: true });
+gl.addEventListener('pointermove', e => {
+  if (!V3.ok) return;
+  const ray = setRay(e), hit = new THREE.Vector3();
+  if (drag === 'A' || drag === 'B') {
+    if (ray.ray.intersectPlane(V3.floorPlane, hit)) { const x = Math.round(Math.max(0, Math.min(3.2, hit.x)) * 100) / 100; if (drag === 'A') S.rulerA = x; else S.rulerB = x; }
+  } else if (drag === 'hand') {
+    if (ray.ray.intersectPlane(V3.handPlane, hit)) handTarget = S.dir === 'T' ? Math.max(-0.15, Math.min(0.15, hit.z)) : Math.max(-0.06, Math.min(0.06, hit.x - HANDLE_X));
+  } else if (e.buttons === 0) {
+    const over = (S.ruler && ray.intersectObjects([V3.tipA, V3.tipB, V3.lineA, V3.lineB]).length) ? 'ew-resize' : ray.intersectObject(V3.handle, true).length ? 'grab' : 'default';
+    gl.style.cursor = over;
+  }
+});
+const endDrag = () => { if (drag === 'hand') { dragHand = false; handTarget = 0; } drag = null; if (V3.ok) V3.controls.enabled = true; };
+gl.addEventListener('pointerup', endDrag); gl.addEventListener('pointercancel', endDrag);
+const reTheme = () => { readTheme(); theme3D(); };
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', reTheme);
+new MutationObserver(reTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+new ResizeObserver(() => size3D()).observe($('#stage'));
+
+/* ---------- 시작 ---------- */
+readTheme();
+try { initThree(); size3D(); }
+catch (err) { V3.ok = false; $('#nogl').hidden = false; gl.hidden = true; }
+applyPreset(0); goView(true);
+function advance(dt) {
+  if (!S.run) return;
+  S.t += dt * S.speed; writeUntil(S.t);
+  for (const tb of beats) beat(tb);
+  beats.length = 0;
+  if (S.freezeAt > 0 && S.shaking && vel() * (S.t - S.t0) >= S.freezeAt) { S.freezeAt = 0; setS({ run: false }); }
+}
+let last = performance.now(), fr = 0;
+function loop(now) {
+  const raw = Math.min(0.5, (now - last) / 1000); last = now;
+  advance(Math.min(0.1, raw));
+  update3D(raw);
+  if (S.graph) drawGraph();
+  if ((fr = (fr + 1) % 3) === 0) updateReadout();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>

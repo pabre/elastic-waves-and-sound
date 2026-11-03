@@ -1,0 +1,151 @@
+<title>탄성파와 소리 시뮬레이터</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: 교과서 소단원(01~05) 순서의 목록. 소단원마다 번호 줄 + 시뮬레이터 카드 */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --ink: #141c25;
+  --muted: #5a6573;
+  --line: #d3dae2;
+  --accent: #0b6b70;
+  --accent-soft: #dcefee;
+  --badge: #d06a14;
+  --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+    --accent: #3fc0b5; --accent-soft: #173533; --badge: #f5a04c; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+  --accent: #3fc0b5; --accent-soft: #173533; --badge: #f5a04c; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; }
+.wrap {
+  max-width: 1120px; margin: 0 auto;
+  padding-block: 40px 56px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: flex; flex-direction: column; gap: 34px;
+}
+.head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; }
+.eyebrow { margin: 0; font: 500 13px var(--mono); color: var(--muted); letter-spacing: .02em; }
+h1 { margin: 6px 0 0; font-size: clamp(28px, 4vw, 40px); font-weight: 700; letter-spacing: -.02em; line-height: 1.15; text-wrap: balance; }
+.keys { display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; color: var(--muted); }
+.keys span { display: inline-flex; align-items: center; gap: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 4px 11px; }
+kbd { font: 600 12px var(--mono); color: var(--ink); background: var(--surface-2); border: 1px solid var(--line); border-bottom-width: 2px; border-radius: 5px; padding: 0 6px; }
+
+section { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 18px; }
+@media (max-width: 760px) { section { grid-template-columns: minmax(0, 1fr); gap: 10px; } }
+.sec-head { display: flex; flex-direction: column; gap: 2px; padding-top: 6px; }
+.sec-head b { font: 600 34px var(--mono); color: var(--accent); line-height: 1; }
+.sec-head span { font-size: 17px; font-weight: 700; }
+.sec-head small { font-size: 12px; color: var(--muted); }
+@media (max-width: 760px) { .sec-head { flex-direction: row; align-items: baseline; gap: 10px; } .sec-head b { font-size: 24px; } }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 12px; }
+.card {
+  display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: start;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px;
+  color: inherit; text-decoration: none; transition: border-color .15s, transform .15s, box-shadow .15s;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 10px 26px rgb(10 20 30 / .08); }
+.card:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.icon { width: 64px; height: 64px; border-radius: 12px; background: var(--accent-soft); color: var(--accent); display: grid; place-items: center; }
+.icon svg { width: 40px; height: 40px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.card h3 { margin: 0; font-size: 17px; font-weight: 700; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.b3d { font: 600 11px var(--mono); color: var(--badge); border: 1px solid currentColor; border-radius: 5px; padding: 0 5px; }
+.card p { margin: 3px 0 8px; color: var(--muted); font-size: 14px; }
+.meta { display: flex; gap: 10px; font: 500 12px var(--mono); color: var(--muted); }
+.meta .go { margin-left: auto; color: var(--accent); font-family: var(--font); font-weight: 700; }
+@media (prefers-reduced-motion: reduce) { .card { transition: none; } .card:hover { transform: none; } }
+</style>
+
+<div class="wrap">
+  <header class="head">
+    <div>
+      <p class="eyebrow">역학과 에너지 · Ⅲ 탄성파와 소리 · 교사용 수업 도구</p>
+      <h1>탄성파와 소리 시뮬레이터</h1>
+    </div>
+    <div class="keys" aria-label="모든 도구 공통 단축키">
+      <span><kbd>Space</kbd> 재생·정지</span>
+      <span><kbd>1</kbd>~<kbd>9</kbd> 장면</span>
+      <span><kbd>F</kbd> 전체 화면</span>
+    </div>
+  </header>
+
+  <section>
+    <div class="sec-head"><b>01</b><span>단진동</span><small>88~91쪽</small></div>
+    <div class="cards">
+      <a class="card" href="https://claude.ai/artifact/VsJd2zRQ7gr9AZd1X4xsrQ" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 40 40"><path d="M6 4h28M14 4v3"/><path d="M14 7l-5 2 10 2-10 2 10 2-10 2 10 2-5 2"/><rect x="9" y="23" width="10" height="9" rx="2"/><circle cx="29" cy="20" r="7"/><circle cx="34" cy="17" r="1.6" fill="currentColor"/></svg></span>
+        <div><h3>단진동 실험실 <span class="b3d">3D</span></h3><p>용수철 진자와 회전판 그림자, 주기 측정</p><div class="meta"><span>장면 6</span><span class="go">열기 →</span></div></div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><b>02</b><span>탄성파</span><small>92~97쪽</small></div>
+    <div class="cards">
+      <a class="card" href="https://claude.ai/artifact/6V3sBxRdRToyHfeVZcb7b6" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 40 40"><path d="M3 20c3-8 6-8 9 0s6 8 9 0 6-8 9 0 4 6 7 2"/><path d="M14 29h12M23 26l3 3-3 3"/></svg></span>
+        <div><h3>용수철 파동 <span class="b3d">3D</span></h3><p>횡파·종파, 파장·주기·속력</p><div class="meta"><span>장면 8</span><span class="go">열기 →</span></div></div>
+      </a>
+      <a class="card" href="https://claude.ai/artifact/3zqejLTFnanX5BfhxgHNgv" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 40 40"><path d="M3 22h8c2 0 3-7 5-7s3 7 5 7"/><path d="M21 22h16" stroke-width="4"/><circle cx="21" cy="22" r="2" fill="currentColor"/></svg></span>
+        <div><h3>반사와 투과</h3><p>고정단·자유단 반사, 초음파 탐지</p><div class="meta"><span>장면 7</span><span class="go">열기 →</span></div></div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><b>03</b><span>도플러 효과</span><small>98~103쪽</small></div>
+    <div class="cards">
+      <a class="card" href="https://claude.ai/artifact/G9M8EbMEvKXLnHLW9w7VSm" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 40 40"><circle cx="24" cy="20" r="5"/><circle cx="22" cy="20" r="10"/><circle cx="19" cy="20" r="15"/><path d="M28 20h6M31 17l3 3-3 3"/></svg></span>
+        <div><h3>도플러 효과</h3><p>구급차 사이렌, 음속 돌파, 스피드 건</p><div class="meta"><span>장면 8</span><span class="go">열기 →</span></div></div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><b>04</b><span>음파의 간섭</span><small>104~107쪽</small></div>
+    <div class="cards">
+      <a class="card" href="https://claude.ai/artifact/2TuyLaTnnJt9yD3HWfJ81f" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 40 40"><rect x="7" y="4" width="8" height="10" rx="2"/><rect x="25" y="4" width="8" height="10" rx="2"/><path d="M11 18c-2 6-4 12-6 18M29 18c2 6 4 12 6 18M20 18v18" stroke-dasharray="3 3"/></svg></span>
+        <div><h3>두 스피커 간섭 <span class="b3d">3D</span></h3><p>보강·상쇄 간섭과 경로차</p><div class="meta"><span>장면 8</span><span class="go">열기 →</span></div></div>
+      </a>
+      <a class="card" href="https://claude.ai/artifact/SGdBbu727LpyutkRSQpwPM" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 40 40"><path d="M8 24v-4a12 12 0 0 1 24 0v4"/><rect x="5" y="22" width="7" height="11" rx="3"/><rect x="28" y="22" width="7" height="11" rx="3"/></svg></span>
+        <div><h3>소음 제거</h3><p>헤드폰, 자동차 소음기, 맥놀이</p><div class="meta"><span>장면 7</span><span class="go">열기 →</span></div></div>
+      </a>
+    </div>
+  </section>
+
+  <section>
+    <div class="sec-head"><b>05</b><span>정상파</span><small>108~113쪽</small></div>
+    <div class="cards">
+      <a class="card" href="https://claude.ai/artifact/G1Cr7BwHPi2dHhNTPmgDVJ" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 40 40"><path d="M4 20c4-10 12-10 16 0s12 10 16 0"/><path d="M4 20c4 10 12 10 16 0s12-10 16 0" opacity=".45"/><circle cx="4" cy="20" r="1.8" fill="currentColor"/><circle cx="20" cy="20" r="1.8" fill="currentColor"/><circle cx="36" cy="20" r="1.8" fill="currentColor"/></svg></span>
+        <div><h3>정상파 만들기</h3><p>두 파동의 중첩, 마디와 배</p><div class="meta"><span>장면 6</span><span class="go">열기 →</span></div></div>
+      </a>
+      <a class="card" href="https://claude.ai/artifact/SNE477yRRXQbWR8k28iBrk" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 40 40"><path d="M4 16h22M4 24h22"/><circle cx="31" cy="20" r="6"/><path d="M10 16v8M16 16v8M21 16v8"/><path d="M4 20h32" stroke-width="1.2"/></svg></span>
+        <div><h3>가상 악기</h3><p>현·관의 고유 진동, 음색, 유리병</p><div class="meta"><span>장면 8</span><span class="go">열기 →</span></div></div>
+      </a>
+      <a class="card" href="https://claude.ai/artifact/9oxpRD4K7t94JHFcPuGVhb" target="_blank" rel="noopener">
+        <span class="icon"><svg viewBox="0 0 40 40"><path d="M14 4v30a3 3 0 0 0 6 0V4"/><path d="M14 22h6" /><path d="M14 26h6M14 30h6" opacity=".45"/><path d="M8 6h4M8 12h4M8 18h4"/><path d="M26 10c3 2 3 6 0 8M30 7c5 4 5 10 0 14"/></svg></span>
+        <div><h3>공기 기둥 공명</h3><p>공명 위치로 음속 측정</p><div class="meta"><span>장면 7</span><span class="go">열기 →</span></div></div>
+      </a>
+    </div>
+  </section>
+</div>

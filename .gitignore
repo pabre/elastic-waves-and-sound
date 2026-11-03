@@ -1,0 +1,8 @@
+# 교과서 PDF는 저작물이라 올리지 않음
+*.pdf
+
+# 빌드 결과·임시 파일
+_site/
+__pycache__/
+tmp_*
+.claude/

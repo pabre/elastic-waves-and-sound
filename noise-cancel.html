@@ -1,0 +1,1250 @@
+<title>소음 제거 실험실</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* 교사용 시연 도구 (TEACHER-DEMO v3 형식): 상단 장면 칩 · 화면을 채우는 무대 + 유리 카드 · 아래 조작 독 */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --ink: #141c25;
+  --muted: #5a6573;
+  --line: #d3dae2;
+  --accent: #0b6b70;
+  --accent-ink: #ffffff;
+  --on-strong: #ffffff;
+  --noise: #e0484f;
+  --anti: #2f74e0;
+  --sum: #1f9d63;
+  --music: #d08a12;
+  --s1: #0a7f86;
+  --s2: #d06a14;
+  --stage: #e3e8ec;
+  --skin: #e8c3a0;
+  --skin-2: #c99a76;
+  --shell: #3a4048;
+  --shell-2: #1f2328;
+  --pad: #50565e;
+  --cavity: #f1f3f5;
+  --metal: #d5dade;
+  --metal-2: #8d969f;
+  --pcb: #1f7a4a;
+  --bus: #2f8f62;
+  --bus-2: #1f6646;
+  --glass: #1d2933;
+  --glass-hi: #6f8ea5;
+  --wood: #caa77a;
+  --wood-2: #a9845a;
+  --water: #bfe0ee;
+  --stone: #d8b45a;
+  --scope: #0a1410;
+  --scope-grid: #173226;
+  --road: #5b6066;
+  --hair: #2c221b;
+  --flesh: #c0675a;
+  --fat: #efd49e;
+  --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+    --accent: #3fc0b5; --accent-ink: #0d1116; --on-strong: #ffffff; --noise: #ff6b70; --anti: #6aa2ff; --sum: #4fd389; --music: #f2b440; --s1: #3fc6c4; --s2: #f5a04c;
+    --stage: #12171d; --skin: #c9a07c; --skin-2: #9c7656; --shell: #2a2f35; --shell-2: #121518; --pad: #3a4047; --cavity: #232a32;
+    --metal: #a6aeb6; --metal-2: #5b646d; --pcb: #1b6a41; --bus: #2a7a55; --bus-2: #1a5139; --glass: #0b1116; --glass-hi: #46607a;
+    --wood: #6e5639; --wood-2: #4f3d28; --water: #18394a; --stone: #c9a24c;
+    --road: #30353b; --hair: #1d1713; --flesh: #8e4a40; --fat: #a88d5e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+  --accent: #3fc0b5; --accent-ink: #0d1116; --on-strong: #ffffff; --noise: #ff6b70; --anti: #6aa2ff; --sum: #4fd389; --music: #f2b440; --s1: #3fc6c4; --s2: #f5a04c;
+  --stage: #12171d; --skin: #c9a07c; --skin-2: #9c7656; --shell: #2a2f35; --shell-2: #121518; --pad: #3a4047; --cavity: #232a32;
+  --metal: #a6aeb6; --metal-2: #5b646d; --pcb: #1b6a41; --bus: #2a7a55; --bus-2: #1a5139; --glass: #0b1116; --glass-hi: #46607a;
+  --wood: #6e5639; --wood-2: #4f3d28; --water: #18394a; --stone: #c9a24c;
+  --road: #30353b; --hair: #1d1713; --flesh: #8e4a40; --fat: #a88d5e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app {
+  min-height: 100vh; display: flex; flex-direction: column; gap: 10px;
+  padding-block: 10px 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg);
+}
+.app:fullscreen { padding-block: 12px; }
+
+/* 상단 바 */
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tag { font: 500 12px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; white-space: nowrap; }
+h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 520px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px 4px 4px; cursor: pointer; font-size: 13.5px; font-weight: 500; white-space: nowrap; transition: background .15s, border-color .15s; }
+.chip b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font: 600 12px var(--mono); }
+.chip:hover { border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.chip[aria-pressed="true"] b { background: var(--accent); color: var(--accent-ink); }
+.tools { display: flex; gap: 6px; margin-left: auto; }
+.tbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 6px 12px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.tbtn:hover { border-color: var(--muted); }
+.tbtn[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+
+/* 무대 */
+.stage { position: relative; flex: 1 1 auto; height: clamp(420px, calc(100vh - 200px), 1100px); border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--stage); }
+.app:fullscreen .stage { height: auto; }
+#scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.glass { background: color-mix(in srgb, var(--surface) 86%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid color-mix(in srgb, var(--line) 85%, transparent); border-radius: 14px; box-shadow: 0 8px 28px rgb(10 20 30 / .10); }
+.readout { position: absolute; top: 12px; right: 12px; width: 236px; padding: 12px 14px 12px; display: flex; flex-direction: column; gap: 3px; }
+.ro { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 14px; color: var(--muted); }
+.ro b { font: 500 18px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ro b small { font: 500 13px var(--font); color: var(--muted); margin-left: 3px; }
+.ro-k { display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 700; color: var(--muted); margin-top: 2px; }
+.ro-k i { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.ro-sub { text-align: right; font: 500 14px var(--mono); color: var(--muted); margin-top: -2px; white-space: nowrap; }
+.ro-f { text-align: right; font: 500 13px var(--mono); color: var(--ink); background: var(--surface-2); border-radius: 7px; padding: 3px 7px; margin-top: 2px; white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
+.ro-sep { height: 1px; background: var(--line); margin: 6px 0; }
+.ro-db { display: flex; align-items: baseline; justify-content: flex-end; gap: 6px; }
+.ro-db b { font: 600 36px var(--mono); line-height: 1.05; font-variant-numeric: tabular-nums; letter-spacing: -.02em; white-space: nowrap; }
+.ro-db small { color: var(--muted); font-size: 14px; }
+
+.playbar { position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; padding: 6px; flex-wrap: wrap; max-width: calc(100% - 272px); }
+.timenote { font-size: 12px; color: var(--muted); padding: 0 8px 0 4px; white-space: nowrap; }
+@media (min-width: 900px) and (min-height: 560px) {
+  html, body { height: 100%; }
+  .app { height: 100%; min-height: 0; }
+  .stage { height: auto; flex: 1 1 0; min-height: 360px; }
+}
+.bottom { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap-reverse; justify-content: space-between; align-items: flex-end; gap: 10px; pointer-events: none; }
+.bottom > * { pointer-events: auto; }
+.caption { padding: 9px 16px; font-size: 18px; font-weight: 500; max-width: 720px; text-wrap: balance; }
+.graph-card { width: min(400px, 100%); padding: 8px 10px 4px; margin-left: auto; }
+.graph-card .gt { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); padding: 0 2px 2px; }
+#gcv { display: block; width: 100%; height: 118px; }
+
+/* 조작 독 */
+.dock { display: flex; flex-wrap: wrap; gap: 8px; }
+.dg { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 7px 12px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dg > span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.dg.slider { flex: 1 1 170px; }
+.dg.slider label { font-size: 12px; color: var(--muted); white-space: nowrap; display: flex; flex-direction: column; line-height: 1.2; }
+.dg.slider output { font: 600 17px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.dg.slider output small { font: 500 12px var(--font); color: var(--muted); margin-left: 3px; }
+.dg input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent); height: 28px; }
+.seg { display: flex; gap: 3px; background: var(--surface-2); border-radius: 9px; padding: 3px; flex-wrap: wrap; }
+.seg button, .tg { border: 0; background: transparent; border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / .14); }
+.tgs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tg { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); }
+.tg[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.tg .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.pbtn { border: 0; border-radius: 9px; padding: 7px 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--accent-ink); white-space: nowrap; }
+.pbtn.alt { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+.pbtn.snd[aria-pressed="true"] { background: var(--noise); color: var(--on-strong); }
+.pbtn.big { font-size: 15px; padding: 7px 16px 7px 13px; background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+.pbtn.big::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 8px; vertical-align: 0; background: var(--muted); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--surface) 60%, transparent); }
+.pbtn.big[aria-pressed="true"] { background: var(--anti); color: var(--on-strong); border-color: var(--anti); }
+.pbtn.big[aria-pressed="true"]::before { background: var(--on-strong); }
+
+@media (max-width: 720px) {
+  h1 { font-size: 18px; }
+  .readout { width: 150px; padding: 8px 10px; }
+  .ro-opt, .ro-f { display: none !important; }
+  .ro b { font-size: 15px; } .ro-db b { font-size: 24px; }
+  .caption { font-size: 15px; }
+  .graph-card { display: none; }
+  .stage { height: clamp(440px, 76vh, 720px); }
+  .playbar { max-width: calc(100% - 186px); }
+  .playbar .seg.speed, .timenote { display: none; }
+}
+@media (max-width: 600px) {
+  .playbar { max-width: calc(100% - 24px); }
+  .pbtn, .pbtn.big { font-size: 14px; padding: 6px 11px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand"><span class="tag">Ⅲ-04 · 106~107쪽</span><h1>소음 제거</h1></div>
+    <nav class="presets" id="chips" aria-label="수업 장면"></nav>
+    <div class="tools">
+      <button class="tbtn" id="capBtn" aria-pressed="true" title="C">설명</button>
+      <button class="tbtn" id="fsBtn" title="F">전체 화면</button>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-label="소음 제거 장면">
+    <canvas id="scene" tabindex="0"></canvas>
+    <div class="glass playbar" id="playbar"></div>
+    <div class="glass readout" id="readout" aria-live="polite"></div>
+    <div class="bottom">
+      <div class="glass caption" id="caption"></div>
+      <div class="glass graph-card" id="gpanel" hidden><div class="gt"><span id="gTitle"></span><span id="gUnit"></span></div><canvas id="gcv"></canvas></div>
+    </div>
+  </section>
+
+  <div class="dock" id="dock"></div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const V = 340, TAU = 2 * Math.PI, DEG = Math.PI / 180;
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const html = (el, s) => { if (el && el.innerHTML !== s) el.innerHTML = s; };
+const txt = (el, s) => { if (el && el.textContent !== s) el.textContent = s; };
+
+/* ---------- 테마 ---------- */
+const T = {};
+const TOK = ['surface', 'surface-2', 'ink', 'muted', 'line', 'accent', 'noise', 'anti', 'sum', 'music', 's1', 's2', 'stage', 'skin', 'skin-2', 'shell', 'shell-2', 'pad', 'cavity', 'metal', 'metal-2', 'pcb', 'bus', 'bus-2', 'glass', 'glass-hi', 'wood', 'wood-2', 'water', 'stone', 'scope', 'scope-grid', 'road', 'hair', 'flesh', 'fat'];
+function readTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of TOK) T[k] = cs.getPropertyValue('--' + k).trim();
+  T.font = getComputedStyle(document.body).fontFamily; T.mono = cs.getPropertyValue('--mono').trim();
+  const dt = document.documentElement.dataset.theme;
+  T.dark = dt === 'dark' || (dt !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
+new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+function hexRGB(hex) {
+  let c = (hex || '#888888').trim(); if (c[0] !== '#') return [136, 136, 136];
+  if (c.length === 4) c = '#' + [...c.slice(1)].map(h => h + h).join('');
+  const n = parseInt(c.slice(1, 7), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255];
+}
+function rgba(hex, a) { const [r, g, b] = hexRGB(hex); return `rgba(${r},${g},${b},${a})`; }
+function mix(h1, h2, t, a = 1) { const p = hexRGB(h1), q = hexRGB(h2); return `rgba(${p.map((v, i) => Math.round(v + (q[i] - v) * t)).join(',')},${a})`; }
+
+/* ---------- 캔버스 ---------- */
+const cv = $('#scene'), ctx = cv.getContext('2d');
+const D = { dpr: 1, w: 1, h: 1 };
+function fit(c) {
+  const r = c.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+  if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+  D.dpr = dpr; return [Math.max(1, r.width), Math.max(1, r.height)];
+}
+function resize() { [D.w, D.h] = fit(cv); }
+function shadow(blur, ox, oy, a = 0.3) { ctx.shadowColor = `rgba(0,0,0,${a})`; ctx.shadowBlur = blur * D.dpr; ctx.shadowOffsetX = ox * D.dpr; ctx.shadowOffsetY = oy * D.dpr; }
+function noShadow() { ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; }
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, Math.max(0, Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2))); }
+function lg(x1, y1, x2, y2, stops) { const g = ctx.createLinearGradient(x1, y1, x2, y2); stops.forEach(([o, c]) => g.addColorStop(o, c)); return g; }
+function rg(x, y, r0, r1, stops, x1 = x, y1 = y) { const g = ctx.createRadialGradient(x, y, r0, x1, y1, r1); stops.forEach(([o, c]) => g.addColorStop(o, c)); return g; }
+function pill(text, x, y, color = T.ink, align = 'center', size = 15) {
+  if (D.w <= 600) size = Math.min(size, 12);           // 좁은 화면에서는 이름표를 작게
+  ctx.font = `600 ${size}px ${T.font}`;
+  const w = ctx.measureText(text).width + 18, h = size + 11;
+  let bx = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
+  bx = clamp(bx, 4, D.w - w - 4); const by = clamp(y - h / 2, 4, D.h - h - 4);
+  shadow(10, 0, 2, 0.18); ctx.fillStyle = rgba(T.surface, 0.93); rr(bx, by, w, h, h / 2); ctx.fill(); noShadow();
+  ctx.strokeStyle = rgba(T.line, 0.9); ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = color; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(text, bx + 9, by + h / 2 + 0.5);
+}
+function ellipseShadow(x, y, rx, ry, a = 0.28) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(1, ry / rx);
+  ctx.fillStyle = rg(0, 0, 0, rx, [[0, `rgba(0,0,0,${a})`], [0.55, `rgba(0,0,0,${a * 0.45})`], [1, 'rgba(0,0,0,0)']]);
+  ctx.beginPath(); ctx.arc(0, 0, rx, 0, TAU); ctx.fill(); ctx.restore();
+}
+function stageBG() {
+  const g = ctx.createRadialGradient(D.w * 0.3, D.h * 0.25, 10, D.w * 0.5, D.h * 0.5, Math.hypot(D.w, D.h) * 0.7);
+  g.addColorStop(0, rgba(T.surface, T.dark ? 0.06 : 0.7)); g.addColorStop(1, rgba(T.stage, 0));
+  ctx.fillStyle = T.stage; ctx.fillRect(0, 0, D.w, D.h); ctx.fillStyle = g; ctx.fillRect(0, 0, D.w, D.h);
+}
+
+/* ---------- 무대 나누기: 장치 그림 / 오실로스코프 (겹쳐 놓인 카드들을 실제로 재서 피함) ---------- */
+function layout(opt = {}) {
+  const W = D.w, H = D.h, pb = $('#playbar'), ro = $('#readout'), cap = $('#caption');
+  const narrow = W <= 600;
+  const pbB = pb.offsetTop + pb.offsetHeight, roW = ro.offsetWidth + 24;
+  // 좁은 화면: 측정 카드를 조작 막대 아래로 내리고, 그림은 카드 아래부터
+  const roTop = narrow ? `${pbB + 8}px` : ''; if (ro.style.top !== roTop) ro.style.top = roTop;
+  const top = narrow ? Math.max(pbB, ro.offsetTop + ro.offsetHeight) + 10 : Math.max(66, pbB + 10);
+  const bottom = S.caption && !cap.hidden ? cap.offsetHeight + 24 : 16, gH = opt.graph && W > 720 ? 150 : 0;
+  if (opt.full) return { app: { x: 12, y: top, w: W - 24 - (narrow ? 0 : roW), h: H - top - bottom } };
+  if (!narrow && W / H > 1.3) {
+    const aw = Math.max(320, W * 0.5);
+    return { app: { x: 12, y: top, w: aw - 24, h: H - top - bottom }, scope: { x: aw + 6, y: top + 6, w: W - aw - roW - 18, h: H - top - Math.max(bottom, gH + 22) - 12 } };
+  }
+  const ah = (H - top - bottom) * (narrow ? 0.56 : 0.5);
+  return { app: { x: 12, y: top, w: W - 24 - (W > 600 && !narrow ? roW : 0), h: ah }, scope: { x: 18, y: top + ah + 14, w: W - 36, h: H - top - ah - 20 - Math.max(bottom, gH + 22) } };
+}
+
+/* ---------- 오실로스코프 (테 + 유리 + 인광 선) ---------- */
+function scope(r, rows, o) {
+  if (!r || r.w < 60 || r.h < 60) return;
+  shadow(20, 0, 9, 0.3);
+  ctx.fillStyle = lg(r.x, r.y - 6, r.x, r.y + r.h + 6, [[0, '#353c43'], [1, '#14181c']]); rr(r.x - 6, r.y - 6, r.w + 12, r.h + 12, 18); ctx.fill(); noShadow();
+  ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1; rr(r.x - 5.5, r.y - 5.5, r.w + 11, r.h + 11, 17.5); ctx.stroke();
+  ctx.fillStyle = T.scope; rr(r.x, r.y, r.w, r.h, 12); ctx.fill();
+  const inX = r.x + 12, inY = r.y + 10, iw = r.w - 24, ih = r.h - 20;
+  ctx.save(); rr(inX, inY, iw, ih, 8); ctx.clip();
+  ctx.fillStyle = rg(inX + iw / 2, inY + ih / 2, 0, Math.max(iw, ih) * 0.7, [[0, 'rgba(40,90,60,.18)'], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(inX, inY, iw, ih);
+  ctx.strokeStyle = T['scope-grid']; ctx.lineWidth = 1; ctx.beginPath();
+  for (let i = 1; i < 10; i++) { const x = Math.round(inX + i * iw / 10) + 0.5; ctx.moveTo(x, inY); ctx.lineTo(x, inY + ih); }
+  const rh = ih / rows.length;
+  rows.forEach((row, i) => {
+    const cy = Math.round(inY + rh * (i + 0.5)) + 0.5;
+    ctx.moveTo(inX, cy); ctx.lineTo(inX + iw, cy);
+    if (i) { const y = Math.round(inY + rh * i) + 0.5; ctx.moveTo(inX, y); ctx.lineTo(inX + iw, y); }
+  });
+  ctx.stroke();
+  rows.forEach((row, i) => {
+    const cy = inY + rh * (i + 0.5), A = rh * 0.36 / (o.amp || 1);
+    ctx.save(); ctx.shadowColor = row.col; ctx.shadowBlur = 8 * D.dpr; ctx.strokeStyle = row.col; ctx.lineWidth = 2.4; ctx.lineJoin = 'round';
+    ctx.beginPath();
+    const N = Math.max(200, Math.round(iw * 1.5));
+    for (let j = 0; j <= N; j++) { const x = inX + j / N * iw, t = o.t0 + (j / N) * o.win, y = cy - clamp(row.fn(t), -(o.amp || 1) * 1.35, (o.amp || 1) * 1.35) * A; j ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+    ctx.stroke(); ctx.restore();
+    ctx.font = `600 15px ${T.font}`; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+    ctx.fillStyle = 'rgba(8,18,13,.78)'; const tw = ctx.measureText(row.label).width;
+    rr(inX + 4, inY + rh * i + 4, tw + 14, 24, 6); ctx.fill();
+    ctx.fillStyle = row.col; ctx.fillText(row.label, inX + 11, inY + rh * i + 8);
+    if (row.right) { ctx.font = `600 15px ${T.mono}`; ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(8,18,13,.78)'; const rw = ctx.measureText(row.right).width; rr(inX + iw - rw - 18, inY + rh * i + 4, rw + 14, 24, 6); ctx.fill(); ctx.fillStyle = 'rgba(230,245,236,.92)'; ctx.fillText(row.right, inX + iw - 11, inY + rh * i + 8); }
+  });
+  if (o.cursor != null) {
+    const x = inX + clamp(o.cursor, 0, 1) * iw;
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = 2; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(x, inY); ctx.lineTo(x, inY + ih); ctx.stroke(); ctx.setLineDash([]);
+  }
+  ctx.fillStyle = lg(inX, inY, inX + iw * 0.6, inY + ih * 0.6, [[0, 'rgba(255,255,255,.07)'], [0.5, 'rgba(255,255,255,.015)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(inX, inY, iw, ih);
+  ctx.restore();
+  if (o.note) { ctx.font = `500 13px ${T.mono}`; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom'; ctx.fillStyle = 'rgba(200,230,210,.7)'; ctx.fillText(o.note, inX + iw - 6, inY + ih - 4); }
+}
+
+/* ---------- 작은 그래프 (유리 카드) ---------- */
+function plot(c, o) {
+  const [w, h] = fit(c), g = c.getContext('2d');
+  g.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const L = 42, R = 8, Tp = 6, B = 19, pw = w - L - R, ph = h - Tp - B;
+  const Xp = x => L + (x - o.x0) / (o.x1 - o.x0) * pw, Yp = y => Tp + ph - (y - o.y0) / (o.y1 - o.y0) * ph;
+  g.font = `12px ${T.mono}`; g.lineWidth = 1; g.textBaseline = 'middle';
+  for (const yv of o.yt) { g.strokeStyle = rgba(T.ink, 0.1); g.beginPath(); g.moveTo(L, Yp(yv)); g.lineTo(w - R, Yp(yv)); g.stroke(); g.fillStyle = T.muted; g.textAlign = 'right'; g.fillText(o.yf ? o.yf(yv) : yv, L - 5, Yp(yv)); }
+  g.textAlign = 'center'; g.textBaseline = 'top';
+  for (const xv of o.xt) { g.fillStyle = T.muted; g.fillText(o.xf ? o.xf(xv) : xv, Xp(xv), h - B + 4); }
+  for (const hl of o.hl || []) { g.setLineDash([4, 4]); g.strokeStyle = hl.col || T.muted; g.beginPath(); g.moveTo(L, Yp(hl.y)); g.lineTo(w - R, Yp(hl.y)); g.stroke(); g.setLineDash([]); if (hl.label) { g.fillStyle = hl.col || T.muted; g.font = `500 12px ${T.font}`; g.textAlign = 'right'; g.textBaseline = 'bottom'; g.fillText(hl.label, w - R - 2, Yp(hl.y) - 1); g.font = `12px ${T.mono}`; } }
+  g.save(); g.beginPath(); g.rect(L, Tp - 2, pw, ph + 4); g.clip();
+  g.beginPath();
+  for (let i = 0; i <= 300; i++) { const x = o.x0 + (o.x1 - o.x0) * i / 300, y = o.fn(x); i ? g.lineTo(Xp(x), Yp(y)) : g.moveTo(Xp(x), Yp(y)); }
+  g.lineTo(Xp(o.x1), Yp(o.y0)); g.lineTo(Xp(o.x0), Yp(o.y0)); g.closePath(); g.fillStyle = rgba(o.col, 0.12); g.fill();
+  g.strokeStyle = o.col; g.lineWidth = 2.4; g.lineJoin = 'round'; g.beginPath();
+  for (let i = 0; i <= 300; i++) { const x = o.x0 + (o.x1 - o.x0) * i / 300, y = o.fn(x); i ? g.lineTo(Xp(x), Yp(y)) : g.moveTo(Xp(x), Yp(y)); }
+  g.stroke(); g.restore();
+  if (o.mark) { const [mx, my] = o.mark; g.strokeStyle = T.ink; g.setLineDash([2, 3]); g.beginPath(); g.moveTo(Xp(mx), Tp); g.lineTo(Xp(mx), Tp + ph); g.stroke(); g.setLineDash([]); g.fillStyle = T.surface; g.strokeStyle = T.ink; g.lineWidth = 2; g.beginPath(); g.arc(Xp(mx), Yp(Math.min(my, o.y1)), 5, 0, TAU); g.fill(); g.stroke(); }
+}
+
+/* =====================================================================
+   소리 (단추를 누른 뒤에만) — 모든 소리는 버스 → 압축기 → 주 음량 → 스피커
+   ===================================================================== */
+const AU = { ctx: null, on: false, bus: null, master: null, musG: null, tones: [], eng: null, pair: null, white: null, mel: { i: 0, next: 0 }, bass: { i: 0, next: 0 } };
+function audioOK() {
+  if (!AU.ctx) {
+    try {
+      const C = window.AudioContext || window.webkitAudioContext, ac = AU.ctx = new C();
+      AU.bus = ac.createGain();
+      const comp = ac.createDynamicsCompressor(); comp.threshold.value = -14; comp.knee.value = 8; comp.ratio.value = 6; comp.attack.value = 0.004; comp.release.value = 0.25;
+      AU.master = ac.createGain(); AU.master.gain.value = 0;
+      AU.bus.connect(comp); comp.connect(AU.master); AU.master.connect(ac.destination);
+      AU.musG = ac.createGain(); AU.musG.gain.value = 0; AU.musG.connect(AU.bus);
+    } catch (e) { AU.ctx = null; return false; }
+  }
+  if (AU.ctx.state === 'suspended') AU.ctx.resume();
+  return true;
+}
+function noiseBuf(kind) {
+  const ac = AU.ctx, n = ac.sampleRate * 3, b = ac.createBuffer(1, n, ac.sampleRate), d = b.getChannelData(0);
+  let last = 0;
+  for (let i = 0; i < n; i++) { const w = Math.random() * 2 - 1; if (kind === 'brown') { last = (last + 0.02 * w) / 1.02; d[i] = last * 3.5; } else d[i] = w; }
+  const f = 2000; for (let i = 0; i < f; i++) { const k = i / f; d[i] = d[i] * k + d[n - f + i] * (1 - k); }   // 이음매 없이 반복
+  return b;
+}
+function loopSrc(buf) { const s = AU.ctx.createBufferSource(); s.buffer = buf; s.loop = true; s.loopEnd = buf.duration - 2000 / AU.ctx.sampleRate; s.start(); return s; }
+// 디젤 엔진: 점화 진동수 F의 배음(반 차수 포함) + 낮은 웅웅거림 + 점화마다 '딱딱'거리는 노킹 + 회전수 흔들림
+const ENG = [[0.5, 0.26, 0.4], [1, 1, 0], [1.5, 0.16, 2.2], [2, 0.56, 0.9], [3, 0.36, 2.1], [4, 0.22, 0.4], [5, 0.13, 1.3], [6, 0.08, 2.7]];   // [F의 배수, 진폭, 위상]
+function engineNode() {
+  if (AU.eng) return AU.eng;
+  const ac = AU.ctx, out = ac.createGain(); out.connect(AU.bus);
+  const l1 = ac.createOscillator(), l2 = ac.createOscillator(), g1 = ac.createGain(), g2 = ac.createGain();
+  l1.frequency.value = 0.23; l2.frequency.value = 0.071; g1.gain.value = 9; g2.gain.value = 15; l1.connect(g1); l2.connect(g2); l1.start(); l2.start();
+  const harm = ENG.map(([m]) => { const o = ac.createOscillator(), g = ac.createGain(); g.gain.value = 0; o.connect(g); g.connect(out); g1.connect(o.detune); g2.connect(o.detune); o.start(); return { o, g, m }; });
+  const rum = loopSrc(noiseBuf('brown')), lp = ac.createBiquadFilter(), rgn = ac.createGain();
+  lp.type = 'lowpass'; lp.frequency.value = 170; lp.Q.value = 0.7; rgn.gain.value = 0; rum.connect(lp); lp.connect(rgn); rgn.connect(out);
+  const cl = loopSrc(AU.white || (AU.white = noiseBuf('white'))), bp = ac.createBiquadFilter(), am = ac.createGain(), cg = ac.createGain();
+  bp.type = 'bandpass'; bp.frequency.value = 1500; bp.Q.value = 0.9; am.gain.value = 0.05; cg.gain.value = 0;
+  const po = ac.createOscillator(), ws = ac.createWaveShaper(), curve = new Float32Array(512);
+  for (let i = 0; i < 512; i++) { const x = i / 255.5 - 1; curve[i] = Math.pow(Math.max(0, x), 6); }
+  ws.curve = curve; g1.connect(po.detune); g2.connect(po.detune); po.connect(ws); ws.connect(am.gain); po.start();
+  cl.connect(bp); bp.connect(am); am.connect(cg); cg.connect(out);
+  return (AU.eng = { harm, rgn, cg, po });
+}
+function setEngine(spec) {
+  if (!spec && !AU.eng) return;
+  const e = engineNode(), now = AU.ctx.currentTime;
+  e.harm.forEach((h, i) => { if (spec) h.o.frequency.setTargetAtTime(spec.F * h.m, now, 0.04); h.g.gain.setTargetAtTime(spec ? spec.harm[i] : 0, now, 0.06); });
+  if (spec) e.po.frequency.setTargetAtTime(spec.F, now, 0.04);
+  e.rgn.gain.setTargetAtTime(spec ? spec.rumble : 0, now, 0.06); e.cg.gain.setTargetAtTime(spec ? spec.clatter : 0, now, 0.06);
+}
+function setTones(parts) {
+  const now = AU.ctx.currentTime;
+  while (AU.tones.length < parts.length) { const o = AU.ctx.createOscillator(), g = AU.ctx.createGain(); g.gain.value = 0; o.connect(g); g.connect(AU.bus); o.start(); AU.tones.push({ o, g }); }
+  AU.tones.forEach((v, i) => { const p = parts[i]; if (p) { v.o.frequency.setTargetAtTime(p.f, now, 0.02); v.g.gain.setTargetAtTime(Math.min(0.3, p.a), now, 0.05); } else v.g.gain.setTargetAtTime(0, now, 0.04); });
+}
+// 맥놀이용 두 음: 같은 순간에 같은 위상으로 시작하고, 두 음의 위상차를 따라가 화면과 소리를 맞춘다
+function pairPhase() {
+  const p = AU.pair; if (!p || !AU.ctx) return null;
+  const now = AU.ctx.currentTime; if (now > p.last) { p.phi += TAU * (p.f2 - p.f1) * (now - p.last); p.last = now; }
+  return p.phi;
+}
+function setPair(spec) {
+  const ac = AU.ctx, now = ac.currentTime;
+  const kill = p => { p.g.gain.setTargetAtTime(0, now, 0.02); p.o1.stop(now + 0.2); p.o2.stop(now + 0.2); };
+  if (!spec) { if (AU.pair) { kill(AU.pair); AU.pair = null; } return; }
+  const restart = !AU.pair || (spec.f1 === spec.f2 && Math.abs(Math.sin((AU.pair.phi || 0) / 2)) > 0.05);
+  if (restart) {
+    if (AU.pair) kill(AU.pair);
+    const t0 = now + 0.03, g = ac.createGain(), o1 = ac.createOscillator(), o2 = ac.createOscillator();
+    g.gain.value = 0; g.gain.setValueAtTime(0, t0); g.gain.setTargetAtTime(spec.a, t0, 0.03);
+    o1.frequency.value = spec.f1; o2.frequency.value = spec.f2; o1.connect(g); o2.connect(g); g.connect(AU.bus); o1.start(t0); o2.start(t0);
+    AU.pair = { o1, o2, g, t0, last: t0, phi: 0, f1: spec.f1, f2: spec.f2 };
+  } else {
+    pairPhase(); const p = AU.pair;
+    p.o1.frequency.setValueAtTime(spec.f1, now); p.o2.frequency.setValueAtTime(spec.f2, now); p.f1 = spec.f1; p.f2 = spec.f2;
+    p.g.gain.setTargetAtTime(spec.a, now, 0.03);
+  }
+}
+// 장면이 정한 소리 { tones, engine, pair } 를 그대로 들려줌 (켜고 끄기는 주 음량으로 부드럽게)
+function setVoices(spec) {
+  if (!AU.ctx) return; spec = spec || {};
+  setTones(spec.tones || []); setEngine(spec.engine || null); setPair(spec.pair || null);
+}
+// 음악: 일렉트릭 피아노 선율 + 베이스 (원래 곡, 4마디 반복)
+const MEL = [[76, 1], [79, 1], [81, 1], [79, 1], [76, 2], [72, 2], [77, 1], [76, 1], [74, 1], [71, 1], [72, 3], [0, 1]];
+const BASS = [[48, 2], [55, 2], [45, 2], [52, 2], [41, 2], [43, 2], [48, 4]];
+const midi = m => 440 * Math.pow(2, (m - 69) / 12), BEAT = 0.42;
+function epNote(f, t0, dur, vel) {
+  const ac = AU.ctx;
+  [[1, 1, 0.9], [2, 0.32, 0.4], [3, 0.1, 0.2], [4.02, 0.06, 0.1]].forEach(([m, a, tau]) => {
+    const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = f * m; o.detune.value = (Math.random() - 0.5) * 5;
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(a * vel, t0 + 0.005); g.gain.setTargetAtTime(0, t0 + 0.005, tau); g.gain.setTargetAtTime(0, t0 + dur, 0.07);
+    o.connect(g); g.connect(AU.musG); o.start(t0); o.stop(t0 + dur + 0.6);
+  });
+}
+function bassNote(f, t0, dur, vel) {
+  const ac = AU.ctx, lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 600; lp.connect(AU.musG);
+  [[1, 1], [2, 0.25]].forEach(([m, a]) => {
+    const o = ac.createOscillator(), g = ac.createGain(); o.type = m === 1 ? 'triangle' : 'sine'; o.frequency.value = f * m;
+    g.gain.setValueAtTime(0, t0); g.gain.linearRampToValueAtTime(a * vel, t0 + 0.012); g.gain.setTargetAtTime(a * vel * 0.4, t0 + 0.012, 0.5); g.gain.setTargetAtTime(0, t0 + dur - 0.05, 0.06);
+    o.connect(g); g.connect(lp); o.start(t0); o.stop(t0 + dur + 0.5);
+  });
+}
+function musicTick() {
+  if (!AU.ctx) return;
+  const want = AU.on && cur.music && cur.music(), now = AU.ctx.currentTime;
+  if (want !== AU.musOn) { AU.musOn = want; AU.musG.gain.setTargetAtTime(want ? 1 : 0, now, want ? 0.02 : 0.05); if (want) { AU.mel = { i: 0, next: now + 0.08 }; AU.bass = { i: 0, next: now + 0.08 }; } }
+  if (!want) return;
+  for (const [tr, seq, play] of [[AU.mel, MEL, (m, t, d) => m && epNote(midi(m), t, d * BEAT * 0.95, 0.075)], [AU.bass, BASS, (m, t, d) => bassNote(midi(m), t, d * BEAT, 0.07)]]) {
+    if (tr.next < now) tr.next = now + 0.05;
+    while (tr.next < now + 0.35) { const [m, d] = seq[tr.i % seq.length]; tr.i++; play(m, tr.next, d); tr.next += d * BEAT; }
+  }
+}
+// 충격파 쇄석기의 방전음 ('딱')
+function snap() {
+  if (!AU.ctx || !AU.on) return;
+  const ac = AU.ctx, t = ac.currentTime + 0.01, s = ac.createBufferSource(), hp = ac.createBiquadFilter(), g = ac.createGain();
+  s.buffer = AU.white || (AU.white = noiseBuf('white')); hp.type = 'highpass'; hp.frequency.value = 900;
+  g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(0.4, t + 0.0015); g.gain.setTargetAtTime(0, t + 0.0015, 0.016);
+  s.connect(hp); hp.connect(g); g.connect(AU.bus); s.start(t, Math.random() * 2); s.stop(t + 0.25);
+  const o = ac.createOscillator(), og = ac.createGain(); o.frequency.setValueAtTime(150, t); o.frequency.exponentialRampToValueAtTime(42, t + 0.14);
+  og.gain.setValueAtTime(0, t); og.gain.linearRampToValueAtTime(0.3, t + 0.003); og.gain.setTargetAtTime(0, t + 0.003, 0.045);
+  o.connect(og); og.connect(AU.bus); o.start(t); o.stop(t + 0.4);
+}
+function soundToggle() {
+  if (!AU.on) { if (!audioOK()) return; AU.on = true; } else AU.on = false;
+  const now = AU.ctx.currentTime;
+  AU.master.gain.setTargetAtTime(AU.on ? 0.8 : 0, now, AU.on ? 0.06 : 0.04);
+  setVoices(cur.audio ? cur.audio() : null);
+  syncBars();
+}
+
+/* =====================================================================
+   물리
+   ===================================================================== */
+const S = { i: 0, playing: !reduce, speed: 1, caption: true, formula: false };
+let tv = 0;                                   // 화면용 시간 (느리게 흐름)
+const engineParts = F => ENG.map(([m, a, ph]) => ({ f: F * m, a, ph }));
+// 소음 종류: 성분 [{f, a, ph}]
+function noiseParts(kind, f) { return kind === 'engine' ? engineParts(110) : [{ f, a: 1, ph: 0 }]; }
+// 상쇄음 = −g × (τ만큼 늦고 ε만큼 어긋난 소음). 한 성분이 남는 진폭 비율 |1 − g e^{−iδ}|, δ = ε + 2π f τ
+function residual(f, g, epsDeg, tauMs) { const d = epsDeg * DEG + TAU * f * tauMs / 1000; return Math.hypot(1 - g * Math.cos(d), g * Math.sin(d)); }
+function rmsRatio(parts, g, eps, tau) { let a = 0, b = 0; for (const p of parts) { const r = residual(p.f, g, eps, tau); a += p.a * p.a * r * r; b += p.a * p.a; } return Math.sqrt(a / b); }
+const dbOf = r => r < 1e-4 ? -80 : 20 * Math.log10(r);
+const pct = r => `${Math.round(r * 100)}`;
+
+/* =====================================================================
+   그림: 시내버스, 헤드폰 단면, 소음기, 스마트폰, 충격파 쇄석기 (빛은 왼쪽 위에서)
+   ===================================================================== */
+function road(x0, x1, y, u) {
+  ctx.fillStyle = lg(0, y, 0, y + 2.6 * u, [[0, mix(T.road, '#ffffff', 0.08)], [1, T.road]]); ctx.fillRect(x0, y, x1 - x0, 2.6 * u);
+  ctx.fillStyle = rgba('#ffffff', T.dark ? 0.35 : 0.75); for (let x = x0 + 2 * u; x < x1 - 3 * u; x += 7 * u) ctx.fillRect(x, y + 1.6 * u, 3.6 * u, 0.34 * u);
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(x0, y, x1 - x0, Math.max(1, 0.18 * u));
+}
+function wheel(cx, cy, r) {
+  ctx.fillStyle = rg(cx - r * 0.3, cy - r * 0.3, 0, r, [[0, '#3a3e43'], [0.7, '#1a1c1f'], [1, '#0b0c0e']]); ctx.beginPath(); ctx.arc(cx, cy, r, 0, TAU); ctx.fill();
+  ctx.fillStyle = lg(cx - r, cy - r, cx + r, cy + r, [[0, '#eef1f3'], [0.5, T.metal], [1, T['metal-2']]]); ctx.beginPath(); ctx.arc(cx, cy, r * 0.56, 0, TAU); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = Math.max(1, r * 0.06); ctx.beginPath(); ctx.arc(cx, cy, r * 0.56, 0, TAU); ctx.stroke();
+  ctx.fillStyle = '#5b636b'; for (let k = 0; k < 6; k++) { const a = k * TAU / 6; ctx.beginPath(); ctx.arc(cx + Math.cos(a) * r * 0.32, cy + Math.sin(a) * r * 0.32, r * 0.06, 0, TAU); ctx.fill(); }
+  ctx.fillStyle = lg(cx - r * 0.2, cy - r * 0.2, cx + r * 0.2, cy + r * 0.2, [[0, '#ffffff'], [1, T['metal-2']]]); ctx.beginPath(); ctx.arc(cx, cy, r * 0.17, 0, TAU); ctx.fill();
+}
+function bus(x, y, u) {            // 옆에서 본 시내버스 (오른쪽이 앞, 길이:높이 ≈ 3.3:1)
+  const X = v => x + v * u, Y = v => y + v * u;
+  ellipseShadow(X(20), Y(13.3), 22 * u, 1.6 * u, 0.4);
+  // 지붕 냉방기
+  ctx.fillStyle = lg(0, Y(-1), 0, Y(0.8), [[0, mix(T.metal, '#ffffff', 0.3)], [1, T['metal-2']]]); rr(X(12), Y(-0.9), 15 * u, 1.8 * u, 0.7 * u); ctx.fill();
+  // 차체
+  shadow(10, 3, 6, 0.25);
+  ctx.fillStyle = lg(0, Y(0.6), 0, Y(11.4), [[0, mix(T.bus, '#ffffff', 0.22)], [0.12, T.bus], [0.7, T.bus], [1, T['bus-2']]]);
+  ctx.beginPath(); ctx.moveTo(X(1.2), Y(0.6)); ctx.lineTo(X(37), Y(0.6)); ctx.quadraticCurveTo(X(39.6), Y(0.7), X(39.85), Y(3.2)); ctx.lineTo(X(40), Y(10.5));
+  ctx.quadraticCurveTo(X(40), Y(11.4), X(39.1), Y(11.4)); ctx.lineTo(X(0.8), Y(11.4)); ctx.quadraticCurveTo(X(0), Y(11.4), X(0), Y(10.5)); ctx.lineTo(X(0), Y(1.7)); ctx.quadraticCurveTo(X(0), Y(0.6), X(1.2), Y(0.6)); ctx.closePath(); ctx.fill(); noShadow();
+  ctx.save(); ctx.clip();
+  ctx.fillStyle = 'rgba(255,255,255,.28)'; ctx.fillRect(X(0), Y(0.8), 40 * u, 0.35 * u);                                   // 지붕 모서리 빛
+  ctx.fillStyle = rgba(T['bus-2'], 0.9); ctx.fillRect(X(0), Y(9.3), 40 * u, 2.2 * u);                                     // 아랫단
+  ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(X(0), Y(8.15), 40 * u, 0.55 * u);                                  // 도색 띠
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; for (let i = 0; i < 4; i++) ctx.fillRect(X(1), Y(9.7 + i * 0.38), 3.2 * u, 0.16 * u);   // 뒤쪽 엔진 통풍구
+  ctx.restore();
+  // 옆 창문 (기둥으로 나뉜 짙은 유리)
+  const glass = (x0, y0, w, h, r = 0.5) => { ctx.fillStyle = lg(0, Y(y0), 0, Y(y0 + h), [[0, T['glass-hi']], [0.45, T.glass], [1, mix(T.glass, '#000000', 0.2)]]); rr(X(x0), Y(y0), w * u, h * u, r * u); ctx.fill(); };
+  glass(1.6, 2.1, 16.6, 4.9); glass(22.6, 2.1, 11.2, 4.9);
+  ctx.fillStyle = mix(T.bus, '#000000', 0.15); for (const px of [6.6, 11.8, 16.6, 27.6, 32.4]) ctx.fillRect(X(px), Y(2.1), 0.55 * u, 4.9 * u);
+  // 문 (가운데, 앞)
+  for (const dx of [18.8, 34.4]) {
+    ctx.fillStyle = rgba(T['bus-2'], 1); rr(X(dx - 0.3), Y(1.8), 3.8 * u, 9.4 * u, 0.4 * u); ctx.fill();
+    glass(dx, 2.1, 1.55, 8.7, 0.3); glass(dx + 1.65, 2.1, 1.55, 8.7, 0.3);
+  }
+  // 앞 유리, 행선 표시판, 등, 거울
+  ctx.fillStyle = lg(X(38.2), 0, X(40), 0, [[0, T.glass], [1, T['glass-hi']]]);
+  ctx.beginPath(); ctx.moveTo(X(38.3), Y(1.9)); ctx.lineTo(X(39.55), Y(2.0)); ctx.lineTo(X(39.8), Y(7.6)); ctx.lineTo(X(38.3), Y(7.6)); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#121518'; rr(X(36.6), Y(0.95), 3.1 * u, 0.85 * u, 0.2 * u); ctx.fill();
+  ctx.fillStyle = '#ffb547'; ctx.fillRect(X(36.9), Y(1.22), 2.4 * u, 0.3 * u);
+  ctx.fillStyle = rg(X(39.6), Y(9.1), 0, 1.2 * u, [[0, '#fffbe6'], [1, '#e8d58a']]); rr(X(39.15), Y(8.7), 0.8 * u, 0.85 * u, 0.25 * u); ctx.fill();
+  ctx.fillStyle = '#d23a2e'; rr(X(0), Y(7.2), 0.55 * u, 1.9 * u, 0.2 * u); ctx.fill();
+  ctx.strokeStyle = '#1b1e22'; ctx.lineWidth = Math.max(1.2, 0.3 * u); ctx.beginPath(); ctx.moveTo(X(39.8), Y(2.6)); ctx.lineTo(X(41.2), Y(2.2)); ctx.stroke();
+  ctx.fillStyle = '#1b1e22'; rr(X(40.8), Y(2.0), 0.75 * u, 2.4 * u, 0.25 * u); ctx.fill();
+  // 바퀴와 바퀴집
+  for (const wx of [9.2, 30.6]) {
+    ctx.fillStyle = '#121417'; ctx.beginPath(); ctx.arc(X(wx), Y(11.3), 2.85 * u, Math.PI, 0); ctx.fill();
+    wheel(X(wx), Y(11.3), 2.3 * u);
+  }
+}
+
+// 헤드폰 단면 + 머리 (정면에서 본 왼쪽 귀). 설계 좌표 104 × 86
+function headphone(R, o) {
+  if (R.w < 40 || R.h < 40) return;
+  const u = Math.min(R.w / 104, R.h / 86), ox = R.x + (R.w - 104 * u) / 2, oy = R.y + (R.h - 86 * u) / 2 + 12 * u;
+  const P = (x, y) => [ox + x * u, oy + y * u], X = x => ox + x * u, Y = y => oy + y * u;
+  const fv = o.fv, ph = (tv * fv) % 1, lamU = 7, lamV = lamU * u;
+  // 길과 버스
+  road(X(-6), X(34), Y(46.2), u);
+  bus(X(-2.5), Y(37.2), u * 0.74);
+  // 바깥 소음 파면: 버스 앞에서 헤드폰 쪽으로
+  const SRC = [28.4, 40.6], ex = X(SRC[0]), ey = Y(SRC[1]);
+  ctx.save(); ctx.beginPath(); ctx.rect(ex, Y(-12), X(42) - ex, 86 * u); ctx.clip();
+  ctx.lineWidth = Math.max(2.5, 0.5 * u); ctx.strokeStyle = T.noise; ctx.lineCap = 'round';
+  for (let k = 0; k < 4; k++) { const r = (k + ph) * lamV; ctx.globalAlpha = Math.max(0, 0.95 * (1 - r / (15 * u))); ctx.beginPath(); ctx.arc(ex, ey, r, -0.62, 0.62); ctx.stroke(); }
+  ctx.restore(); ctx.globalAlpha = 1; ctx.lineCap = 'butt';
+
+  // 머리 (얼굴 옆선, 턱, 목) — 왼쪽 위에서 빛
+  shadow(26, 6, 12, 0.22);
+  ctx.fillStyle = rg(X(74), Y(10), 0, 70 * u, [[0, mix(T.skin, '#ffffff', 0.14)], [0.55, T.skin], [1, T['skin-2']]]);
+  ctx.beginPath(); ctx.moveTo(X(106), Y(-9)); ctx.lineTo(X(87), Y(-9)); ctx.bezierCurveTo(X(75.5), Y(-8.6), X(67.6), Y(0.5), X(67), Y(13));
+  ctx.lineTo(X(66.8), Y(50)); ctx.bezierCurveTo(X(66.9), Y(58.5), X(69.4), Y(64.5), X(74), Y(68.3)); ctx.bezierCurveTo(X(77), Y(70.6), X(79.6), Y(71.4), X(81), Y(73.5));
+  ctx.lineTo(X(81.5), Y(78)); ctx.lineTo(X(106), Y(78)); ctx.closePath(); ctx.fill(); noShadow();
+  ctx.save(); ctx.clip();
+  ctx.fillStyle = lg(0, Y(64), 0, Y(76), [[0, rgba(T['skin-2'], 0)], [0.5, rgba(T['skin-2'], 0.55)], [1, rgba(T['skin-2'], 0.2)]]); ctx.fillRect(X(76), Y(64), 30 * u, 12 * u);   // 턱 아래 그늘
+  ctx.fillStyle = lg(X(67), 0, X(73), 0, [[0, rgba(T['skin-2'], 0.45)], [1, rgba(T['skin-2'], 0)]]); ctx.fillRect(X(66), Y(-9), 7 * u, 80 * u);                       // 옆 모서리 그늘
+  // 귓구멍 둘레 단면 (살짝 어두운 띠) + 외이도
+  ctx.fillStyle = rgba(T['skin-2'], 0.22); rr(X(66.6), Y(30.4), 21 * u, 7.5 * u, 3.8 * u); ctx.fill();
+  ctx.restore();
+  // 머리카락
+  ctx.fillStyle = lg(0, Y(-9), 0, Y(22), [[0, mix(T.hair, '#ffffff', 0.12)], [0.5, T.hair], [1, mix(T.hair, '#000000', 0.3)]]);
+  ctx.beginPath(); ctx.moveTo(X(106), Y(-9.6)); ctx.lineTo(X(87), Y(-9.6)); ctx.bezierCurveTo(X(75.2), Y(-9.2), X(67), Y(0.1), X(66.4), Y(13)); ctx.lineTo(X(66.3), Y(21));
+  ctx.bezierCurveTo(X(67.6), Y(14.5), X(70.6), Y(7.5), X(76.2), Y(3.6)); ctx.bezierCurveTo(X(84), Y(-1.2), X(95), Y(-2.2), X(106), Y(-1.8)); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = Math.max(1, 0.25 * u);
+  for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(X(70 + i * 5), Y(-6.5 + i * 0.4)); ctx.quadraticCurveTo(X(72 + i * 5), Y(-2 + i * 0.3), X(69 + i * 5.6), Y(4 + i * 0.2)); ctx.stroke(); }
+  // 외이도와 고막
+  const c0x = X(66.6), c1x = X(86), cy0 = Y(32.3), ch = 3.7 * u;
+  ctx.fillStyle = lg(0, cy0, 0, cy0 + ch, [[0, mix(T['skin-2'], '#000000', 0.25)], [0.5, mix(T['skin-2'], '#5a2e22', 0.55)], [1, mix(T['skin-2'], '#000000', 0.15)]]);
+  rr(c0x, cy0, c1x - c0x, ch, ch / 2); ctx.fill();
+  ctx.strokeStyle = rgba('#ffffff', 0.12); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(c0x + ch, cy0 + 0.8); ctx.lineTo(c1x - 2, cy0 + 0.8); ctx.stroke();
+  // 헤드밴드 (쿠션 + 금속 슬라이더)
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = lg(X(50), Y(-12), X(96), Y(10), [[0, mix(T.shell, '#ffffff', 0.15)], [1, T['shell-2']]]); ctx.lineWidth = 3.6 * u;
+  ctx.beginPath(); ctx.moveTo(X(52), Y(12)); ctx.bezierCurveTo(X(53.5), Y(-3.5), X(69), Y(-13), X(97), Y(-12.4)); ctx.stroke();
+  ctx.strokeStyle = lg(X(50), 0, X(96), 0, [[0, T.metal], [1, T['metal-2']]]); ctx.lineWidth = Math.max(1.5, 0.8 * u);
+  ctx.beginPath(); ctx.moveTo(X(49.6), Y(11)); ctx.bezierCurveTo(X(50.8), Y(-5.6), X(68), Y(-15.6), X(97), Y(-14.8)); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.16)'; ctx.lineWidth = Math.max(1, 0.5 * u); ctx.beginPath(); ctx.moveTo(X(51.4), Y(9)); ctx.bezierCurveTo(X(52.6), Y(-3.8), X(68.4), Y(-12.6), X(90), Y(-12.9)); ctx.stroke();
+  ctx.lineCap = 'butt';
+  // 이어컵 껍데기 (단면)
+  shadow(18, 5, 10, 0.35);
+  ctx.fillStyle = lg(...P(42, 10), ...P(62, 58), [[0, mix(T.shell, '#ffffff', 0.16)], [0.45, T.shell], [1, T['shell-2']]]);
+  ctx.beginPath(); ctx.moveTo(...P(62, 10)); ctx.lineTo(...P(50, 10)); ctx.bezierCurveTo(...P(44, 10), ...P(42, 14), ...P(42, 20)); ctx.lineTo(...P(42, 48)); ctx.bezierCurveTo(...P(42, 54), ...P(44, 58), ...P(50, 58)); ctx.lineTo(...P(62, 58)); ctx.lineTo(...P(62, 55)); ctx.lineTo(...P(51, 55)); ctx.bezierCurveTo(...P(47, 55), ...P(45.5, 52), ...P(45.5, 48)); ctx.lineTo(...P(45.5, 20)); ctx.bezierCurveTo(...P(45.5, 16), ...P(47, 13), ...P(51, 13)); ctx.lineTo(...P(62, 13)); ctx.closePath(); ctx.fill(); noShadow();
+  ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = Math.max(1.2, 0.3 * u); ctx.beginPath(); ctx.moveTo(...P(42.7, 46)); ctx.lineTo(...P(42.7, 20)); ctx.bezierCurveTo(...P(42.7, 15), ...P(45, 11), ...P(50, 10.7)); ctx.stroke();
+  // 안쪽 공간
+  ctx.fillStyle = lg(...P(45, 13), ...P(62, 55), [[0, mix(T.cavity, '#000000', 0.06)], [0.3, T.cavity], [1, mix(T.cavity, '#000000', 0.04)]]);
+  ctx.beginPath(); ctx.moveTo(...P(62, 13)); ctx.lineTo(...P(51, 13)); ctx.bezierCurveTo(...P(47, 13), ...P(45.5, 16), ...P(45.5, 20)); ctx.lineTo(...P(45.5, 48)); ctx.bezierCurveTo(...P(45.5, 52), ...P(47, 55), ...P(51, 55)); ctx.lineTo(...P(62, 55)); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = lg(X(45.5), 0, X(48), 0, [[0, 'rgba(0,0,0,.14)'], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(X(45.5), Y(14), 2.5 * u, 40 * u);
+
+  // 안쪽 파동: 껍데기를 뚫고 들어온 소음(빨강, 바깥과 같은 파면이 약해짐)과 스피커가 낸 상쇄음(파랑, 고막에서 반대 위상)
+  const cone = [59.6, 34.15], drum = [86, 34.15];
+  const De = Math.hypot(drum[0] - SRC[0], drum[1] - SRC[1]), Da = Math.hypot(drum[0] - cone[0], drum[1] - cone[1]);
+  const lag = ((o.lagFrac || 0) % 1 + 1) % 1;   // 위상 오차·처리 시간만큼 상쇄음이 늦어짐 (파장 비율)
+  const off = (((Da - De - 0.5 * lamU - lag * lamU) % lamU) + lamU) % lamU;
+  ctx.save(); ctx.beginPath(); ctx.moveTo(...P(45.6, 13.3)); ctx.lineTo(...P(60, 13.3)); ctx.lineTo(...P(60, 20.2)); ctx.lineTo(...P(66.6, 20.2)); ctx.lineTo(...P(66.6, 47.8)); ctx.lineTo(...P(60, 47.8)); ctx.lineTo(...P(60, 54.7)); ctx.lineTo(...P(45.6, 54.7)); ctx.closePath(); ctx.clip();
+  ctx.lineCap = 'round';
+  for (let k = 0; k < 9; k++) {
+    const r = (k + ph) * lamV + Math.floor((X(45) - ex) / lamV) * lamV;
+    ctx.strokeStyle = T.noise; ctx.lineWidth = Math.max(2, 0.42 * u); ctx.globalAlpha = 0.5; ctx.beginPath(); ctx.arc(ex, ey, r, -1.0, 1.0); ctx.stroke();
+  }
+  if (o.anc) for (let k = 0; k < 5; k++) {
+    const r = (k + ph) * lamV + off * u;
+    ctx.strokeStyle = T.anti; ctx.lineWidth = Math.max(2.4, 0.5 * u); ctx.globalAlpha = Math.min(1, clamp(o.g, 0, 1.2)) * Math.max(0, 1 - r / (19 * u)); ctx.beginPath(); ctx.arc(X(cone[0]), Y(cone[1]), r, -1.25, 1.25); ctx.stroke();
+  }
+  ctx.restore(); ctx.globalAlpha = 1; ctx.lineCap = 'butt';
+  // 스피커 판, 스피커(자석·틀·진동판), 회로 기판, 마이크
+  ctx.fillStyle = lg(X(57.4), 0, X(58.6), 0, [[0, mix(T.shell, '#ffffff', 0.1)], [1, T['shell-2']]]);
+  ctx.fillRect(X(57.5), Y(13.2), 1 * u, 11.2 * u); ctx.fillRect(X(57.5), Y(43.9), 1 * u, 10.9 * u);
+  const [mx, my] = P(51, 29.2);
+  ctx.fillStyle = lg(mx, my, mx, my + 10 * u, [[0, mix(T.metal, '#ffffff', 0.35)], [0.5, T.metal], [1, T['metal-2']]]); rr(mx, my, 4 * u, 10 * u, 0.8 * u); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.fillRect(mx + 3.4 * u, my, 0.6 * u, 10 * u);
+  ctx.strokeStyle = T['metal-2']; ctx.lineWidth = Math.max(1.2, 0.35 * u);
+  ctx.beginPath(); ctx.moveTo(...P(55, 29.4)); ctx.lineTo(...P(58, 24.4)); ctx.moveTo(...P(55, 38.9)); ctx.lineTo(...P(58, 43.9)); ctx.stroke();
+  const cd = (o.anc ? Math.cos(TAU * (ph + off / lamU)) * 0.55 * clamp(o.g, 0, 1.2) : 0) * u;   // 진동판이 앞으로 나올 때 상쇄음의 마루가 나간다
+  ctx.fillStyle = lg(...P(55, 25), ...P(59.6, 43), [[0, '#f4f6f7'], [0.6, '#c9d0d6'], [1, '#9aa3ab']]);
+  ctx.beginPath(); ctx.moveTo(...P(55, 31.4)); ctx.lineTo(...P(55, 36.9)); ctx.lineTo(X(59.6) + cd, Y(43.3)); ctx.lineTo(X(59.6) + cd, Y(25)); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = '#2b2f34'; for (const yy of [24.6, 43.7]) { ctx.beginPath(); ctx.arc(X(59.6) + cd, Y(yy), 0.75 * u, 0, TAU); ctx.fill(); }
+  ctx.fillStyle = lg(0, Y(32.4), 0, Y(36), [[0, '#d8dde1'], [1, '#8f98a0']]); ctx.beginPath(); ctx.ellipse(X(55.9) + cd * 0.4, Y(34.15), 0.9 * u, 1.9 * u, 0, -Math.PI / 2, Math.PI / 2); ctx.fill();
+  const [px, py] = P(47.6, 15.8);
+  ctx.fillStyle = lg(px, py, px + 9 * u, py + 5 * u, [[0, mix(T.pcb, '#ffffff', 0.1)], [1, mix(T.pcb, '#000000', 0.35)]]); rr(px, py, 9.4 * u, 4.6 * u, 0.6 * u); ctx.fill();
+  ctx.strokeStyle = 'rgba(214,180,90,.55)'; ctx.lineWidth = Math.max(0.8, 0.14 * u); ctx.beginPath(); ctx.moveTo(px + 0.8 * u, py + 3.8 * u); ctx.lineTo(px + 2.6 * u, py + 3.8 * u); ctx.lineTo(px + 3 * u, py + 2.4 * u); ctx.moveTo(px + 6.6 * u, py + 1 * u); ctx.lineTo(px + 8.4 * u, py + 1 * u); ctx.stroke();
+  ctx.fillStyle = '#15181b'; rr(px + 3 * u, py + 0.9 * u, 3.4 * u, 2.7 * u, 0.3 * u); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.12)'; ctx.fillRect(px + 3.2 * u, py + 1.1 * u, 1.2 * u, 0.4 * u);
+  ctx.fillStyle = '#d6b45a'; for (let i = 0; i < 4; i++) { ctx.fillRect(px + 3.3 * u + i * 0.8 * u, py + 0.5 * u, 0.35 * u, 0.4 * u); ctx.fillRect(px + 3.3 * u + i * 0.8 * u, py + 3.6 * u, 0.35 * u, 0.4 * u); }
+  ctx.fillStyle = '#c9ccd0'; ctx.fillRect(px + 7.2 * u, py + 2.2 * u, 1 * u, 0.6 * u); ctx.fillStyle = '#3d2b1f'; ctx.fillRect(px + 1 * u, py + 1.2 * u, 1.1 * u, 0.6 * u);
+  const [mcx, mcy] = P(41.1, 25);
+  shadow(4, 1, 2, 0.3); ctx.fillStyle = lg(mcx - 2 * u, mcy - 2 * u, mcx + 2 * u, mcy + 2 * u, [[0, '#f2f4f6'], [1, T['metal-2']]]); ctx.beginPath(); ctx.arc(mcx, mcy, 1.9 * u, 0, TAU); ctx.fill(); noShadow();
+  ctx.fillStyle = '#1b1f23'; for (let i = -1; i <= 1; i++) for (let j = -1; j <= 1; j++) { if (i * i + j * j > 1.5) continue; ctx.beginPath(); ctx.arc(mcx + i * 0.62 * u, mcy + j * 0.62 * u, 0.2 * u, 0, TAU); ctx.fill(); }
+  // 신호 흐름: 마이크 → 회로 → 스피커
+  const path = [P(42.6, 23.6), P(45.6, 21.2), P(47.6, 19.4), P(56.8, 18.6), P(56.8, 26), P(53, 29.2)];
+  ctx.strokeStyle = o.anc ? T.anti : rgba(T.muted, 0.6); ctx.lineWidth = Math.max(1.6, 0.45 * u); ctx.lineJoin = 'round'; ctx.setLineDash(o.anc ? [] : [4, 4]);
+  ctx.beginPath(); path.forEach((p, i) => i ? ctx.lineTo(...p) : ctx.moveTo(...p)); ctx.stroke(); ctx.setLineDash([]);
+  if (o.anc) {
+    const segs = []; let tot = 0;
+    for (let i = 1; i < path.length; i++) { const l = Math.hypot(path[i][0] - path[i - 1][0], path[i][1] - path[i - 1][1]); segs.push(l); tot += l; }
+    for (let k = 0; k < 4; k++) {
+      let s = ((tv / 1.4 + k / 4) % 1) * tot, i = 0; while (i < segs.length - 1 && s > segs[i]) { s -= segs[i]; i++; }
+      const a = path[i], b = path[i + 1], q = s / segs[i];
+      ctx.fillStyle = T.anti; ctx.beginPath(); ctx.arc(a[0] + (b[0] - a[0]) * q, a[1] + (b[1] - a[1]) * q, Math.max(2.6, 0.6 * u), 0, TAU); ctx.fill();
+    }
+  }
+  // 귀 덮개 (가죽 쿠션)
+  for (const [y0, y1] of [[9.5, 20.2], [47.8, 58.5]]) {
+    shadow(8, 2, 4, 0.3);
+    ctx.fillStyle = lg(...P(60, y0), ...P(68, y1), [[0, mix(T.pad, '#ffffff', 0.12)], [0.5, T.pad], [1, T['shell-2']]]); rr(...P(60, y0), 7.5 * u, (y1 - y0) * u, 3 * u); ctx.fill(); noShadow();
+    ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(...P(60.8, y0 + 0.8), 2 * u, (y1 - y0 - 1.6) * u, u); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1; ctx.setLineDash([Math.max(2, 0.6 * u), Math.max(2, 0.5 * u)]); rr(...P(60.7, y0 + 0.7), 6.1 * u, (y1 - y0 - 1.4) * u, 2.4 * u); ctx.stroke(); ctx.setLineDash([]);
+  }
+  // 귓바퀴 (덮개 안쪽)
+  ctx.fillStyle = lg(...P(61, 23), ...P(67, 47), [[0, mix(T.skin, '#ffffff', 0.12)], [1, T['skin-2']]]);
+  ctx.beginPath(); ctx.moveTo(...P(66.9, 22.8)); ctx.bezierCurveTo(...P(62.2, 21.8), ...P(60.7, 29.5), ...P(61.2, 35.5)); ctx.bezierCurveTo(...P(61.6, 42.2), ...P(63.6, 47.4), ...P(66.8, 46.8));
+  ctx.lineTo(...P(66.8, 41.6)); ctx.bezierCurveTo(...P(64.9, 40.8), ...P(64.3, 38), ...P(64.6, 36.6)); ctx.lineTo(...P(66.7, 36.2)); ctx.lineTo(...P(66.7, 31.9)); ctx.lineTo(...P(64.6, 31.5));
+  ctx.bezierCurveTo(...P(64.4, 28.5), ...P(65.2, 26.6), ...P(66.9, 26.2)); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = rgba(T['skin-2'], 0.9); ctx.lineWidth = 1; ctx.stroke();
+  // 외이도 속 소리 (남은 소리만 고막까지)
+  const amp = clamp(o.ear, 0, 1.6);
+  ctx.save(); ctx.beginPath(); ctx.rect(c0x, cy0, c1x - c0x, ch); ctx.clip();
+  ctx.strokeStyle = T.sum; ctx.lineWidth = Math.max(2, 0.4 * u); ctx.beginPath();
+  for (let i = 0; i <= 60; i++) { const xx = c0x + i / 60 * (c1x - c0x), d = (xx - ex) / u; const yy = Y(34.15) + Math.cos(TAU * (d / lamU - ph)) * amp * 1.05 * u; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+  ctx.stroke(); ctx.restore();
+  // 고막 (얇은 막, 남은 소리만큼 떨림)
+  const wob = Math.cos(TAU * (De / lamU - ph)) * amp * 1.3 * u;
+  ctx.fillStyle = mix(T.skin, '#c98f80', 0.5); ctx.strokeStyle = mix(T['skin-2'], '#000000', 0.25); ctx.lineWidth = Math.max(1.4, 0.32 * u);
+  ctx.beginPath(); ctx.moveTo(c1x, cy0 - 0.9 * u); ctx.quadraticCurveTo(c1x + wob, cy0 + ch / 2, c1x, cy0 + ch + 0.9 * u); ctx.quadraticCurveTo(c1x + wob + 0.9 * u, cy0 + ch / 2, c1x, cy0 - 0.9 * u); ctx.fill(); ctx.stroke();
+  // 오른쪽은 흐리게 사라짐 (오실로스코프 쪽)
+  { const fx0 = X(89), fx1 = X(103.5), fg = ctx.createLinearGradient(fx0, 0, fx1, 0); fg.addColorStop(0, rgba(T.stage, 0)); fg.addColorStop(1, rgba(T.stage, 1)); ctx.fillStyle = fg; ctx.fillRect(fx0, Y(-18), X(108) - fx0, 100 * u); }
+  // 이름표
+  pill(o.noiseName, X(12.4), Y(31.6), T.noise);
+  pill('마이크', mcx - 3 * u, mcy - 6.2 * u, o.anc ? T.anti : T.ink, 'right');
+  pill('소음 제거 회로', px + 4.7 * u, py - 4.6 * u, o.anc ? T.anti : T.ink);
+  pill('스피커', mx + 2 * u, Y(49.5) + 6, o.anc ? T.anti : T.ink);
+  pill('고막', c1x + 6 * u, cy0 - 6.5 * u, T.ink);
+  if (o.music) { const nx = X(52.5), ny = Y(47.5); ctx.fillStyle = T.music; ctx.font = `700 ${Math.max(18, 3.2 * u)}px ${T.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('♪', nx + Math.sin(tv * 3) * 2, ny); }
+}
+
+// 자동차 소음기 (헤르쉘-퀸케 관): 통로 1은 위로 돌아가는 관 (높이 h → 경로가 2h 더 김). 설계 단위 1 = 2 cm
+function muffler(R, o) {
+  if (R.w < 40 || R.h < 40) return;
+  const W0 = 126, H0 = 56, u = Math.min(R.w / W0, R.h / H0), ox = R.x + (R.w - W0 * u) / 2, oy = R.y + (R.h - H0 * u) / 2;
+  const P = (x, y) => [ox + x * u, oy + y * u], X = x => ox + x * u, Y = y => oy + y * u;
+  const yb = 36, h = o.dl / 4, xs = 31, xe = 97, tube = 4.6, cx0 = 21, cx1 = 107;
+  const lamU = o.lam * 100 / 2, kU = TAU / lamU;
+  const ctop = yb - Math.max(h, 3) - 9, cbot = yb + 8.5;
+  // 어디에 있는지: 작은 자동차 옆모습 (뒤쪽 아래의 소음기를 표시)
+  const cw = Math.min(R.w * 0.3, 210), cxp = R.x + 6, cyp = R.y + 4, cu = cw / 100, CX = v => cxp + v * cu, CY = v => cyp + v * cu;
+  if (Y(ctop) - cyp > 30 * cu) {
+    ctx.fillStyle = lg(0, CY(2), 0, CY(24), [[0, rgba(T.surface, 0.95)], [1, rgba(T['surface-2'], 0.95)]]); ctx.strokeStyle = rgba(T.muted, 0.7); ctx.lineWidth = 1.4;
+    ctx.beginPath(); ctx.moveTo(CX(3), CY(23)); ctx.lineTo(CX(3), CY(16)); ctx.quadraticCurveTo(CX(4), CY(12.5), CX(13), CY(11.5)); ctx.lineTo(CX(28), CY(10.5)); ctx.quadraticCurveTo(CX(37), CY(2.6), CX(50), CY(2.4));
+    ctx.lineTo(CX(65), CY(2.8)); ctx.quadraticCurveTo(CX(76), CY(3.6), CX(83), CY(10.6)); ctx.lineTo(CX(94), CY(12.2)); ctx.quadraticCurveTo(CX(98), CY(13.2), CX(98), CY(17.5)); ctx.lineTo(CX(98), CY(23)); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = rgba(T.muted, 0.35); ctx.beginPath(); ctx.moveTo(CX(31), CY(10.4)); ctx.quadraticCurveTo(CX(38.5), CY(4.2), CX(49), CY(4.1)); ctx.lineTo(CX(49), CY(10.4)); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(CX(52), CY(4.1)); ctx.lineTo(CX(64), CY(4.4)); ctx.quadraticCurveTo(CX(73), CY(5), CX(79), CY(10.4)); ctx.lineTo(CX(52), CY(10.4)); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = rgba(T.muted, 0.8); ctx.lineWidth = 1.6; ctx.beginPath(); ctx.moveTo(CX(30), CY(25.5)); ctx.lineTo(CX(97), CY(25.5)); ctx.stroke();
+    for (const wx of [21, 79]) { ctx.fillStyle = rgba(T.ink, 0.75); ctx.beginPath(); ctx.arc(CX(wx), CY(23), 5.6 * cu, 0, TAU); ctx.fill(); ctx.fillStyle = rgba(T.surface, 0.9); ctx.beginPath(); ctx.arc(CX(wx), CY(23), 2.4 * cu, 0, TAU); ctx.fill(); }
+    ctx.fillStyle = T.s2; rr(CX(63), CY(24), 15 * cu, 3 * cu, 1.4 * cu); ctx.fill();
+    ctx.strokeStyle = rgba(T.s2, 0.8); ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(CX(63), CY(27)); ctx.lineTo(X(cx0 + 2), Y(ctop + 1)); ctx.moveTo(CX(78), CY(27)); ctx.lineTo(X(cx1 - 2), Y(ctop + 1)); ctx.stroke(); ctx.setLineDash([]);
+  }
+  // 바닥 그림자
+  ellipseShadow(X(64), Y(cbot + 4), 48 * u, 2.2 * u, 0.3);
+  // 배기관 (금속 원통 음영)
+  const pipe = (x0, x1, y, d = tube + 1.4) => { shadow(6, 2, 4, 0.28); ctx.fillStyle = lg(0, Y(y - d / 2), 0, Y(y + d / 2), [[0, T['metal-2']], [0.28, '#f3f5f7'], [0.55, T.metal], [1, mix(T['metal-2'], '#000000', 0.3)]]); rr(X(x0), Y(y - d / 2), (x1 - x0) * u, d * u, 1.2 * u); ctx.fill(); noShadow(); };
+  pipe(0, cx0 + 2, yb); pipe(cx1 - 2, 120, yb);
+  // 들어오는 쪽 주름관과 죔쇠
+  ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = Math.max(1, 0.3 * u); for (let i = 0; i < 6; i++) { ctx.beginPath(); ctx.moveTo(X(4 + i * 0.9), Y(yb - 3)); ctx.lineTo(X(4 + i * 0.9), Y(yb + 3)); ctx.stroke(); }
+  for (const cx of [12, 113]) { ctx.fillStyle = lg(0, Y(yb - 3.9), 0, Y(yb + 3.9), [[0, '#d9dde1'], [1, '#5f676f']]); rr(X(cx), Y(yb - 3.9), 1.6 * u, 7.8 * u, 0.4 * u); ctx.fill(); }
+  // 꼬리관 (크롬)
+  ctx.fillStyle = lg(0, Y(yb - 3.6), 0, Y(yb + 3.6), [[0, '#9aa3ab'], [0.3, '#ffffff'], [0.6, '#c3cad0'], [1, '#59616a']]); rr(X(118), Y(yb - 3.6), 7 * u, 7.2 * u, 1 * u); ctx.fill();
+  ctx.fillStyle = '#15191d'; ctx.beginPath(); ctx.ellipse(X(125), Y(yb), 0.9 * u, 2.8 * u, 0, 0, TAU); ctx.fill();
+  // 몸통 (스테인리스 통)
+  shadow(20, 6, 12, 0.32);
+  ctx.fillStyle = lg(0, Y(ctop), 0, Y(cbot), [[0, mix(T.metal, '#ffffff', 0.45)], [0.18, T.metal], [0.65, T['metal-2']], [1, mix(T['metal-2'], '#000000', 0.35)]]);
+  rr(X(cx0), Y(ctop), (cx1 - cx0) * u, (cbot - ctop) * u, 6 * u); ctx.fill(); noShadow();
+  ctx.save(); rr(X(cx0), Y(ctop), (cx1 - cx0) * u, (cbot - ctop) * u, 6 * u); ctx.clip();
+  ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1; for (let i = 0; i < 26; i++) { const yy = Y(ctop) + ((i * 37) % 97) / 97 * (cbot - ctop) * u; ctx.beginPath(); ctx.moveTo(X(cx0), yy); ctx.lineTo(X(cx1), yy); ctx.stroke(); }
+  for (const ex of [cx0, cx1 - 3.2]) { ctx.fillStyle = lg(X(ex), 0, X(ex + 3.2), 0, [[0, 'rgba(0,0,0,.18)'], [0.5, 'rgba(255,255,255,.12)'], [1, 'rgba(0,0,0,.18)']]); ctx.fillRect(X(ex), Y(ctop), 3.2 * u, (cbot - ctop) * u); }
+  ctx.fillStyle = 'rgba(0,0,0,.25)'; for (const ex of [cx0 + 3.2, cx1 - 3.2]) for (let yy = ctop + 1; yy < cbot - 0.5; yy += 1.3) { ctx.beginPath(); ctx.arc(X(ex), Y(yy), 0.28 * u, 0, TAU); ctx.fill(); }   // 용접 자국
+  ctx.restore();
+  // 잘라 낸 단면 (안쪽)
+  const ix = cx0 + 4.5, iy = ctop + 3.2, iw = cx1 - cx0 - 9, ih = cbot - ctop - 6.4;
+  ctx.fillStyle = lg(0, Y(iy), 0, Y(iy + ih), [[0, T['shell-2']], [1, T.shell]]); rr(X(ix), Y(iy), iw * u, ih * u, 3.6 * u); ctx.fill();
+  ctx.fillStyle = lg(0, Y(iy), 0, Y(iy + 3), [[0, 'rgba(0,0,0,.35)'], [1, 'rgba(0,0,0,0)']]); rr(X(ix), Y(iy), iw * u, 3 * u, 3.6 * u); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = Math.max(1, 0.3 * u); rr(X(ix), Y(iy), iw * u, ih * u, 3.6 * u); ctx.stroke();
+  // 관 (금속 테두리 + 어두운 속)
+  const tubeLine = pts => {
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(...P(...p)) : ctx.moveTo(...P(...p)));
+    ctx.strokeStyle = T['metal-2']; ctx.lineWidth = tube * u + 6; ctx.stroke();
+    ctx.strokeStyle = T.metal; ctx.lineWidth = tube * u + 3; ctx.stroke();
+    ctx.strokeStyle = '#13171b'; ctx.lineWidth = Math.max(4, tube * u - 3); ctx.stroke();
+    ctx.lineCap = 'butt';
+  };
+  const p2 = [[ix, yb], [xs, yb], [xe, yb], [ix + iw, yb]];
+  const p1 = h > 0.3 ? [[xs, yb], [xs, yb - h], [xe, yb - h], [xe, yb]] : [[xs, yb], [xe, yb]];
+  if (h > 0.3) tubeLine(p1);
+  tubeLine(p2);
+  // 관을 따라 움직이는 파동 (압력 변화를 관에 수직인 변위로 그림)
+  const along = (pts, s0, col, amp) => {
+    const segs = []; for (let i = 1; i < pts.length; i++) segs.push([pts[i - 1], pts[i], Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1])]);
+    ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = 5 * D.dpr; ctx.strokeStyle = col; ctx.lineWidth = 2.6; ctx.lineJoin = 'round'; ctx.beginPath();
+    let s = s0, first = true;
+    for (const [a, b, L] of segs) {
+      const nx = -(b[1] - a[1]) / L, ny = (b[0] - a[0]) / L, n = Math.max(8, Math.round(L * 2));
+      for (let j = 0; j <= n; j++) {
+        const q = j / n, v = amp(s + q * L), x = a[0] + (b[0] - a[0]) * q + nx * v, y = a[1] + (b[1] - a[1]) * q + ny * v;
+        const [X1, Y1] = P(x, y); first ? ctx.moveTo(X1, Y1) : ctx.lineTo(X1, Y1); first = false;
+      }
+      s += L;
+    }
+    ctx.stroke(); ctx.restore();
+  };
+  const wt = TAU * tv * o.fv, A0 = 1.35;
+  along([[0, yb], [xs, yb]], -xs, T.noise, s => A0 * Math.sin(wt - kU * s));
+  along(p2.slice(1, 3), 0, T.s1, s => A0 * 0.8 * Math.sin(wt - kU * s));
+  if (h > 0.3) along(p1, 0, T.s2, s => A0 * 0.8 * Math.sin(wt - kU * s));
+  const L2 = xe - xs;
+  along([[xe, yb], [120, yb]], 0, T.sum, s => A0 * 0.8 * (Math.sin(wt - kU * (L2 + s)) + Math.sin(wt - kU * (L2 + 2 * h + s))) * 0.5 * 1.25);
+  // 나가는 소리
+  const outA = Math.abs(Math.cos(Math.PI * o.dl / 100 / o.lam));
+  ctx.save(); ctx.strokeStyle = T.sum; ctx.lineWidth = 2.6; ctx.lineCap = 'round';
+  for (let k = 0; k < 3; k++) { const r = ((k + (tv * o.fv) % 1) * 3.2 + 1) * u; ctx.globalAlpha = outA * Math.max(0, 1 - r / (11 * u)); ctx.beginPath(); ctx.arc(X(124.5), Y(yb), r, -0.6, 0.6); ctx.stroke(); }
+  ctx.restore(); ctx.globalAlpha = 1;
+  // 경로차 표시: 통로 1에서 더 가는 두 세로 관
+  if (h > 2) {
+    ctx.strokeStyle = rgba(T.s2, 0.9); ctx.lineWidth = Math.max(1.5, 0.35 * u); ctx.setLineDash([4, 3]);
+    for (const xx of [xs - 4, xe + 4]) { ctx.beginPath(); ctx.moveTo(X(xx), Y(yb)); ctx.lineTo(X(xx), Y(yb - h)); ctx.stroke(); }
+    ctx.setLineDash([]);
+  }
+  // 이름표
+  pill('엔진에서', X(8), Y(yb - 8), T.noise);
+  pill('통로 2 (곧은 길)', X(64), Y(cbot + 5), T.s1);
+  if (h > 0.3) pill('통로 1 (돌아가는 길)', X(64), Y(Math.max(ctop + 3, yb - h - 5.4)), T.s2); else pill('통로 1 = 통로 2', X(64), Y(yb - 7.5), T.s2);
+  if (h >= 6) pill(`l₁ − l₂ = ${o.dl} cm`, X(xe - 2.5), Y(yb - h / 2), T.s2, 'right', 14); else if (h > 2) pill(`l₁ − l₂ = ${o.dl} cm`, X(xe + 6), Y(yb - h / 2 - 2), T.s2, 'left', 14);
+  pill('밖으로', X(119), Y(yb - 8), T.sum);
+}
+
+// 스마트폰 (거치대에 세움) — 소리 발생기 앱
+function phoneDev(x, y, w, f, col, playing, label) {
+  const h = w * 1.95, r = w * 0.14;
+  // 거치대
+  ellipseShadow(x + w / 2, y + h + w * 0.1, w * 0.75, w * 0.09, 0.42);
+  ctx.fillStyle = lg(0, y + h * 0.55, 0, y + h + w * 0.1, [[0, '#30353b'], [1, '#121518']]);
+  ctx.beginPath(); ctx.moveTo(x + w * 0.22, y + h * 0.5); ctx.lineTo(x + w * 0.78, y + h * 0.5); ctx.lineTo(x + w * 0.95, y + h + w * 0.08); ctx.lineTo(x + w * 0.05, y + h + w * 0.08); ctx.closePath(); ctx.fill();
+  // 본체
+  shadow(16, 5, 10, 0.3);
+  ctx.fillStyle = lg(x, y, x + w, y + h, [[0, '#4a5058'], [0.5, '#22262b'], [1, '#121518']]); rr(x, y, w, h, r); ctx.fill(); noShadow();
+  ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.lineWidth = 1; rr(x + 0.5, y + 0.5, w - 1, h - 1, r - 0.5); ctx.stroke();
+  ctx.fillStyle = '#2a2f35'; rr(x + w - 1.5, y + h * 0.22, 3, h * 0.1, 1.5); ctx.fill(); rr(x + w - 1.5, y + h * 0.35, 3, h * 0.07, 1.5); ctx.fill();
+  const sx = x + w * 0.055, sy = y + w * 0.08, sw = w * 0.89, sh = h - w * 0.16;
+  ctx.fillStyle = lg(sx, sy, sx, sy + sh, [[0, T.dark ? '#1c242c' : '#fbfcfd'], [1, T.dark ? '#141a20' : '#eef2f5']]); rr(sx, sy, sw, sh, r * 0.72); ctx.fill();
+  ctx.fillStyle = '#0d0f11'; ctx.beginPath(); ctx.arc(x + w / 2, sy + w * 0.06, w * 0.028, 0, TAU); ctx.fill();
+  ctx.fillStyle = T.muted; ctx.font = `600 ${Math.max(12, w * 0.085)}px ${T.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  ctx.fillText('소리 발생기', x + w / 2, sy + sh * 0.07);
+  ctx.fillStyle = col; ctx.font = `600 ${Math.max(20, w * 0.22)}px ${T.mono}`; ctx.textBaseline = 'middle'; ctx.fillText(String(f), x + w / 2, sy + sh * 0.33);
+  ctx.fillStyle = T.muted; ctx.font = `500 ${Math.max(13, w * 0.09)}px ${T.mono}`; ctx.fillText('Hz', x + w / 2, sy + sh * 0.45);
+  ctx.strokeStyle = col; ctx.lineWidth = 2.2; ctx.beginPath();
+  for (let i = 0; i <= 60; i++) { const q = i / 60, xx = sx + sw * 0.12 + q * sw * 0.76, yy = sy + sh * 0.6 + Math.sin(q * TAU * 3 + (playing ? tv * 3 : 0)) * sh * 0.045; i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+  ctx.stroke();
+  const bx = x + w / 2, by = sy + sh * 0.8, br = w * 0.12;
+  ctx.fillStyle = playing ? T.noise : T.accent; ctx.beginPath(); ctx.arc(bx, by, br, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#fff'; if (playing) { ctx.fillRect(bx - br * 0.35, by - br * 0.35, br * 0.7, br * 0.7); } else { ctx.beginPath(); ctx.moveTo(bx - br * 0.3, by - br * 0.45); ctx.lineTo(bx + br * 0.5, by); ctx.lineTo(bx - br * 0.3, by + br * 0.45); ctx.fill(); }
+  ctx.save(); rr(sx, sy, sw, sh, r * 0.72); ctx.clip();
+  ctx.fillStyle = lg(sx, sy, sx + sw, sy + sh * 0.6, [[0, 'rgba(255,255,255,.16)'], [0.45, 'rgba(255,255,255,.04)'], [0.46, 'rgba(255,255,255,0)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(sx, sy, sw, sh);
+  ctx.restore();
+  if (label) pill(label, x + w / 2, y + h + w * 0.42, col);
+}
+// 나무 탁자 (위에서 조금 내려다봄)
+function table(x0, x1, yTop, d, e) {
+  ctx.fillStyle = lg(0, yTop, 0, yTop + d, [[0, mix(T.wood, '#000000', 0.12)], [1, mix(T.wood, '#ffffff', 0.08)]]);
+  ctx.beginPath(); ctx.moveTo(x0 + d * 0.5, yTop); ctx.lineTo(x1 - d * 0.5, yTop); ctx.lineTo(x1, yTop + d); ctx.lineTo(x0, yTop + d); ctx.closePath(); ctx.fill();
+  ctx.save(); ctx.clip(); ctx.strokeStyle = rgba(T['wood-2'], 0.28); ctx.lineWidth = 1;
+  for (let i = 0; i < 12; i++) { const yy = yTop + d * (i + 0.5) / 12; ctx.beginPath(); for (let x = x0; x <= x1; x += 8) { const v = yy + Math.sin(x * 0.013 + i * 1.7) * 1.6 + Math.sin(x * 0.041 + i) * 0.6; x === x0 ? ctx.moveTo(x, v) : ctx.lineTo(x, v); } ctx.stroke(); }
+  ctx.restore();
+  ctx.fillStyle = lg(0, yTop + d, 0, yTop + d + e, [[0, T.wood], [1, T['wood-2']]]); ctx.fillRect(x0, yTop + d, x1 - x0, e);
+  ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.fillRect(x0, yTop + d, x1 - x0, 1.2);
+  ctx.fillStyle = lg(0, yTop + d + e, 0, yTop + d + e + 18, [[0, 'rgba(0,0,0,.18)'], [1, 'rgba(0,0,0,0)']]); ctx.fillRect(x0, yTop + d + e, x1 - x0, 18);
+}
+
+/* =====================================================================
+   장면 (수업 순서)
+   ===================================================================== */
+function ancScene(cfg) {
+  return Object.assign({
+    kind: 'anc',
+    enter() { this.p = Object.assign({}, this.p0); },
+    parts() { return noiseParts(this.p.noise, this.p.f); },
+    vals() {
+      const ps = this.parts(), g = this.p.anc ? this.p.ratio : 0;
+      const r = this.p.anc ? rmsRatio(ps, g, this.p.err, this.p.tau) : 1;
+      return { ps, g, r, db: dbOf(r) };
+    },
+    fn() {   // 화면용 신호 (시간 단위: 초, 실제 진동수)
+      const v = this.vals(), tau = this.p.tau / 1000, e = this.p.err * DEG, g = v.g;
+      const noise = t => v.ps.reduce((s, p) => s + p.a * Math.sin(TAU * p.f * t + p.ph), 0);
+      const anti = t => -g * v.ps.reduce((s, p) => s + p.a * Math.sin(TAU * p.f * (t - tau) + p.ph - e), 0);
+      const mus = t => this.p.music ? 0.55 * Math.sin(TAU * 523.25 * t) : 0;
+      return { noise, anti, ear: t => noise(t) + anti(t) + mus(t), mus };
+    },
+    draw() {
+      stageBG();
+      const v = this.vals(), L = layout({ graph: !!this.graph }), fb = this.parts()[0].f;
+      const lagFrac = this.p.err / 360 + this.p.f * this.p.tau / 1000;
+      headphone(L.app, { anc: this.p.anc, g: v.g, lagFrac, ear: Math.max(v.r, this.p.music ? 0.5 : 0), fv: 0.9, noiseName: this.p.noise === 'engine' ? '버스 엔진 소리' : `소음 ${this.p.f} Hz`, music: this.p.music });
+      const F = this.fn(), win = 3 / fb, amp = this.p.noise === 'engine' ? 2.2 : 1.2;
+      const rows = [{ label: '소음 (마이크)', col: T.noise, fn: F.noise }];
+      if (this.p.anc) rows.push({ label: '상쇄음 (스피커)', col: T.anti, fn: F.anti });
+      rows.push({ label: this.p.music ? '귀에 들리는 소리 (음악 + 남은 소음)' : '귀에 들리는 소리', col: T.sum, fn: F.ear, right: this.p.anc ? `${pct(v.r)} %` : '' });
+      scope(L.scope, rows, { t0: tv * 0.25 / fb, win, amp, note: `${(win * 1000).toFixed(1)} ms` });
+    },
+    audio() {
+      const v = this.vals(), res = f => this.p.anc ? residual(f, v.g, this.p.err, this.p.tau) : 1;
+      if (this.p.noise === 'engine') return { engine: { F: 110, harm: ENG.map(([m, a]) => 0.11 * a * res(110 * m)), rumble: 0.17 * res(110), clatter: 0.07 * res(1500) } };
+      return { tones: [{ f: this.p.f, a: 0.15 * res(this.p.f) }] };
+    },
+    music() { return this.p.music; },
+    onParam() { setVoices(this.audio()); }
+  }, cfg);
+}
+const noiseHud = (sc, extra = []) => {
+  const v = sc.vals(), on = sc.p.anc;
+  return [{ k: '귀에 들리는 소음', dot: T.sum, v: on ? (v.db < -59 ? '≈ 0' : pct(v.r)) : '100', u: '%', s: on ? (v.db < -59 ? '완전 상쇄' : `${v.db >= 0 ? '+' : ''}${v.db.toFixed(1)} dB`) : '소음 그대로', f: '소음 + (−소음) = 0' }].concat(extra);
+};
+
+const SCENES = [
+  ancScene({
+    chip: '소음', cap: '바깥의 소음이 헤드폰 안으로 들어와 고막을 흔든다',
+    p0: { noise: 'tone', f: 200, anc: false, err: 0, ratio: 1, tau: 0, music: false },
+    hud() {
+      return { M: [{ k: '소음', v: this.p.noise === 'engine' ? '110' : `${this.p.f}`, u: this.p.noise === 'engine' ? 'Hz +배음' : 'Hz' }, { k: '소음 크기', v: '80', u: 'dB' }], R: noiseHud(this) };
+    },
+    dock() { return [{ t: 'play' }, { t: 'anc' }, { t: 'seg', label: '소음', key: 'noise', opts: [['tone', '한 음'], ['engine', '엔진 소리']] }, { t: 'slider', label: '소음 진동수', key: 'f', min: 50, max: 1000, step: 10, fmt: v => `${v}<small>Hz</small>`, show: () => this.p.noise === 'tone' }]; }
+  }),
+  ancScene({
+    chip: '반대 위상', cap: '마이크로 받은 소음과 반대 위상(180°)의 소리를 더하면 상쇄 간섭으로 조용해진다 · 106쪽',
+    p0: { noise: 'tone', f: 200, anc: true, err: 0, ratio: 1, tau: 0, music: false },
+    hud() {
+      return {
+        M: [{ k: '소음 크기', v: '80', u: 'dB' }, { k: '두 소리의 위상차', v: this.p.anc ? '180' : '—', u: this.p.anc ? '°' : '' }],
+        R: noiseHud(this, this.p.music ? [{ k: '음악', dot: T.music, v: '그대로', s: '회로는 소음만 뒤집음' }] : [])
+      };
+    },
+    dock() { return [{ t: 'play' }, { t: 'anc' }, { t: 'seg', label: '소음', key: 'noise', opts: [['tone', '한 음'], ['engine', '엔진 소리']] }, { t: 'toggle', key: 'music', label: '♪ 음악 함께' }, { t: 'formula' }]; }
+  }),
+  ancScene({
+    chip: '위상 어긋남', cap: '반대 위상에서 조금만 어긋나도 덜 지워진다. 60° 어긋나면 소음이 그대로 남는다',
+    p0: { noise: 'tone', f: 200, anc: true, err: 60, ratio: 1, tau: 0, music: false },
+    graph: true,
+    hud() {
+      const v = this.vals();
+      return {
+        M: [{ k: '위상 오차 ε', v: `${this.p.err}`, u: '°' }, { k: '진폭 비율', v: this.p.ratio.toFixed(2) }],
+        R: [{ k: '남은 소음 (진폭)', dot: T.sum, v: pct(v.r), u: '%', s: v.db < -59 ? '완전 상쇄' : `${v.db >= 0 ? '+' : ''}${v.db.toFixed(1)} dB`, f: this.p.ratio === 1 ? `2 sin(${this.p.err}°/2) = ${(2 * Math.sin(this.p.err * DEG / 2)).toFixed(2)}` : `|1 − ${this.p.ratio.toFixed(2)}·e^(iε)| = ${v.r.toFixed(2)}` }]
+      };
+    },
+    graph() {
+      const g = this.p.ratio;
+      plot($('#gcv'), { x0: 0, x1: 180, y0: 0, y1: 2, yt: [0, 1, 2], yf: v => `${Math.round(v * 100)}%`, xt: [0, 30, 60, 90, 120, 150, 180], xf: v => v + '°', col: T.sum,
+        fn: e => residual(200, g, e, 0), hl: [{ y: 1, label: '원래 소음' }, { y: 0.1, label: '90% 줄임', col: T.anti }], mark: [this.p.err, this.vals().r] });
+      return ['위상 오차에 따른 남은 소음', '가로: 위상 오차'];
+    },
+    dock() { return [{ t: 'play' }, { t: 'anc' }, { t: 'slider', label: '위상 오차 ε', key: 'err', min: 0, max: 180, step: 1, fmt: v => `${v}<small>°</small>` }, { t: 'seg', label: '빠르게', key: 'err', opts: [[0, '0°'], [6, '6°'], [60, '60°'], [180, '180°']] }, { t: 'slider', label: '진폭 비율', key: 'ratio', min: 0.5, max: 1.5, step: 0.05, fmt: v => v.toFixed(2), narrow: true }, { t: 'formula' }]; }
+  }),
+  ancScene({
+    chip: '고음일수록 어려움', cap: '처리 시간이 같아도 높은 소리일수록 위상이 많이 어긋나 덜 지워진다',
+    p0: { noise: 'tone', f: 100, anc: true, err: 0, ratio: 1, tau: 0.25, music: false },
+    graph: true,
+    hud() {
+      const v = this.vals(), pe = 360 * this.p.f * this.p.tau / 1000;
+      return {
+        M: [{ k: '소음 진동수', v: `${this.p.f}`, u: 'Hz' }, { k: '처리 시간 τ', v: this.p.tau.toFixed(2), u: 'ms' }, { k: '위상 오차', v: pe.toFixed(0), u: '°' }],
+        R: [{ k: '남은 소음 (진폭)', dot: T.sum, v: pct(v.r), u: '%', s: `${v.db >= 0 ? '+' : ''}${v.db.toFixed(1)} dB`, f: `360° × ${this.p.f} × ${(this.p.tau / 1000).toFixed(5)} s = ${pe.toFixed(0)}°` }]
+      };
+    },
+    graph() {
+      const tau = this.p.tau;
+      plot($('#gcv'), { x0: 0, x1: 2000, y0: 0, y1: 2, yt: [0, 1, 2], yf: v => `${Math.round(v * 100)}%`, xt: [0, 500, 1000, 1500, 2000], xf: v => v + '', col: T.sum,
+        fn: f => residual(f, 1, 0, tau), hl: [{ y: 1, label: '원래 소음' }], mark: [this.p.f, this.vals().r] });
+      return [`처리 시간 ${tau.toFixed(2)} ms일 때 진동수별 남은 소음`, 'Hz'];
+    },
+    dock() { return [{ t: 'play' }, { t: 'anc' }, { t: 'slider', label: '소음 진동수', key: 'f', min: 50, max: 2000, step: 10, fmt: v => `${v}<small>Hz</small>` }, { t: 'slider', label: '처리 시간 τ', key: 'tau', min: 0, max: 1, step: 0.01, fmt: v => `${v.toFixed(2)}<small>ms</small>` }, { t: 'formula' }]; }
+  }),
+
+  /* ⑤ 자동차 소음기 */
+  {
+    chip: '소음기', cap: '두 통로의 길이 차가 반파장의 홀수 배인 소리가 지워진다 · 107쪽', kind: 'muffler',
+    p0: { f: 500, dl: 34, noise: 'tone' }, graph: true,
+    enter() { this.p = Object.assign({}, this.p0); },
+    parts() { return this.p.noise === 'engine' ? engineParts(125) : [{ f: this.p.f, a: 1, ph: 0 }]; },
+    out(f) { return Math.abs(Math.cos(Math.PI * f * this.p.dl / 100 / V)); },
+    draw() {
+      stageBG();
+      const L = layout({ graph: true }), eng = this.p.noise === 'engine', f = eng ? 125 : this.p.f, lam = V / f, fb = this.parts()[0].f;
+      muffler(L.app, { dl: this.p.dl, lam, fv: 0.7 });
+      const dl = this.p.dl / 100, ps = this.parts();
+      const p1 = t => 0.5 * ps.reduce((s, p) => s + p.a * Math.sin(TAU * p.f * (t - dl / V) + p.ph), 0), p2 = t => 0.5 * ps.reduce((s, p) => s + p.a * Math.sin(TAU * p.f * t + p.ph), 0);
+      scope(L.scope, [{ label: '통로 1 끝', col: T.s2, fn: p1 }, { label: '통로 2 끝', col: T.s1, fn: p2 }, { label: '밖으로 나가는 소리', col: T.sum, fn: t => p1(t) + p2(t), right: eng ? '' : `${Math.round(this.out(f) * 100)} %` }],
+        { t0: tv * 0.25 / fb, win: 3 / fb, amp: eng ? 1.8 : 1, note: `${(3000 / fb).toFixed(1)} ms` });
+    },
+    hud() {
+      const f = this.p.f, lam = V / f, ratio = this.p.dl / 100 / (lam / 2), o = this.out(f);
+      if (this.p.noise === 'engine') return { M: [{ k: '엔진 소리', v: '125', u: 'Hz +배음' }, { k: '경로차 l₁ − l₂', v: `${this.p.dl}`, u: 'cm' }], R: [{ k: '지워지는 진동수', dot: T.sum, v: this.p.dl ? `${Math.round(V / (2 * this.p.dl / 100))}` : '없음', u: this.p.dl ? 'Hz' : '', s: this.p.dl ? '와 그 홀수 배' : '', f: 'f = v / (2 Δl) × (2m+1)' }] };
+      return {
+        M: [{ k: '진동수', v: `${f}`, u: 'Hz' }, { k: '파장 λ', v: (lam * 100).toFixed(1), u: 'cm' }, { k: '경로차 l₁ − l₂', v: `${this.p.dl}`, u: 'cm' }, { k: '경로차 ÷ (λ/2)', v: ratio.toFixed(2) }],
+        R: [{ k: '밖으로 나가는 소리', dot: T.sum, v: `${Math.round(o * 100)}`, u: '%', s: o < 0.05 ? '상쇄 간섭' : o > 0.95 ? '보강 간섭' : '', f: `|cos(π × ${this.p.dl} ÷ ${(lam * 100).toFixed(1)})| = ${o.toFixed(2)}` }, { k: '이 소리를 지우는 가장 짧은 경로차', v: (lam * 50).toFixed(1), u: 'cm', s: 'λ/2' }]
+      };
+    },
+    graph() {
+      const dl = this.p.dl;
+      plot($('#gcv'), { x0: 0, x1: 2000, y0: 0, y1: 1.05, yt: [0, 0.5, 1], yf: v => `${Math.round(v * 100)}%`, xt: [0, 500, 1000, 1500, 2000], col: T.sum, fn: f => this.out(f), mark: this.p.noise === 'engine' ? null : [this.p.f, this.out(this.p.f)] });
+      return [`경로차 ${dl} cm일 때 진동수별로 나가는 소리`, 'Hz'];
+    },
+    dock() { return [{ t: 'play' }, { t: 'snd' }, { t: 'seg', label: '소리', key: 'noise', opts: [['tone', '한 음'], ['engine', '엔진 소리']] }, { t: 'slider', label: '진동수', key: 'f', min: 100, max: 2000, step: 10, fmt: v => `${v}<small>Hz</small>`, show: () => this.p.noise === 'tone' }, { t: 'slider', label: '경로차 l₁ − l₂', key: 'dl', min: 0, max: 100, step: 1, fmt: v => `${v}<small>cm</small>` }, { t: 'formula' }]; },
+    audio() {
+      if (this.p.noise === 'engine') return { engine: { F: 125, harm: ENG.map(([m, a]) => 0.11 * a * this.out(125 * m)), rumble: 0.17 * this.out(110), clatter: 0.07 * this.out(1500) } };
+      return { tones: [{ f: this.p.f, a: 0.15 * this.out(this.p.f) }] };
+    },
+    onParam() { setVoices(this.audio()); }
+  },
+
+  /* ⑥ 맥놀이: 스마트폰 2대 (화면과 소리가 같은 빠르기) */
+  {
+    chip: '맥놀이', cap: '진동수가 조금 다른 두 소리를 겹치면 소리가 커졌다 작아졌다 한다 · 107쪽 탐구 과제', kind: 'beats', realTime: true,
+    p0: { f1: 440, f2: 443 },
+    enter() { this.p = Object.assign({}, this.p0); this.phi = 0; this.tp = 0; },
+    step(dt, dtRaw) {
+      const df = this.p.f2 - this.p.f1, ap = AU.on ? pairPhase() : null;
+      if (ap != null) this.phi = ap; else this.phi += TAU * df * dtRaw;
+      this.tp += dtRaw;
+    },
+    draw() {
+      stageBG();
+      const L = layout({});
+      const R = L.app, w = Math.min(R.w * 0.2, R.h * 0.4), gap = Math.min(R.w * 0.24, w * 1.7), cx = R.x + R.w / 2, h = w * 1.95, y = R.y + Math.max(8, (R.h - h - w * 0.7) / 2);
+      const env = Math.abs(Math.cos(this.phi / 2));
+      table(R.x, R.x + R.w, y + h - w * 0.32, w * 0.62, w * 0.12);
+      const x1 = cx - gap / 2 - w, x2 = cx + gap / 2;
+      for (const [x, f, col, toR] of [[x1, this.p.f1, T.s1, true], [x2, this.p.f2, T.s2, false]]) {
+        ctx.save(); ctx.strokeStyle = col; ctx.lineWidth = 2.8; ctx.lineCap = 'round';
+        const ax = toR ? x + w + 4 : x - 4, ay = y + w * 0.75, a0 = toR ? -0.55 : Math.PI - 0.55;
+        for (let k = 0; k < 4; k++) { const r = ((k + (tv * 0.8) % 1) * 0.12 + 0.04) * w * 2; ctx.globalAlpha = (AU.on ? 0.9 : 0.3) * Math.max(0, 1 - r / (w * 1.05)); ctx.beginPath(); ctx.arc(ax, ay, r, a0, a0 + 1.1); ctx.stroke(); }
+        ctx.restore(); ctx.globalAlpha = 1;
+        phoneDev(x, y, w, f, col, AU.on, x === x1 ? '휴대폰 1' : '휴대폰 2');
+      }
+      // 합친 소리의 크기 (맥놀이 포락선)
+      const ecx = cx, ecy = y + w * 0.75, er = w * 0.17 + env * w * 0.13;
+      ctx.fillStyle = rg(ecx, ecy, 0, er * 1.6, [[0, rgba(T.sum, 0.18 + 0.4 * env)], [1, rgba(T.sum, 0)]]); ctx.beginPath(); ctx.arc(ecx, ecy, er * 1.6, 0, TAU); ctx.fill();
+      ctx.fillStyle = rgba(T.sum, 0.16 + 0.34 * env); ctx.beginPath(); ctx.arc(ecx, ecy, er, 0, TAU); ctx.fill();
+      ctx.fillStyle = T.sum; ctx.font = `700 ${Math.max(15, w * 0.11)}px ${T.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('합친 소리', ecx, ecy - 9); ctx.font = `600 ${Math.max(14, w * 0.09)}px ${T.font}`; ctx.fillText('크기', ecx, ecy + 12);
+      // 오실로스코프: 고정된 파형 위를 재생 위치가 지나감 (빠른 진동은 줄여서 그림, 포락선은 실제)
+      const df = this.p.f2 - this.p.f1, adf = Math.abs(df), win = adf > 0 ? clamp(4 / adf, 0.5, 2) : 1, vis = 26 / win;
+      const tNow = adf > 0 ? this.phi / (TAU * df) : this.tp, cur01 = (((tNow % win) + win) % win) / win;
+      scope(L.scope, [
+        { label: `휴대폰 1 · ${this.p.f1} Hz`, col: T.s1, fn: t => Math.sin(TAU * vis * t) },
+        { label: `휴대폰 2 · ${this.p.f2} Hz`, col: T.s2, fn: t => Math.sin(TAU * vis * t + TAU * df * t) },
+        { label: '합친 소리', col: T.sum, fn: t => Math.sin(TAU * vis * t) + Math.sin(TAU * vis * t + TAU * df * t), right: adf ? `${adf} 번/초` : '맥놀이 없음' }
+      ], { t0: 0, win, amp: 1.6, cursor: cur01, note: `${win.toFixed(2)} s · 빠른 진동은 줄여서 그림` });
+    },
+    hud() {
+      const df = Math.abs(this.p.f1 - this.p.f2);
+      return { M: [{ k: '휴대폰 1', v: `${this.p.f1}`, u: 'Hz' }, { k: '휴대폰 2', v: `${this.p.f2}`, u: 'Hz' }], R: [{ k: '맥놀이', dot: T.sum, v: `${df}`, u: '번/초', s: df ? `${(1 / df).toFixed(2)} 초마다 커짐` : '두 소리 진동수가 같음', f: `|f₁ − f₂| = |${this.p.f1} − ${this.p.f2}|` }] };
+    },
+    dock() { return [{ t: 'play', noSpeed: true }, { t: 'snd', label: '두 휴대폰 재생' }, { t: 'slider', label: '휴대폰 1', key: 'f1', min: 400, max: 480, step: 1, fmt: v => `${v}<small>Hz</small>` }, { t: 'slider', label: '휴대폰 2', key: 'f2', min: 400, max: 480, step: 1, fmt: v => `${v}<small>Hz</small>` }, { t: 'seg', label: '휴대폰 2', key: 'df', opts: [[0, '같게'], [1, '+1'], [3, '+3'], [8, '+8']] }, { t: 'formula' }]; },
+    audio() { return { pair: { f1: this.p.f1, f2: this.p.f2, a: 0.1 } }; },
+    onParam(key) { if (key === 'df') this.p.f2 = clamp(this.p.f1 + this.p.df, 400, 480); setVoices(this.audio()); if (!AU.on && this.p.f1 === this.p.f2) this.phi = 0; }
+  },
+
+  /* ⑦ 소리 증폭: 체외 충격파 쇄석기 (보강 간섭) */
+  {
+    chip: '충격파 쇄석기', cap: '반사판에서 반사된 충격파가 결석에서 같은 위상으로 만나 보강 간섭으로 세진다 · 107쪽', kind: 'litho',
+    p0: { rays: true },
+    enter() { this.p = Object.assign({}, this.p0); this.s = 0; },
+    a: 15, b: 12,
+    step(dt) { const prev = this.s; this.s = (this.s + dt * 9) % 40; if (this.s < prev) snap(); },
+    draw() {
+      stageBG();
+      const L = layout({ full: true }), R = L.app, a = this.a, b = this.b, c = Math.sqrt(a * a - b * b);
+      const u = Math.min(R.w / 52, R.h / 31), ox = R.x + R.w / 2 - 1 * u, oy = R.y + R.h / 2;
+      const P = (x, y) => [ox + x * u, oy + y * u], F1 = [-c, 0], F2 = [c, 0];
+      const th0 = 0.62 * Math.PI, th1 = 1.38 * Math.PI, E = (th, k = 1) => [a * k * Math.cos(th), b * k * Math.sin(th)];
+      // 물 (반사판 안쪽 + 피부에 닿는 물주머니) — 한 덩어리로 칠함
+      ctx.beginPath(); for (let i = 0; i <= 80; i++) { const th = th0 + (th1 - th0) * i / 80; ctx[i ? 'lineTo' : 'moveTo'](...P(...E(th))); }
+      ctx.bezierCurveTo(...P(-1.5, -12.6), ...P(2.3, -9), ...P(2.3, -4)); ctx.lineTo(...P(2.3, 4)); ctx.bezierCurveTo(...P(2.3, 9), ...P(-1.5, 12.6), ...P(...E(th0))); ctx.closePath();
+      ctx.fillStyle = lg(...P(-14, -10), ...P(3, 10), [[0, rgba(T.water, 0.98)], [1, rgba(T.water, 0.72)]]); ctx.fill();
+      ctx.save(); ctx.clip(); ctx.fillStyle = rg(...P(-8, -6), 0, 12 * u, [[0, 'rgba(255,255,255,.28)'], [1, 'rgba(255,255,255,0)']]); ctx.fillRect(...P(-16, -13), 20 * u, 26 * u); ctx.restore();
+      // 몸: 피부 · 지방 · 근육 층
+      const body = dx => { ctx.beginPath(); ctx.moveTo(...P(16 + dx, -40)); ctx.bezierCurveTo(...P(5 + dx, -22), ...P(1.6 + dx, -10), ...P(1.8 + dx, 0)); ctx.bezierCurveTo(...P(1.6 + dx, 10), ...P(5 + dx, 22), ...P(16 + dx, 40)); ctx.lineTo(...P(90, 40)); ctx.lineTo(...P(90, -40)); ctx.closePath(); };
+      shadow(22, 8, 12, 0.22); body(0); ctx.fillStyle = lg(...P(2, -20), ...P(30, 20), [[0, mix(T.skin, '#ffffff', 0.1)], [1, T['skin-2']]]); ctx.fill(); noShadow();
+      body(0.8); ctx.fillStyle = lg(...P(3, -20), ...P(30, 20), [[0, mix(T.fat, '#ffffff', 0.15)], [1, T.fat]]); ctx.fill();
+      body(3); ctx.fillStyle = lg(...P(4, -20), ...P(34, 24), [[0, mix(T.skin, T.flesh, 0.35)], [1, mix(T['skin-2'], T.flesh, 0.45)]]); ctx.fill();
+      ctx.save(); body(3); ctx.clip(); ctx.strokeStyle = 'rgba(255,255,255,.07)'; ctx.lineWidth = 1;
+      for (let i = -14; i < 30; i++) { ctx.beginPath(); ctx.moveTo(...P(4 + i * 1.6, -30)); ctx.lineTo(...P(14 + i * 1.6, 30)); ctx.stroke(); }
+      ctx.restore();
+      // 콩팥 (겉질 · 속질 · 깔때기) — 결석은 깔때기 안, 초점 F₂
+      const kx = c + 1;
+      shadow(12, 3, 6, 0.28);
+      const bean = () => { ctx.beginPath(); ctx.moveTo(...P(kx - 1, -7.5)); ctx.bezierCurveTo(...P(kx + 6.5, -7.5), ...P(kx + 6.5, 7.5), ...P(kx - 1, 7.5)); ctx.bezierCurveTo(...P(kx - 5.5, 7.5), ...P(kx - 6, 3), ...P(kx - 3.2, 1.2)); ctx.bezierCurveTo(...P(kx - 2.2, 0.4), ...P(kx - 2.2, -0.4), ...P(kx - 3.2, -1.2)); ctx.bezierCurveTo(...P(kx - 6, -3), ...P(kx - 5.5, -7.5), ...P(kx - 1, -7.5)); };
+      bean(); ctx.fillStyle = lg(...P(kx - 5, -7), ...P(kx + 5, 7), [[0, '#c9645b'], [1, '#7f2f2b']]); ctx.fill(); noShadow();
+      ctx.save(); bean(); ctx.clip();
+      ctx.fillStyle = 'rgba(90,20,20,.28)'; for (let i = 0; i < 6; i++) { const an = -1.1 + i * 0.44, ix = kx + 3.6 * Math.cos(an), iy = 5.6 * Math.sin(an); ctx.beginPath(); ctx.moveTo(...P(kx - 0.6 + 0.9 * Math.cos(an), 1.4 * Math.sin(an))); ctx.lineTo(...P(ix + 0.9 * Math.sin(an), iy - 0.9 * Math.cos(an))); ctx.lineTo(...P(ix - 0.9 * Math.sin(an), iy + 0.9 * Math.cos(an))); ctx.closePath(); ctx.fill(); }
+      ctx.fillStyle = '#ecd3c6'; ctx.beginPath(); ctx.ellipse(...P(kx - 1.6, 0), 2.6 * u, 2.3 * u, 0, 0, TAU); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.2)'; ctx.beginPath(); ctx.ellipse(...P(kx + 1.4, -4.6), 2.4 * u, 1 * u, -0.3, 0, TAU); ctx.fill();
+      ctx.restore();
+      // 반사판 (두꺼운 금속 그릇, 안쪽 면이 반짝임)
+      shadow(14, 4, 7, 0.3);
+      ctx.beginPath(); for (let i = 0; i <= 80; i++) { const th = th0 + (th1 - th0) * i / 80; ctx[i ? 'lineTo' : 'moveTo'](...P(...E(th, 1.13))); }
+      for (let i = 80; i >= 0; i--) { const th = th0 + (th1 - th0) * i / 80; ctx.lineTo(...P(...E(th))); } ctx.closePath();
+      ctx.fillStyle = lg(...P(-a * 1.13, -b), ...P(-4, b), [[0, mix(T.metal, '#ffffff', 0.3)], [0.5, T['metal-2']], [1, mix(T['metal-2'], '#000000', 0.3)]]); ctx.fill(); noShadow();
+      ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = Math.max(1.5, 0.28 * u); ctx.beginPath(); for (let i = 0; i <= 80; i++) { const th = th0 + (th1 - th0) * i / 80; ctx[i ? 'lineTo' : 'moveTo'](...P(...E(th))); } ctx.stroke();
+      // 발생기 전극 (반사판 바닥에서 초점 F₁까지)
+      ctx.fillStyle = lg(0, ...P(0, -0.5).slice(1), 0, P(0, 0.5)[1], [[0, '#eef1f3'], [1, T['metal-2']]]); rr(...P(-a * 1.13 - 1, -0.55), (a * 1.13 + 1 - c - 0.5) * u, 1.1 * u, 0.4 * u); ctx.fill();
+      ctx.fillStyle = '#f2efe6'; rr(...P(-c - 3.4, -0.8), 2.4 * u, 1.6 * u, 0.5 * u); ctx.fill();
+      ctx.fillStyle = T['metal-2']; ctx.beginPath(); ctx.moveTo(...P(-c - 1, -0.45)); ctx.lineTo(...P(-c - 0.18, 0)); ctx.lineTo(...P(-c - 1, 0.45)); ctx.fill();
+      // 같은 길이의 경로 3개
+      const s = this.s, path = th => { const p = E(th); return Math.hypot(p[0] - F1[0], p[1] - F1[1]) + Math.hypot(p[0] - F2[0], p[1] - F2[1]); };
+      const RAYS = [0.8, 1.0, 1.22], RC = [T.s1, T.anti, T.s2];
+      if (this.p.rays) {
+        RAYS.forEach((q, i) => {
+          const p = E(q * Math.PI);
+          ctx.strokeStyle = RC[i]; ctx.lineWidth = 2.2; ctx.setLineDash([7, 5]);
+          ctx.beginPath(); ctx.moveTo(...P(...F1)); ctx.lineTo(...P(...p)); ctx.lineTo(...P(...F2)); ctx.stroke(); ctx.setLineDash([]);
+        });
+      }
+      // 파면: 발생기에서 퍼져 반사판에 반사된 뒤 결석으로 모임
+      ctx.lineWidth = Math.max(3, 0.55 * u); ctx.lineCap = 'round'; ctx.save(); ctx.shadowColor = T.noise; ctx.shadowBlur = 10 * D.dpr;
+      for (const off of [0, -6, -12]) {
+        const ss = s + off; if (ss <= 0 || ss > 2 * a + 2) continue;
+        ctx.strokeStyle = rgba(T.noise, off === 0 ? 1 : 0.35); ctx.beginPath(); let pen = false;
+        for (let i = 0; i <= 120; i++) {
+          const th = th0 + (th1 - th0) * i / 120, p = E(th), d1 = Math.hypot(p[0] - F1[0], p[1] - F1[1]);
+          let q;
+          if (ss < d1) { const ux = (p[0] - F1[0]) / d1, uy = (p[1] - F1[1]) / d1; q = [F1[0] + ux * ss, F1[1] + uy * ss]; }
+          else { const d2 = Math.hypot(F2[0] - p[0], F2[1] - p[1]), r = Math.min(ss - d1, d2); q = [p[0] + (F2[0] - p[0]) / d2 * r, p[1] + (F2[1] - p[1]) / d2 * r]; }
+          pen ? ctx.lineTo(...P(...q)) : ctx.moveTo(...P(...q)); pen = true;
+        }
+        ctx.stroke();
+      }
+      ctx.restore(); ctx.lineCap = 'butt';
+      // 방전 불꽃, 결석과 초점의 빛
+      const [g1x, g1y] = P(...F1);
+      if (s < 1.6) { const k = 1 - s / 1.6; ctx.fillStyle = rg(g1x, g1y, 0, (1.2 + s * 1.5) * u, [[0, `rgba(255,250,220,${0.95 * k})`], [0.4, `rgba(255,200,110,${0.6 * k})`], [1, 'rgba(255,160,80,0)']]); ctx.beginPath(); ctx.arc(g1x, g1y, (1.2 + s * 1.5) * u, 0, TAU); ctx.fill(); }
+      const [sx, sy] = P(...F2), focus = Math.max(0, 1 - Math.abs(s - 2 * a) / 1.6);
+      if (focus > 0) { ctx.fillStyle = rg(sx, sy, 0, 4.5 * u, [[0, rgba('#fff0c0', 0.95 * focus)], [1, rgba(T.noise, 0)]]); ctx.beginPath(); ctx.arc(sx, sy, 4.5 * u, 0, TAU); ctx.fill(); }
+      shadow(4, 1, 2, 0.35); ctx.fillStyle = lg(sx - 6, sy - 6, sx + 6, sy + 6, [[0, mix(T.stone, '#ffffff', 0.45)], [1, T.stone]]);
+      ctx.beginPath(); for (let i = 0; i < 9; i++) { const ang = i / 9 * TAU, r0 = (0.9 + (i % 3) * 0.18) * Math.max(6, u * 0.9); ctx[i ? 'lineTo' : 'moveTo'](sx + Math.cos(ang) * r0, sy + Math.sin(ang) * r0); } ctx.closePath(); ctx.fill(); noShadow();
+      ctx.strokeStyle = 'rgba(80,60,10,.45)'; ctx.lineWidth = 1; ctx.stroke();
+      // 경로 번호 (반사되는 곳)
+      if (this.p.rays) RAYS.forEach((q, i) => { const [qx, qy] = P(...E(q * Math.PI)); ctx.fillStyle = RC[i]; ctx.beginPath(); ctx.arc(qx, qy, 11, 0, TAU); ctx.fill(); ctx.fillStyle = '#fff'; ctx.font = `700 13px ${T.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(i + 1), qx, qy + 0.5); });
+      pill('충격파 발생기', g1x, g1y + Math.max(28, 2.8 * u), T.ink);
+      pill('결석', sx, sy - Math.max(28, 2.8 * u), T.ink);
+      pill('반사판', ...P(-a + 0.4, -b * 0.82), T.ink, 'left');
+      pill('콩팥', ...P(kx + 4.5, 9.5), T.ink); pill('물', ...P(-1.8, -9.2), T.anti);
+      this.len = RAYS.map(q => path(q * Math.PI));
+    },
+    hud() {
+      const L = this.len || [30, 30, 30];
+      return { M: L.map((l, i) => ({ k: `경로 ${['①', '②', '③'][i]}`, v: l.toFixed(1), u: 'cm' })), R: [{ k: '결석에서', dot: T.noise, v: '보강', u: '간섭', s: '세 경로 길이가 같음', f: '같은 위상으로 도착' }] };
+    },
+    dock() { return [{ t: 'play' }, { t: 'snd', label: '방전 소리' }, { t: 'toggle', key: 'rays', label: '경로 보기' }]; },
+    audio() { return {}; },
+    onParam() {}
+  }
+];
+
+/* =====================================================================
+   화면 구성과 조작
+   ===================================================================== */
+let cur = SCENES[0], PB = [], DK = [];
+function renderChips() { $('#chips').innerHTML = SCENES.map((s, i) => `<button class="chip" data-i="${i}" aria-pressed="${i === S.i}" title="${i + 1}"><b>${i + 1}</b>${s.chip}</button>`).join(''); }
+function go(i) {
+  S.i = clamp(i, 0, SCENES.length - 1); S.playing = !reduce;
+  cur = SCENES[S.i]; cur.enter();
+  document.querySelectorAll('.chip').forEach((b, j) => b.setAttribute('aria-pressed', String(j === S.i)));
+  renderBars(); txt($('#caption'), cur.cap); $('#caption').hidden = !S.caption;
+  $('#gpanel').hidden = !cur.graph; hudKey = '';
+  setVoices(cur.audio ? cur.audio() : null);
+  renderHud();
+  try { localStorage.setItem('anc3-scene', String(S.i)); } catch (e) {}
+}
+function renderBars() {
+  const items = cur.dock();
+  PB = items.filter(d => ['play', 'anc', 'snd'].includes(d.t));
+  DK = items.filter(d => ['slider', 'seg'].includes(d.t));
+  const tg = items.filter(d => d.t === 'toggle' || d.t === 'formula');
+  let pb = PB.map((d, i) => {
+    if (d.t === 'play') return `<button class="pbtn alt" data-pb="${i}" title="Space"></button>` + (d.noSpeed ? '' : '<div class="seg speed"><button data-speed="1">보통</button><button data-speed="0.3">느리게</button></div>');
+    if (d.t === 'anc') return `<button class="pbtn big" data-pb="${i}" title="A"></button>`;
+    return '';
+  }).join('');
+  if (cur.audio) pb += `<button class="pbtn snd" id="sndBtn" aria-pressed="false" title="S">${cur.dock().find(d => d.t === 'snd')?.label || '소리 켜기'}</button>`;
+  pb += '<span class="timenote" id="timenote"></span>';
+  $('#playbar').innerHTML = pb;
+  let dk = DK.map((d, i) => {
+    if (d.t === 'slider') return `<div class="dg slider" data-row="${i}"${d.narrow ? ' style="flex-grow:.6"' : ''}><label for="sl${i}">${d.label}<output id="so${i}"></output></label><input type="range" id="sl${i}" data-dk="${i}" min="${d.min}" max="${d.max}" step="${d.step}"></div>`;
+    return `<div class="dg" data-row="${i}"><span>${d.label}</span><div class="seg">${d.opts.map(([v, l]) => `<button data-dk="${i}" data-v="${v}">${l}</button>`).join('')}</div></div>`;
+  }).join('');
+  if (tg.length) dk += `<div class="dg"><div class="tgs">${tg.map(d => d.t === 'formula' ? '<button class="tg" data-tg="formula">식</button>' : `<button class="tg" data-tg="${d.key}">${d.label}</button>`).join('')}</div></div>`;
+  $('#dock').innerHTML = dk;
+  syncBars();
+}
+function syncBars() {
+  PB.forEach((d, i) => {
+    const el = document.querySelector(`#playbar [data-pb="${i}"]`); if (!el) return;
+    if (d.t === 'play') { txt(el, S.playing ? '❚❚' : '▶'); el.setAttribute('aria-label', S.playing ? '멈춤' : '재생'); }
+    if (d.t === 'anc') { txt(el, cur.p.anc ? '소음 제거 켜짐' : '소음 제거 꺼짐'); el.setAttribute('aria-pressed', String(!!cur.p.anc)); }
+  });
+  document.querySelectorAll('#playbar [data-speed]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.speed === S.speed)));
+  const sb = $('#sndBtn'); if (sb) { sb.setAttribute('aria-pressed', String(AU.on)); const lab = cur.dock().find(d => d.t === 'snd')?.label; txt(sb, AU.on ? '소리 끄기' : (lab || '소리 켜기')); }
+  const tn = $('#timenote'); if (tn) txt(tn, !S.playing ? '일시정지' : cur.realTime ? '실제 빠르기 · 소리와 같음' : '파형은 느리게 그림 · 소리는 실제');
+  DK.forEach((d, i) => {
+    const row = document.querySelector(`#dock [data-row="${i}"]`); if (row) row.hidden = !!(d.show && !d.show());
+    if (d.t === 'slider') { const el = $('#sl' + i); if (!el) return; if (document.activeElement !== el) el.value = cur.p[d.key]; html($('#so' + i), d.fmt(cur.p[d.key])); }
+    else document.querySelectorAll(`#dock [data-dk="${i}"]`).forEach(b => b.setAttribute('aria-pressed', String(d.key === 'df' ? +b.dataset.v === cur.p.f2 - cur.p.f1 : b.dataset.v === String(cur.p[d.key]))));
+  });
+  document.querySelectorAll('#dock [data-tg]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tg === 'formula' ? S.formula : !!cur.p[b.dataset.tg])));
+}
+function roHTML(o, compact) {
+  const dot = o.dot ? `<i style="background:${o.dot}"></i>` : '';
+  let h = compact
+    ? `<div class="ro"><span>${o.k}</span><b>${o.v}${o.u ? `<small>${o.u}</small>` : ''}</b></div>`
+    : `<div class="ro-k">${dot}${o.k}</div><div class="ro-db"><b>${o.v}</b>${o.u ? `<small>${o.u}</small>` : ''}</div>`;
+  if (o.s) h += `<div class="ro-sub${compact ? ' ro-opt' : ''}">${o.s}</div>`;
+  if (o.f && S.formula) h += `<div class="ro-f">${o.f}</div>`;
+  return h;
+}
+let hudKey = '';
+function renderHud() {
+  const h = cur.hud(), parts = [];
+  if (h.M && h.M.length) parts.push(h.M.map(o => roHTML(o, true)).join(''));
+  if (h.R && h.R.length) parts.push(h.R.map(o => roHTML(o, false)).join('<div class="ro-sep"></div>'));
+  const s = parts.join('<div class="ro-sep"></div>');
+  if (s !== hudKey) { $('#readout').innerHTML = s; hudKey = s; }
+  if (cur.graph) { const g = cur.graph(); txt($('#gTitle'), g[0]); txt($('#gUnit'), g[1]); }
+}
+function setP(key, val) { cur.p[key] = val; cur.onParam(key); syncBars(); renderHud(); }
+
+$('#chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) go(+b.dataset.i); });
+$('#playbar').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.id === 'sndBtn') { soundToggle(); return; }
+  if (b.dataset.pb != null) { const d = PB[+b.dataset.pb]; if (d.t === 'play') S.playing = !S.playing; if (d.t === 'anc') { setP('anc', !cur.p.anc); return; } }
+  else if (b.dataset.speed) S.speed = +b.dataset.speed;
+  syncBars(); renderHud();
+});
+$('#dock').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.dk != null) { const d = DK[+b.dataset.dk], v = b.dataset.v; setP(d.key, isNaN(+v) ? v : +v); return; }
+  if (b.dataset.tg) { if (b.dataset.tg === 'formula') { S.formula = !S.formula; try { localStorage.setItem('anc3-formula', S.formula ? '1' : '0'); } catch (err) {} syncBars(); renderHud(); } else setP(b.dataset.tg, !cur.p[b.dataset.tg]); }
+});
+$('#dock').addEventListener('input', e => { const r = e.target.closest('input[data-dk]'); if (!r) return; setP(DK[+r.dataset.dk].key, +r.value); });
+$('#capBtn').addEventListener('click', () => { S.caption = !S.caption; $('#caption').hidden = !S.caption; $('#capBtn').setAttribute('aria-pressed', String(S.caption)); try { localStorage.setItem('anc3-cap', S.caption ? '1' : '0'); } catch (e) {} });
+function toggleFS() {
+  try {
+    if (document.fullscreenElement) { const p = document.exitFullscreen(); if (p && p.catch) p.catch(() => {}); }
+    else { const el = $('#app'), fn = el.requestFullscreen || el.webkitRequestFullscreen; if (fn) { const p = fn.call(el); if (p && p.catch) p.catch(() => {}); } }
+  } catch (e) {}
+}
+$('#fsBtn').addEventListener('click', toggleFS);
+document.addEventListener('fullscreenchange', () => { txt($('#fsBtn'), document.fullscreenElement ? '전체 화면 끝' : '전체 화면'); resize(); });
+document.addEventListener('keydown', e => {
+  // 슬라이더를 만진 뒤에도 단축키가 듣도록 range는 막지 않는다 (글자 입력 칸만 제외)
+  if (e.target.matches?.('input:not([type="range"]), textarea, select') || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (e.key === ' ') { e.preventDefault(); S.playing = !S.playing; syncBars(); return; }
+  if (/^[1-9]$/.test(e.key) && +e.key <= SCENES.length) { go(+e.key - 1); return; }
+  if (k === 'f') { toggleFS(); return; }
+  if (k === 'c') { $('#capBtn').click(); return; }
+  if (k === 's' && cur.audio) { soundToggle(); return; }
+  if (k === 'a' && cur.kind === 'anc') setP('anc', !cur.p.anc);
+});
+
+/* ---------- 시작과 반복 (시간 기반) ---------- */
+readTheme(); resize();
+new ResizeObserver(resize).observe($('#stage'));
+renderChips();
+try {
+  if (localStorage.getItem('anc3-cap') === '0') S.caption = false;
+  if (localStorage.getItem('anc3-formula') === '1') S.formula = true;
+  const i = +(localStorage.getItem('anc3-scene') || 0); if (i >= 0 && i < SCENES.length) S.i = i;
+} catch (e) {}
+$('#capBtn').setAttribute('aria-pressed', String(S.caption));
+go(S.i);
+let last = performance.now(), tick = 0, pending = false;
+function loop(now) { pending = false; frame(now); request(); }
+function request() { if (!pending) { pending = true; requestAnimationFrame(loop); } }
+setInterval(() => { if (performance.now() - last > 300) frame(performance.now()); }, 100);
+function frame(now) {
+  const dt = Math.min(0.5, Math.max(0, (now - last) / 1000)); last = now;
+  if (S.playing) { tv += dt * S.speed; if (cur.step) cur.step(dt * S.speed, dt); }
+  ctx.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); ctx.globalAlpha = 1; ctx.setLineDash([]); noShadow();
+  cur.draw();
+  musicTick();
+  if ((tick = (tick + 1) % 4) === 0) { renderHud(); syncBars(); }
+}
+request();
+})();
+</script>

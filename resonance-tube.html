@@ -1,0 +1,835 @@
+<title>공기 기둥 공명 실험</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* TEACHER-DEMO v3 — 교사용 시연 도구
+   Layout: 얇은 상단 바(수업 순서 장면 칩) / 화면을 채우는 무대(옆에서 본 공명 장치 + 깊이를 맞춘 소리 크기 그래프) + 유리 카드 측정값 / 아래 조작 독 */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --ink: #141c25;
+  --muted: #5a6573;
+  --line: #d3dae2;
+  --accent: #0b6b70;
+  --accent-ink: #ffffff;
+  --s1: #0a7f86;
+  --s2: #d06a14;
+  --hi: #e2553f;
+  --lo: #2c6fd4;
+  --heat: #f0a20f;
+  --nodal: #6a3fd6;
+  --anti: #17955a;
+  --stage: #dfe5ea;
+  --shadow: #0d1620;
+  --wall-1: #eef1f3;
+  --wall-2: #d6dce2;
+  --wood-1: #d9b582;
+  --wood-2: #b08048;
+  --wood-grain: #7d5329;
+  --stand-1: #4a5560;
+  --stand-2: #1f262d;
+  --metal-hi: #f6f8fa;
+  --metal-lo: #8b95a0;
+  --glass: #cfe6ee;
+  --glass-hi: #ffffff;
+  --glass-edge: #5f90a3;
+  --water-1: #a3d0f0;
+  --water-2: #2f7cbc;
+  --rubber-1: #b7553d;
+  --rubber-2: #5e2216;
+  --cork: #c8a073;
+  --band: #f0a21a;
+  --speaker-1: #3a4048;
+  --speaker-2: #121619;
+  --phone: #1b2127;
+  --phone-edge: #6d7782;
+  --screen-1: #fbfcfd;
+  --screen-2: #e9eef3;
+  --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+    --accent: #3fc0b5; --accent-ink: #0d1116; --s1: #3fc6c4; --s2: #f5a04c;
+    --hi: #ff7461; --lo: #5d9cff; --heat: #ffbb33; --nodal: #b08cff; --anti: #4fd389; --stage: #12171d;
+    --shadow: #000000; --wall-1: #1c232a; --wall-2: #11161b; --wood-1: #8a6a43; --wood-2: #5a4025; --wood-grain: #2f1d0d;
+    --stand-1: #59646f; --stand-2: #1b2127; --metal-hi: #e3e8ec; --metal-lo: #5f6973;
+    --glass: #2c4a56; --glass-hi: #d8eef6; --glass-edge: #74a8bb; --water-1: #4a8fc8; --water-2: #17436c;
+    --rubber-1: #9e4a36; --rubber-2: #43160d; --cork: #8f714e; --band: #d99a2b; --speaker-1: #2f353d; --speaker-2: #0a0d10;
+    --phone: #05080b; --phone-edge: #4c5560; --screen-1: #1d252e; --screen-2: #141a20;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+  --accent: #3fc0b5; --accent-ink: #0d1116; --s1: #3fc6c4; --s2: #f5a04c;
+  --hi: #ff7461; --lo: #5d9cff; --heat: #ffbb33; --nodal: #b08cff; --anti: #4fd389; --stage: #12171d;
+  --shadow: #000000; --wall-1: #1c232a; --wall-2: #11161b; --wood-1: #8a6a43; --wood-2: #5a4025; --wood-grain: #2f1d0d;
+  --stand-1: #59646f; --stand-2: #1b2127; --metal-hi: #e3e8ec; --metal-lo: #5f6973;
+  --glass: #2c4a56; --glass-hi: #d8eef6; --glass-edge: #74a8bb; --water-1: #4a8fc8; --water-2: #17436c;
+  --rubber-1: #9e4a36; --rubber-2: #43160d; --cork: #8f714e; --band: #d99a2b; --speaker-1: #2f353d; --speaker-2: #0a0d10;
+  --phone: #05080b; --phone-edge: #4c5560; --screen-1: #1d252e; --screen-2: #141a20;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app {
+  min-height: 100vh; display: flex; flex-direction: column; gap: 10px;
+  padding-block: 10px 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg);
+}
+.app:fullscreen { padding-block: 12px; }
+
+/* 상단 바 */
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tag { font: 500 12px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; white-space: nowrap; }
+h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 520px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px 4px 4px; cursor: pointer; font-size: 13.5px; font-weight: 500; white-space: nowrap; transition: background .15s, border-color .15s; }
+.chip b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font: 600 12px var(--mono); }
+.chip:hover { border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.chip[aria-pressed="true"] b { background: var(--accent); color: var(--accent-ink); }
+.tools { display: flex; gap: 6px; margin-left: auto; }
+.tbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 6px 12px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.tbtn:hover { border-color: var(--muted); }
+.tbtn[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+
+/* 무대 */
+.stage { position: relative; flex: 1 1 auto; height: clamp(420px, calc(100vh - 200px), 1100px); border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--stage); }
+.app:fullscreen .stage { height: auto; }
+#scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.glass { background: color-mix(in srgb, var(--surface) 86%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid color-mix(in srgb, var(--line) 85%, transparent); border-radius: 14px; box-shadow: 0 8px 28px color-mix(in srgb, var(--shadow) 10%, transparent); }
+.readout { position: absolute; top: 12px; right: 12px; width: 236px; padding: 12px 14px 12px; display: flex; flex-direction: column; gap: 3px; }
+.ro { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 13px; color: var(--muted); }
+.ro b { font: 500 18px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ro.y span { color: var(--s2); font-weight: 700; }
+.ro.v b { font-size: 24px; font-weight: 600; }
+.ro.e span { color: var(--hi); font-weight: 700; }
+.ro-sub { text-align: right; font: 500 13px var(--mono); color: var(--muted); margin-top: -2px; white-space: nowrap; }
+.ro-sep { height: 1px; background: var(--line); margin: 6px 0; }
+.ro-db { display: flex; align-items: baseline; gap: 6px; }
+.ro-db b { font: 600 38px var(--mono); line-height: 1; font-variant-numeric: tabular-nums; }
+.ro-db small { color: var(--muted); font-size: 14px; }
+.state { margin-left: auto; font-size: 13px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+.state[data-s="plus"] { color: var(--anti); background: color-mix(in srgb, var(--anti) 14%, transparent); }
+.meter { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin-top: 6px; }
+.meter i { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--anti), var(--heat) 65%, var(--hi)); }
+
+.playbar { position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; padding: 6px; }
+.timenote { font-size: 12px; color: var(--muted); padding: 0 8px 0 4px; white-space: nowrap; }
+@media (min-width: 900px) and (min-height: 560px) {
+  html, body { height: 100%; }
+  body { margin: 0; }
+  .app { height: 100%; min-height: 0; }
+  .stage { height: auto; flex: 1 1 0; min-height: 360px; }
+}
+.bottom { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap-reverse; justify-content: space-between; align-items: flex-end; gap: 10px; pointer-events: none; }
+.bottom > * { pointer-events: auto; }
+.caption { padding: 9px 16px; font-size: 18px; font-weight: 500; max-width: 760px; text-wrap: balance; }
+
+/* 조작 독 */
+.dock { display: flex; flex-wrap: wrap; gap: 8px; }
+.dg { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 7px 8px; display: flex; align-items: center; gap: 10px; min-width: 0; min-height: 52px; }
+.dg > span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.dg.slider { flex: 1 1 240px; }
+.dg.slider input[type="range"] { min-width: 70px; }
+.dg.slider label { font-size: 12px; color: var(--muted); white-space: nowrap; display: flex; flex-direction: column; line-height: 1.2; }
+.dg.slider output { font: 600 17px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.dg input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent); height: 28px; }
+.seg { display: flex; gap: 3px; background: var(--surface-2); border-radius: 9px; padding: 3px; }
+.seg button, .tg { border: 0; background: transparent; border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; color: var(--muted); min-height: 34px; }
+.seg button.num { font-family: var(--mono); font-size: 14px; padding: 5px 8px; }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px color-mix(in srgb, var(--shadow) 14%, transparent); }
+.tgs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tg { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); }
+.tg[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.tg .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.pbtn { border: 0; border-radius: 9px; padding: 7px 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--accent-ink); white-space: nowrap; min-height: 36px; }
+.pbtn.alt { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+.pbtn.sm { padding: 7px 9px; font-family: var(--mono); font-weight: 600; }
+.pbtn[aria-pressed="true"].snd { background: var(--hi); color: var(--surface); }
+.pbtn[aria-pressed="true"]:not(.snd) { background: var(--ink); color: var(--surface); }
+
+@media (max-width: 720px) {
+  h1 { font-size: 18px; }
+  .readout { width: 150px; padding: 8px 10px; }
+  .ro { font-size: 12px; } .ro b { font-size: 14px; } .ro-db b { font-size: 26px; } .ro.v b { font-size: 16px; }
+  .ro.l span { font-size: 0; } .ro.l span::before { content: "λ"; font-size: 12px; }
+  .ro-sub, .ro-opt { display: none !important; }
+  .caption { font-size: 15px; }
+  .stage { height: clamp(380px, 62vh, 700px); }
+  .playbar .seg, .timenote { display: none; }
+  .playbar .pbtn.snd { padding: 7px 10px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand"><span class="tag">Ⅲ-05 정상파</span><h1>공기 기둥 공명 실험</h1></div>
+    <nav class="presets" id="presets" aria-label="수업 장면"></nav>
+    <div class="tools">
+      <button class="tbtn" id="capBtn" aria-pressed="true" title="C">설명</button>
+      <button class="tbtn" id="fsBtn" title="F">전체 화면</button>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-label="공기 기둥 공명 장치. 물통이나 관 속 수면을 위아래로 끌어 옮기고, 위아래 화살표 키로 1 mm씩 옮깁니다. Enter 키는 위치 표시입니다.">
+    <canvas id="scene"></canvas>
+    <div class="glass playbar" id="playbar">
+      <button class="pbtn alt" id="playBtn" title="Space">❚❚</button>
+      <div class="seg" data-seg="speed"><button data-v="1">보통</button><button data-v="0.4">느리게</button></div>
+      <button class="pbtn snd" id="sndBtn" aria-pressed="false">소리 켜기</button>
+      <span class="timenote" id="timenote"></span>
+    </div>
+    <div class="glass readout" id="readout" aria-live="polite"></div>
+    <div class="bottom">
+      <div class="glass caption" id="caption"></div>
+    </div>
+  </section>
+
+  <div class="dock" id="dock">
+    <div class="dg" title="소리 발생기 진동수 (Hz)"><div class="seg" data-seg="f"><button class="num" data-v="256">256</button><button class="num" data-v="320">320</button><button class="num" data-v="384">384</button><button class="num" data-v="440">440</button><button class="num" data-v="512">512</button></div></div>
+    <div class="dg slider"><label for="y">수면 위치 y<output id="yOut"></output></label><button class="pbtn alt sm" data-act="up" title="1 mm 위로 (↑)" aria-label="1 mm 위로">▲</button><input type="range" id="y" min="0.02" max="1.17" step="0.001"><button class="pbtn alt sm" data-act="dn" title="1 mm 아래로 (↓)" aria-label="1 mm 아래로">▼</button></div>
+    <div class="dg"><button class="pbtn" data-act="lower" id="lowerBtn">천천히 내리기</button><button class="pbtn alt" data-act="mark" title="Enter">위치 표시</button><button class="pbtn alt" data-act="clear">지우기</button></div>
+    <div class="dg"><span>온도</span><div class="seg" data-seg="t"><button class="num" data-v="0">0°</button><button class="num" data-v="20">20°</button><button class="num" data-v="35">35°</button></div></div>
+    <div class="dg"><div class="tgs">
+      <button class="tg" data-act="thick" id="thickBtn">굵은 관</button>
+      <button class="tg" data-tg="wave">정상파</button>
+      <button class="tg" data-tg="parts">공기 입자</button>
+      <button class="tg" data-tg="endc">끝보정</button>
+    </div></div>
+  </div>
+</div>
+
+<script>
+(() => {
+'use strict';
+/* 유리관 1.2 m. 수면 위치 y는 관 입구에서 수면까지의 거리 (m).
+   공명: 공기 기둥 y + e가 λ/4의 홀수 배일 때 (e ≈ 0.6r, 끝보정). 음속 v = 331.5 + 0.6t
+   물통과 관은 고무관으로 이어진 그릇: 물의 양이 보존되므로 물통을 Δ만큼 내리면 수면은 Δ·A물통/(A관 + A물통)만큼 내려간다.
+   화면에서 관·물통의 가로 폭은 잘 보이도록 XT배 넓게 그린다 (길이 방향은 실제 비율). */
+const $ = s => document.querySelector(s);
+const TUBE = 1.2, YMIN = 0.02, YMAX = 1.17, BG = 40, FD = 0.6, SLOW = 0.4, GAP = 0.03, XT = 3;
+const RES = { R: 0.08, H: 0.2, h0: 0.03 };           // 물통 안쪽 반지름 8 cm, 높이 20 cm, 수면이 맨 위일 때 물 높이 3 cm
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const BASE = { f: 512, t: 20, r: 0.015, wave: false, parts: false, endc: false };
+const S = { ...BASE, y: 0.03, run: true, speed: reduce ? SLOW : 1, sound: false, cap: true, preset: 0, lowering: false, lowerV: 0.06, auto: 0 };
+const LW = { phase: 'down', hold: 0, back: 0, pk: { max: -1, y: 0 }, armed: true };
+let theta = 0, marks = [], trace = new Map(), prev = null, drag = null, flashMark = { y: 0, t: -9e9 };
+const hist = [];
+
+/* ---------- 물리 ---------- */
+const vSound = (t = S.t) => 331.5 + 0.6 * t;
+const lam = (f = S.f, t = S.t) => vSound(t) / f;
+const ecorr = (r = S.r) => 0.6 * r;
+function ampAt(y, f = S.f, t = S.t, r = S.r) {
+  const Le = y + ecorr(r), k = 2 * Math.PI / lam(f, t), d = 0.1 + 0.08 * Le, c = Math.cos(k * Le);
+  return d / Math.sqrt(c * c + d * d) * (1 - 0.12 * Le);
+}
+const dBat = (y, f, t, r) => 10 * Math.log10(Math.pow(10, BG / 10) + Math.pow(10, 8.5) * Math.pow(ampAt(y, f, t, r), 2));
+const resY = m => (2 * m - 1) * lam() / 4 - ecorr();
+const m3 = v => v.toFixed(3);
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rho = () => (S.r / RES.R) ** 2;                 // 관과 물통의 단면적 비
+const resWater = (y = S.y) => RES.h0 + rho() * (y - YMIN);   // 물통 속 물 높이
+const resBottom = (y = S.y) => y + resWater(y);        // 물통 바닥의 깊이 (관 입구 기준)
+const yFromResBottom = zb => (zb - RES.h0 + rho() * YMIN) / (1 + rho());
+const yMax = () => Math.min(YMAX, +yFromResBottom(TUBE + 0.06).toFixed(3));   // 물통이 받침대에 닿기 전까지만 내릴 수 있다
+function synth(f, t, r) { const m = new Map(); for (let mm = Math.round(YMIN * 1000); mm <= YMAX * 1000; mm++) m.set(mm, dBat(mm / 1000, f, t, r)); return m; }
+function measured() {
+  const ys = [...marks].sort((a, b) => a - b);
+  if (ys.length < 2) return { ys };
+  const ds = ys.slice(1).map((y, i) => y - ys[i]), l = 2 * ds.reduce((a, b) => a + b, 0) / ds.length;
+  return { ys, lam: l, v: S.f * l };
+}
+
+/* ---------- 수업 장면 ---------- */
+const PRESETS = [
+  { label: '장치', cap: '물통을 내리면 관 속 수면이 함께 내려가 공기 기둥이 길어진다', run: () => { set({}); S.y = 0.03; marks = []; } },
+  { label: '첫 번째 공명 y₁', cap: '수면을 내리다 소리가 가장 커지는 곳 — 첫 번째 공명 위치 y₁', run: () => { set({}); marks = []; S.y = YMIN; startLower(0.06, 1); } },
+  { label: 'y₂, y₃', cap: '이웃한 공명 위치 사이 = λ/2 → λ = 2(yₙ₊₁ − yₙ), v = fλ', run: () => { set({}); S.y = marks.length ? Math.max(...marks) + 0.03 : YMIN; startLower(0.06, 3); } },
+  { label: '관 속 정상파', cap: '수면은 마디, 관 입구 쪽은 배 — 공기 입자는 관을 따라 위아래로 진동한다', run: () => { set({ wave: true, parts: true }); S.y = +m3(resY(2)); } },
+  { label: '진동수 바꾸기', cap: '진동수가 낮으면 파장이 길어 공명 위치 사이가 넓어진다 (점선: 512 Hz)', run: () => { set({ f: 384 }); prev = { map: synth(512, 20, 0.015), label: '512 Hz' }; marks = []; S.y = YMIN; startLower(0.07, 3); } },
+  { label: '온도와 음속', cap: '온도가 높으면 음속이 빨라 같은 진동수에서도 파장이 길어진다 (점선: 20 °C)', run: () => { set({ t: 35 }); prev = { map: synth(512, 20, 0.015), label: '20 °C' }; marks = []; S.y = YMIN; startLower(0.07, 3); } },
+  { label: '끝보정', cap: '배는 관 입구보다 e ≈ 0.6r 위에 생긴다 — y₁ = λ/4 − e, 차이 y₂ − y₁에서는 e가 지워진다', run: () => { set({ r: 0.03, endc: true, wave: true }); marks = []; S.y = YMIN; startLower(0.06, 2); } }
+];
+const cfg = () => `${S.f}|${S.t}|${S.r}`;
+function set(patch) { const old = cfg(); Object.assign(S, BASE, patch); if (cfg() !== old) marks = []; trace = new Map(); prev = null; S.lowering = false; S.auto = 0; }
+
+/* ---------- 테마 ---------- */
+const T = {};
+const TOK = ['surface', 'surface-2', 'ink', 'muted', 'line', 'accent', 's1', 's2', 'hi', 'lo', 'heat', 'nodal', 'anti', 'stage', 'shadow', 'wall-1', 'wall-2', 'wood-1', 'wood-2', 'wood-grain', 'stand-1', 'stand-2', 'metal-hi', 'metal-lo', 'glass', 'glass-hi', 'glass-edge', 'water-1', 'water-2', 'rubber-1', 'rubber-2', 'cork', 'band', 'speaker-1', 'speaker-2', 'phone', 'phone-edge', 'screen-1', 'screen-2'];
+function toRgb(c) {
+  c = (c || '').trim();
+  if (c[0] === '#') { if (c.length === 4) c = '#' + [...c.slice(1)].map(h => h + h).join(''); const n = parseInt(c.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; }
+  const m = c.match(/[\d.]+/g); return m ? m.slice(0, 3).map(Number) : [128, 128, 128];
+}
+const rgba = (c, a) => { const [r, g, b] = toRgb(c); return `rgba(${r},${g},${b},${a})`; };
+const TEX = {};
+let themeGen = 0;
+function readTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of TOK) T[k] = cs.getPropertyValue('--' + k).trim();
+  T.font = getComputedStyle(document.body).fontFamily; T.mono = cs.getPropertyValue('--mono').trim();
+  for (const k in TEX) delete TEX[k];
+  themeGen++;
+}
+readTheme();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
+new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+
+/* ---------- 캔버스 ---------- */
+const stage = $('#stage'), cv = $('#scene'), roEl = $('#readout'), pbEl = $('#playbar'), capEl = $('#caption');
+let ctx = cv.getContext('2d');
+const D = { dpr: 1, w: 1, h: 1 };
+function resize() {
+  const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+  D.dpr = dpr; D.w = Math.max(1, r.width); D.h = Math.max(1, r.height);
+  const w = Math.round(D.w * dpr), h = Math.round(D.h * dpr);
+  if (cv.width !== w || cv.height !== h) { cv.width = w; cv.height = h; }
+}
+new ResizeObserver(resize).observe(stage);
+const O = { ro: null, pb: null, capH: 46 };
+function measure() {                                  // 무대 위 카드를 피해 그린다 (설명 줄은 숨겨도 자리를 둔다)
+  const s = stage.getBoundingClientRect();
+  const rel = el => { const r = el.getBoundingClientRect(); return { l: r.left - s.left, t: r.top - s.top, r: r.right - s.left, b: r.bottom - s.top }; };
+  O.ro = rel(roEl); O.pb = rel(pbEl);
+  if (!capEl.hidden) { const c = capEl.getBoundingClientRect(); if (c.height > 0) O.capH = c.height; }
+}
+
+function mulberry(a) { return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+function offCanvas(w, h) { const c = document.createElement('canvas'); c.width = Math.max(1, Math.round(w * D.dpr)); c.height = Math.max(1, Math.round(h * D.dpr)); const x = c.getContext('2d'); x.scale(D.dpr, D.dpr); return [c, x]; }
+function grainTex(name, w, h, seed) {
+  w = Math.max(2, Math.round(w)); h = Math.max(2, Math.round(h));
+  const key = `${w}x${h}|${T['wood-1']}|${D.dpr}`;
+  if (TEX[name] && TEX[name].key === key) return TEX[name].cv;
+  const [c, x] = offCanvas(w, h);
+  const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, T['wood-1']); g.addColorStop(1, T['wood-2']); x.fillStyle = g; x.fillRect(0, 0, w, h);
+  const rnd = mulberry(seed);
+  for (let i = 0; i < Math.max(24, h / 1.6); i++) {
+    const y0 = rnd() * h, a = 0.03 + rnd() * 0.1, A = 0.5 + rnd() * 2.5, fr = 0.6 + rnd() * 2.4, ph = rnd() * 6.28;
+    x.strokeStyle = rgba(T['wood-grain'], a); x.lineWidth = 0.4 + rnd() * 1.4; x.beginPath();
+    for (let X = 0; X <= w + 8; X += 8) { const Y = y0 + A * Math.sin(X / w * fr * 6.283 + ph); X ? x.lineTo(X, Y) : x.moveTo(X, Y); }
+    x.stroke();
+  }
+  TEX[name] = { key, cv: c }; return c;
+}
+function shadowed(fn, blur = 16, ox = 6, oy = 8, a = 0.28) { ctx.save(); ctx.shadowColor = rgba(T.shadow, a); ctx.shadowBlur = blur; ctx.shadowOffsetX = ox; ctx.shadowOffsetY = oy; fn(); ctx.restore(); }
+function pill(text, x, y, color, align = 'center', size = 15) {
+  ctx.font = `700 ${size}px ${T.font}`;
+  const w = ctx.measureText(text).width + 18, h = size + 11;
+  let bx = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
+  bx = clamp(bx, 4, D.w - w - 4);
+  const by = clamp(y - h / 2, 4, D.h - h - 4);
+  ctx.save(); ctx.shadowColor = rgba(T.shadow, 0.18); ctx.shadowBlur = 8; ctx.shadowOffsetY = 2;
+  ctx.fillStyle = rgba(T.surface, 0.94); ctx.beginPath(); ctx.roundRect(bx, by, w, h, h / 2); ctx.fill(); ctx.restore();
+  ctx.strokeStyle = rgba(color, 0.28); ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(bx + 0.5, by + 0.5, w - 1, h - 1, h / 2); ctx.stroke();
+  ctx.fillStyle = color; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(text, bx + 9, by + h / 2 + 0.5);
+  return { x0: bx, x1: bx + w, y0: by, y1: by + h };
+}
+function metalV(x0, x1) { const g = ctx.createLinearGradient(x0, 0, x1, 0); g.addColorStop(0, T['metal-lo']); g.addColorStop(0.38, T['metal-hi']); g.addColorStop(0.62, T['metal-hi']); g.addColorStop(1, T['metal-lo']); return g; }
+function metalH(y0, y1) { const g = ctx.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, T['metal-hi']); g.addColorStop(0.45, T['metal-lo']); g.addColorStop(1, T['metal-lo']); return g; }
+function darkH(y0, y1) { const g = ctx.createLinearGradient(0, y0, 0, y1); g.addColorStop(0, T['stand-1']); g.addColorStop(1, T['stand-2']); return g; }
+
+/* ---------- 장면 배치 ---------- */
+function geo() {
+  const w = D.w, h = D.h, narrow = w < 640 || O.ro.l < 600;
+  const benchY = h - 12 - O.capH - 8, top0 = O.pb.b + 12, above = Math.max(GAP + 0.075, RES.H - RES.h0 - YMIN + 0.01), below = 0.11;
+  const lay = ppm => {
+    const tw = S.r * XT * ppm, wall = Math.max(2, 0.0022 * XT * ppm), rw = RES.R * ppm;
+    const phoneW = narrow ? 0 : clamp(0.29 * ppm, 84, 112), labW = narrow ? 34 : 40, pillW = narrow ? 0 : 50;
+    const tx = (narrow ? 8 : 20 + phoneW + 26) + pillW + labW + tw + wall;
+    const rod = tx + tw + wall + Math.max(narrow ? 24 : 40, 0.12 * ppm), rx = rod + 18 + rw;
+    return { ppm, tw, wall, rw, phoneW, tx, rod, rx };
+  };
+  let L = lay(Math.max(90, (benchY - 18 - top0) / (TUBE + above + below)));
+  for (let i = 0; i < 3 && narrow && L.rx + L.rw > O.ro.l - 8; i++) {   // 좁은 화면: 물통이 측정값 카드에 가리지 않게 줄인다
+    const L2 = lay(L.ppm * 0.6), c1 = (L.rx + L.rw - L2.rx - L2.rw) / (L.ppm * 0.4), c0 = L.rx + L.rw - c1 * L.ppm;
+    L = lay(Math.max(80, (O.ro.l - 8 - c0) / c1));
+  }
+  const { ppm } = L, ytop = benchY - 18 - (TUBE + below) * ppm, ybot = ytop + TUBE * ppm, Y = z => ytop + z * ppm;
+  const px0 = L.rx + L.rw + (narrow ? 44 : 92), px1 = O.ro.l - 14;
+  return { ...L, w, h, narrow, benchY, ytop, ybot, Y, px0, px1, panel: !narrow && px1 - px0 > 200 };
+}
+
+/* ---------- 그리기 ---------- */
+function drawRoom(g) {
+  const { w, h, benchY } = g;
+  const wg = ctx.createLinearGradient(0, 0, 0, benchY); wg.addColorStop(0, T['wall-1']); wg.addColorStop(1, T['wall-2']); ctx.fillStyle = wg; ctx.fillRect(0, 0, w, benchY);
+  const vg = ctx.createRadialGradient(w * 0.22, h * 0.05, 40, w * 0.45, h * 0.5, Math.max(w, h) * 0.85); vg.addColorStop(0, rgba(T['glass-hi'], 0.22)); vg.addColorStop(1, rgba(T.shadow, 0.08)); ctx.fillStyle = vg; ctx.fillRect(0, 0, w, benchY);
+  ctx.drawImage(grainTex('bench', w, h - benchY, 5), 0, benchY, w, h - benchY);
+  const bg = ctx.createLinearGradient(0, benchY, 0, h); bg.addColorStop(0, rgba(T['glass-hi'], 0.24)); bg.addColorStop(0.2, rgba(T['glass-hi'], 0)); bg.addColorStop(1, rgba(T.shadow, 0.3)); ctx.fillStyle = bg; ctx.fillRect(0, benchY, w, h - benchY);
+  ctx.fillStyle = rgba(T['glass-hi'], 0.55); ctx.fillRect(0, benchY, w, 1.5);
+  ctx.fillStyle = rgba(T.shadow, 0.12); ctx.fillRect(0, benchY + 1.5, w, 2);
+}
+function drawStand(g) {
+  const { benchY, rod, ytop, ppm } = g, bx0 = g.tx - g.tw - 46, bx1 = g.rx + g.rw + 24, bt = benchY - 16;
+  ctx.save(); ctx.filter = 'blur(8px)'; ctx.fillStyle = rgba(T.shadow, 0.35); ctx.beginPath(); ctx.ellipse((bx0 + bx1) / 2 + 14, benchY + 2, (bx1 - bx0) / 2 + 12, 7, 0, 0, 2 * Math.PI); ctx.fill(); ctx.restore();
+  ctx.fillStyle = darkH(bt, benchY); ctx.beginPath(); ctx.roundRect(bx0, bt, bx1 - bx0, 16, [7, 7, 3, 3]); ctx.fill();
+  ctx.fillStyle = rgba(T['glass-hi'], 0.3); ctx.fillRect(bx0 + 5, bt + 1, bx1 - bx0 - 10, 1.5);
+  ctx.fillStyle = rgba(T.shadow, 0.5); for (const x of [bx0 + 10, bx1 - 22]) ctx.fillRect(x, benchY - 2, 12, 2);
+  const rt = ytop - (GAP + 0.11) * ppm;
+  shadowed(() => { ctx.fillStyle = metalV(rod - 6, rod + 6); ctx.fillRect(rod - 5.5, rt, 11, bt - rt); }, 10, 6, 0, 0.22);
+  ctx.fillStyle = metalH(rt - 6, rt + 2); ctx.beginPath(); ctx.roundRect(rod - 7, rt - 6, 14, 8, 3); ctx.fill();
+  shadowed(() => { ctx.fillStyle = darkH(bt - 10, bt); ctx.beginPath(); ctx.roundRect(rod - 13, bt - 10, 26, 11, 3); ctx.fill(); }, 4, 2, 2, 0.3);
+}
+function boss(rod, y) {                                // 막대에 물리는 연결 집게 (나사 손잡이 포함)
+  shadowed(() => { ctx.fillStyle = darkH(y - 12, y + 12); ctx.beginPath(); ctx.roundRect(rod - 12, y - 12, 24, 24, 4); ctx.fill(); }, 6, 3, 3, 0.3);
+  ctx.fillStyle = rgba(T['glass-hi'], 0.2); ctx.fillRect(rod - 10, y - 11, 20, 1.5);
+  ctx.fillStyle = metalH(y - 3, y + 3); ctx.fillRect(rod + 12, y - 3, 10, 6);
+  const kg = ctx.createRadialGradient(rod + 26, y - 2, 1, rod + 27, y, 8); kg.addColorStop(0, T['stand-1']); kg.addColorStop(1, T['stand-2']);
+  ctx.fillStyle = kg; ctx.beginPath(); ctx.arc(rod + 27, y, 7, 0, 2 * Math.PI); ctx.fill();
+}
+function tubeClamp(g, z) {                             // 관을 무는 집게: 코르크 안감이 양옆으로 보이고, 앞쪽 금속 띠
+  const { rod, tx, tw, wall, Y } = g, y = Y(z), xo = tx + tw + wall, jw = 2 * (tw + wall) + 8;
+  ctx.fillStyle = metalH(y - 3.5, y + 3.5); ctx.fillRect(xo + 4, y - 3.5, rod - xo - 4, 7);
+  ctx.fillStyle = T.cork; ctx.beginPath(); ctx.roundRect(tx - tw - wall - 4, y - 6, 4, 12, 1.5); ctx.roundRect(xo, y - 6, 4, 12, 1.5); ctx.fill();
+  shadowed(() => { ctx.strokeStyle = metalV(tx - jw / 2, tx + jw / 2); ctx.lineWidth = 3; ctx.beginPath(); ctx.roundRect(tx - jw / 2, y - 7, jw, 14, 6); ctx.stroke(); }, 3, 1, 2, 0.3);
+  boss(rod, y);
+}
+function waterColumn(x0, x1, ys, yb, men) {           // 수면은 오목한 메니스커스 (물이 유리벽을 타고 올라감)
+  const wg = ctx.createLinearGradient(x0, 0, x1, 0); wg.addColorStop(0, rgba(T['water-1'], 0.95)); wg.addColorStop(0.5, rgba(T['water-2'], 0.82)); wg.addColorStop(1, rgba(T['water-2'], 0.95));
+  ctx.fillStyle = wg; ctx.beginPath(); ctx.moveTo(x0, ys - men); ctx.quadraticCurveTo(x0 + (x1 - x0) * 0.08, ys, (x0 + x1) / 2, ys + men * 0.25); ctx.quadraticCurveTo(x1 - (x1 - x0) * 0.08, ys, x1, ys - men); ctx.lineTo(x1, yb); ctx.lineTo(x0, yb); ctx.closePath(); ctx.fill();
+  const dg = ctx.createLinearGradient(0, ys, 0, Math.min(yb, ys + 400)); dg.addColorStop(0, rgba(T['glass-hi'], 0.22)); dg.addColorStop(0.15, rgba(T['glass-hi'], 0)); dg.addColorStop(1, rgba(T.shadow, 0.18));
+  ctx.fillStyle = dg; ctx.fillRect(x0, ys, x1 - x0, yb - ys);
+  ctx.strokeStyle = rgba(T['glass-hi'], 0.9); ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x0 + 0.5, ys - men); ctx.quadraticCurveTo(x0 + (x1 - x0) * 0.08, ys, (x0 + x1) / 2, ys + men * 0.25); ctx.quadraticCurveTo(x1 - (x1 - x0) * 0.08, ys, x1 - 0.5, ys - men); ctx.stroke();
+  ctx.strokeStyle = rgba(T['water-2'], 0.7); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(x0 + 1, ys - men + 2); ctx.quadraticCurveTo((x0 + x1) / 2, ys + men * 0.6 + 2, x1 - 1, ys - men + 2); ctx.stroke();
+}
+function glassWalls(x0, x1, y0, y1, wall) {            // 원통 유리: 두께가 보이는 가장자리, 반사광
+  for (const [xa, xb, s] of [[x0 - wall, x0, -1], [x1, x1 + wall, 1]]) {
+    const wg = ctx.createLinearGradient(xa, 0, xb, 0); wg.addColorStop(s < 0 ? 0 : 1, rgba(T['glass-edge'], 0.6)); wg.addColorStop(s < 0 ? 1 : 0, rgba(T['glass-edge'], 0.25));
+    ctx.fillStyle = wg; ctx.fillRect(xa, y0, xb - xa, y1 - y0);
+  }
+  const iw = x1 - x0, sh = (x, wd, al) => { const g2 = ctx.createLinearGradient(x - wd / 2, 0, x + wd / 2, 0); g2.addColorStop(0, rgba(T['glass-hi'], 0)); g2.addColorStop(0.5, rgba(T['glass-hi'], al)); g2.addColorStop(1, rgba(T['glass-hi'], 0)); ctx.fillStyle = g2; ctx.fillRect(x - wd / 2, y0 + 4, wd, y1 - y0 - 8); };
+  sh(x0 + iw * 0.2, Math.max(3, iw * 0.16), 0.75); sh(x0 + iw * 0.3, Math.max(1.5, iw * 0.05), 0.35); sh(x1 - iw * 0.14, Math.max(2, iw * 0.08), 0.32);
+  ctx.strokeStyle = T['glass-edge']; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x0 - wall, y0); ctx.lineTo(x0 - wall, y1); ctx.moveTo(x1 + wall, y0); ctx.lineTo(x1 + wall, y1); ctx.stroke();
+}
+function drawTube(g) {
+  const { tx, tw, wall, ytop, ybot, ppm, Y } = g, x0 = tx - tw, x1 = tx + tw, ys = Y(S.y);
+  ctx.save(); ctx.filter = 'blur(10px)'; ctx.fillStyle = rgba(T.shadow, 0.14); ctx.fillRect(x0 + 12, ytop + 12, 2 * tw + 2 * wall, ybot - ytop); ctx.restore();
+  const bg = ctx.createLinearGradient(x0, 0, x1, 0); bg.addColorStop(0, rgba(T['glass-edge'], 0.18)); bg.addColorStop(0.4, rgba(T.glass, 0.12)); bg.addColorStop(1, rgba(T['glass-edge'], 0.22));
+  ctx.fillStyle = bg; ctx.fillRect(x0, ytop, 2 * tw, ys - ytop);
+  waterColumn(x0, x1, ys, ybot, Math.max(2, Math.min(5, tw * 0.3)));
+  // 정상파 · 공기 입자
+  const k = 2 * Math.PI / lam(), A = ampAt(S.y), e = ecorr(), half = tw - 2, c = Math.cos(theta);
+  const s = z => Math.sin(k * (S.y - z));
+  if (S.parts) {
+    const rows = Math.max(10, Math.round(S.y * ppm / 9)), dz = S.y / rows, D0 = Math.min(dz * ppm * 0.9, 9);
+    for (let i = 0; i < rows; i++) {
+      const z = (i + 0.5) * dz, yy = Y(z) + D0 * A * s(z) * c;
+      for (const fx of [-0.55, 0, 0.55]) { ctx.fillStyle = fx === 0 ? T.accent : rgba(T.ink, 0.62); ctx.beginPath(); ctx.arc(tx + fx * half, yy, fx === 0 ? 2.8 : 2.1, 0, 2 * Math.PI); ctx.fill(); }
+    }
+  }
+  if (S.wave) {
+    ctx.save(); ctx.shadowColor = rgba(T.accent, 0.5); ctx.shadowBlur = 6; ctx.strokeStyle = T.accent; ctx.lineWidth = 2.6; ctx.globalAlpha = S.parts ? 0.6 : 1;
+    for (const sg of [1, -1]) { ctx.beginPath(); for (let j = 0; j <= 220; j++) { const z = j / 220 * S.y, x = tx + sg * half * A * Math.abs(s(z)); j ? ctx.lineTo(x, Y(z)) : ctx.moveTo(x, Y(z)); } ctx.stroke(); }
+    if (S.endc) { ctx.setLineDash([3, 3]); for (const sg of [1, -1]) { ctx.beginPath(); for (let j = 0; j <= 16; j++) { const z = -e + j / 16 * e, x = tx + sg * half * A * Math.abs(s(z)); j ? ctx.lineTo(x, Y(z)) : ctx.moveTo(x, Y(z)); } ctx.stroke(); } ctx.setLineDash([]); }
+    ctx.restore();
+  }
+  glassWalls(x0, x1, ytop, ybot, wall);
+  // 입구 테두리, 아래 꼭지
+  ctx.fillStyle = rgba(T['glass-edge'], 0.35); ctx.beginPath(); ctx.ellipse(tx, ytop, tw + wall, Math.max(2.5, (tw + wall) * 0.22), 0, 0, 2 * Math.PI); ctx.ellipse(tx, ytop, tw, Math.max(2, tw * 0.22), 0, 0, 2 * Math.PI); ctx.fill('evenodd');
+  ctx.strokeStyle = T['glass-edge']; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.ellipse(tx, ytop, tw + wall, Math.max(2.5, (tw + wall) * 0.22), 0, 0, 2 * Math.PI); ctx.stroke();
+  ctx.strokeStyle = rgba(T['glass-hi'], 0.9); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.ellipse(tx, ytop - 0.5, tw + wall - 1, Math.max(2, (tw + wall) * 0.18), 0, Math.PI * 1.05, Math.PI * 1.7); ctx.stroke();
+  const nz = Math.max(5, tw * 0.45), ng = ctx.createLinearGradient(tx - nz, 0, tx + nz, 0); ng.addColorStop(0, rgba(T['glass-edge'], 0.7)); ng.addColorStop(0.4, rgba(T['glass-hi'], 0.7)); ng.addColorStop(1, rgba(T['glass-edge'], 0.8));
+  ctx.fillStyle = rgba(T['water-2'], 0.85); ctx.beginPath(); ctx.moveTo(x0 - wall, ybot); ctx.quadraticCurveTo(x0 - wall, ybot + 0.025 * ppm, tx - nz, ybot + 0.03 * ppm); ctx.lineTo(tx - nz, ybot + 0.05 * ppm); ctx.lineTo(tx + nz, ybot + 0.05 * ppm); ctx.lineTo(tx + nz, ybot + 0.03 * ppm); ctx.quadraticCurveTo(x1 + wall, ybot + 0.025 * ppm, x1 + wall, ybot); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = ng; ctx.globalAlpha = 0.6; ctx.fill(); ctx.globalAlpha = 1; ctx.strokeStyle = T['glass-edge']; ctx.lineWidth = 1.3; ctx.stroke();
+  // 유리에 인쇄된 눈금 (관 입구에서 m)
+  ctx.strokeStyle = rgba(T.ink, 0.72); ctx.fillStyle = T.ink; ctx.lineWidth = 1;
+  ctx.font = `600 ${ppm > 250 ? 14 : 12}px ${T.mono}`; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  const every = ppm * 0.1 < 22 ? 20 : 10;
+  for (let c2 = 0; c2 <= 120; c2++) {
+    const big = c2 % 10 === 0, mid = c2 % 5 === 0;
+    if (!big && !mid && ppm * 0.01 < 2.6) continue;
+    const yy = Y(c2 / 100), len = big ? Math.min(12, tw * 1.1) : mid ? Math.min(8, tw * 0.75) : Math.min(4, tw * 0.4);
+    ctx.beginPath(); ctx.moveTo(x0, yy); ctx.lineTo(x0 + len, yy); ctx.stroke();
+    if (big && c2 % every === 0) ctx.fillText((c2 / 100).toFixed(1), x0 - wall - 6, yy);
+  }
+  ctx.font = `500 13px ${T.font}`; ctx.fillStyle = T.muted; ctx.fillText('m', x0 - wall - 6, ybot + 0.06 * ppm);
+  // 공명 위치 표시 (고무 밴드)
+  [...marks].sort((a, b) => a - b).forEach((v, i) => {
+    const yy = Y(v), bw = 2 * (tw + wall) + 6, age = flashMark.y === v ? (performance.now() - flashMark.t) / 700 : 9;
+    const bgd = ctx.createLinearGradient(tx - bw / 2, 0, tx + bw / 2, 0); bgd.addColorStop(0, rgba(T.band, 0.75)); bgd.addColorStop(0.3, T.band); bgd.addColorStop(1, rgba(T.band, 0.65));
+    shadowed(() => { ctx.fillStyle = bgd; ctx.beginPath(); ctx.roundRect(tx - bw / 2, yy - 3, bw, 6, 3); ctx.fill(); }, 3, 1, 1.5, 0.3);
+    ctx.fillStyle = rgba(T['glass-hi'], 0.55); ctx.fillRect(tx - bw / 2 + 3, yy - 2.4, bw * 0.4, 1.2);
+    if (age < 1) { ctx.strokeStyle = rgba(T.band, 1 - age); ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(tx, yy, bw / 2 + 6 + age * 18, 6 + age * 10, 0, 0, 2 * Math.PI); ctx.stroke(); }
+    if (i < 3 && !g.narrow) pill(`y${'₁₂₃'[i]}`, x1 + wall + 24, yy, T.s2, 'center', 14);
+  });
+  // 마디·배
+  if (S.wave && A > 0.6) {
+    const lx = g.narrow ? x1 + wall + 14 : x0 - wall - 64, ps = g.narrow ? 12 : 15;
+    pill('N', lx, ys, T.nodal, 'center', ps);
+    for (let j = 0; j < 8; j++) { const z = S.y - (2 * j + 1) * lam() / 4; if (z < -e - 0.01) break; pill('A', lx, Y(Math.max(z, -e)), T.anti, 'center', ps); }
+    for (let j = 1; j < 8; j++) { const z = S.y - j * lam() / 2; if (z < 0) break; pill('N', lx, Y(z), T.nodal, 'center', ps); }
+  }
+}
+function drawReservoir(g) {
+  const { rx, rw, Y, benchY, ppm, wall } = g, zb = resBottom(), yb = Y(zb), yt = Y(zb - RES.H), ys = Y(S.y), x0 = rx - rw, x1 = rx + rw;
+  // 고무관: 관 아래 꼭지 → 책상 근처로 처졌다가 → 물통 아래 꼭지
+  const hx0 = g.tx, hy0 = g.ybot + 0.05 * ppm, hx1 = rx, hy1 = yb + 0.035 * ppm, low = Math.min(benchY - 22, Math.max(hy0, hy1) + 0.05 * ppm);
+  const hose = () => { ctx.beginPath(); ctx.moveTo(hx0, hy0); ctx.bezierCurveTo(hx0, low + 6, hx0 + 22, low + 8, (hx0 + hx1) / 2, low + 7); ctx.bezierCurveTo(hx1 - 22, low + 6, hx1, Math.max(hy1, low - 4), hx1, hy1); };
+  const hw = clamp(0.03 * ppm, 7, 12);
+  ctx.lineCap = 'round';
+  ctx.save(); ctx.translate(5, 6); ctx.strokeStyle = rgba(T.shadow, 0.22); ctx.lineWidth = hw + 2; ctx.filter = 'blur(4px)'; hose(); ctx.stroke(); ctx.restore();
+  ctx.strokeStyle = T['rubber-2']; ctx.lineWidth = hw; hose(); ctx.stroke();
+  ctx.strokeStyle = T['rubber-1']; ctx.lineWidth = hw * 0.62; hose(); ctx.stroke();
+  ctx.save(); ctx.translate(-hw * 0.18, -hw * 0.12); ctx.strokeStyle = rgba(T['glass-hi'], 0.35); ctx.lineWidth = Math.max(1.5, hw * 0.16); hose(); ctx.stroke(); ctx.restore();
+  ctx.lineCap = 'butt';
+  for (const [x, y] of [[hx0, hy0], [hx1, hy1]]) { ctx.fillStyle = metalV(x - hw * 0.65, x + hw * 0.65); ctx.fillRect(x - hw * 0.62, y - 3, hw * 1.24, 5); }
+  // 물통 (원통형 투명 그릇, 바닥에 꼭지)
+  ctx.save(); ctx.filter = 'blur(10px)'; ctx.fillStyle = rgba(T.shadow, 0.16); ctx.fillRect(x0 + 12, yt + 10, 2 * rw, yb - yt); ctx.restore();
+  ctx.fillStyle = metalV(rx - 5, rx + 5); ctx.fillRect(rx - 4.5, yb, 9, hy1 - yb - 2);
+  const body = new Path2D(); body.roundRect(x0, yt, 2 * rw, yb - yt + 3, [2, 2, rw * 0.35, rw * 0.35]);
+  ctx.fillStyle = rgba(T.glass, 0.18); ctx.fill(body);
+  ctx.save(); ctx.clip(body); waterColumn(x0 + 1, x1 - 1, ys, yb + 4, Math.max(2, Math.min(5, rw * 0.08)));
+  const ey = Math.max(2.5, rw * 0.13); ctx.fillStyle = rgba(T['water-1'], 0.55); ctx.beginPath(); ctx.ellipse(rx, ys - 1, rw - 2, ey, 0, Math.PI, 2 * Math.PI); ctx.fill();
+  glassWalls(x0 + wall, x1 - wall, yt, yb + 3, wall); ctx.restore();
+  ctx.strokeStyle = T['glass-edge']; ctx.lineWidth = 1.6; ctx.stroke(body);
+  ctx.beginPath(); ctx.ellipse(rx, yt, rw, Math.max(3, rw * 0.15), 0, 0, 2 * Math.PI); ctx.stroke();
+  ctx.strokeStyle = rgba(T['glass-hi'], 0.85); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.ellipse(rx, yt - 0.5, rw - 2, Math.max(2, rw * 0.12), 0, Math.PI * 1.05, Math.PI * 1.7); ctx.stroke();
+  // 물통을 받치는 고리 집게
+  const yc = Y(zb - RES.H * 0.22);
+  ctx.strokeStyle = metalV(x0 - 4, x1 + 4); ctx.lineWidth = 3.5; ctx.beginPath(); ctx.ellipse(rx, yc, rw + 3, Math.max(3, rw * 0.14), 0, 0, 2 * Math.PI); ctx.stroke();
+  ctx.fillStyle = metalH(yc - 3.5, yc + 3.5); ctx.fillRect(g.rod + 12, yc - 3.5, x0 - g.rod - 12 - 3, 7);
+  boss(g.rod, yc);
+  if (drag) { ctx.strokeStyle = T.accent; ctx.lineWidth = 2; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.roundRect(x0 - 10, yt - 12, 2 * rw + 20, yb - yt + 24, 12); ctx.stroke(); ctx.setLineDash([]); }
+  if (!g.narrow) pill('물통 ↕', x1 + 10, yt + 16, T.ink, 'left', 14);
+  return { x0: x0 - 12, x1: x1 + (g.narrow ? 12 : 84), y0: yt - 14, y1: yb + 14 };
+}
+function drawSpeaker(g) {
+  const { tx, tw, wall, ytop, rod, ppm } = g, sw = Math.max(2 * (tw + wall) + 22, 0.1 * ppm), y1 = ytop - GAP * ppm, y0 = y1 - Math.max(22, 0.06 * ppm), mid = (y0 + y1) / 2;
+  const ay = y0 + 6; ctx.fillStyle = metalH(ay - 3.5, ay + 3.5); ctx.fillRect(tx + sw / 2 - 4, ay - 3.5, rod - tx - sw / 2 + 4, 7);
+  boss(rod, ay - 6);
+  shadowed(() => { const g2 = ctx.createLinearGradient(tx - sw / 2, 0, tx + sw / 2, 0); g2.addColorStop(0, T['speaker-1']); g2.addColorStop(0.35, T['speaker-1']); g2.addColorStop(1, T['speaker-2']); ctx.fillStyle = g2; ctx.beginPath(); ctx.roundRect(tx - sw / 2, y0, sw, y1 - y0, [8, 8, 3, 3]); ctx.fill(); }, 12, 5, 7, 0.32);
+  ctx.fillStyle = rgba(T['glass-hi'], 0.2); ctx.fillRect(tx - sw / 2 + 5, y0 + 2, sw - 10, 1.5);
+  ctx.fillStyle = metalH(y1 - 4, y1 + 1); ctx.beginPath(); ctx.roundRect(tx - sw / 2 + 2, y1 - 4, sw - 4, 4.5, 2); ctx.fill();
+  ctx.fillStyle = rgba(T.shadow, 0.5); for (let x = tx - sw / 2 + 7; x < tx + sw / 2 - 5; x += 4.5) ctx.fillRect(x, y1 - 3.2, 2, 2.4);
+  ctx.fillStyle = S.sound ? T.anti : T['speaker-1']; ctx.beginPath(); ctx.arc(tx + sw / 2 - 8, y0 + 7, 2.5, 0, 2 * Math.PI); ctx.fill();
+  ctx.strokeStyle = rgba(T.accent, 0.75); ctx.lineWidth = 1.8;               // 관 입구로 퍼져 들어가는 소리
+  for (let j = 0; j < 3; j++) { const ph = ((theta * 1.2 / (2 * Math.PI) + j / 3) % 1); ctx.globalAlpha = 1 - ph; ctx.beginPath(); ctx.ellipse(tx, y1 + 1 + ph * (GAP * ppm + 8), Math.max(4, tw * (0.7 + ph * 0.5)), 2 + ph * 2, 0, 0, Math.PI); ctx.stroke(); }
+  ctx.globalAlpha = 1;
+  return { x: tx - sw / 2, y: (y0 + y1) / 2 };
+}
+function phone(x, y, w, h, kind, jackOut) {          // 스마트폰: 소리 측정 앱 / 소리 발생기 앱
+  const r = w * 0.15;
+  shadowed(() => { ctx.fillStyle = T.phone; ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill(); }, 16, 6, 9, 0.35);
+  const eg = ctx.createLinearGradient(x, y, x + w, y + h); eg.addColorStop(0, rgba(T['phone-edge'], 0.9)); eg.addColorStop(0.5, rgba(T['phone-edge'], 0.2)); eg.addColorStop(1, rgba(T['phone-edge'], 0.6));
+  ctx.strokeStyle = eg; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.roundRect(x + 0.75, y + 0.75, w - 1.5, h - 1.5, r); ctx.stroke();
+  ctx.fillStyle = T['phone-edge']; ctx.fillRect(x + w, y + h * 0.2, 1.8, h * 0.09); ctx.fillRect(x + w, y + h * 0.33, 1.8, h * 0.14);
+  const sx = x + 4, sy = y + 4, sw = w - 8, sh = h - 8;
+  ctx.save(); ctx.beginPath(); ctx.roundRect(sx, sy, sw, sh, r * 0.75); ctx.clip();
+  const sg = ctx.createLinearGradient(0, sy, 0, sy + sh); sg.addColorStop(0, T['screen-1']); sg.addColorStop(1, T['screen-2']); ctx.fillStyle = sg; ctx.fillRect(sx, sy, sw, sh);
+  ctx.fillStyle = T.phone; ctx.beginPath(); ctx.arc(x + w / 2, sy + 7, 2.6, 0, 2 * Math.PI); ctx.fill();
+  ctx.font = `600 9px ${T.mono}`; ctx.fillStyle = T.muted; ctx.textBaseline = 'middle'; ctx.textAlign = 'left'; ctx.fillText('9:41', sx + 7, sy + 7.5);
+  ctx.strokeStyle = T.muted; ctx.lineWidth = 1; ctx.strokeRect(sx + sw - 19, sy + 4.5, 11, 6); ctx.fillStyle = T.muted; ctx.fillRect(sx + sw - 18, sy + 5.5, 7, 4); ctx.fillRect(sx + sw - 7.5, sy + 6.3, 1.2, 2.4);
+  const cx = x + w / 2;
+  ctx.textAlign = 'center';
+  if (kind === 'meter') {
+    const d = dBat(S.y);
+    ctx.font = `700 12px ${T.font}`; ctx.fillStyle = T.ink; ctx.fillText('소리 측정', cx, sy + 24);
+    const gy = sy + sh * 0.44, gr = sw * 0.36, a0 = Math.PI * 0.82, a1 = Math.PI * 2.18, fr = clamp((d - 30) / 70, 0, 1);
+    ctx.lineCap = 'round'; ctx.lineWidth = Math.max(5, sw * 0.08);
+    ctx.strokeStyle = rgba(T.muted, 0.2); ctx.beginPath(); ctx.arc(cx, gy, gr, a0, a1); ctx.stroke();
+    const ag = ctx.createLinearGradient(cx - gr, 0, cx + gr, 0); ag.addColorStop(0, T.anti); ag.addColorStop(0.65, T.heat); ag.addColorStop(1, T.hi);
+    ctx.strokeStyle = ag; ctx.beginPath(); ctx.arc(cx, gy, gr, a0, a0 + (a1 - a0) * fr); ctx.stroke(); ctx.lineCap = 'butt';
+    ctx.font = `600 ${Math.round(sw * 0.3)}px ${T.mono}`; ctx.fillStyle = T.ink; ctx.fillText(String(Math.round(d)), cx, gy + 2);
+    ctx.font = `500 11px ${T.font}`; ctx.fillStyle = T.muted; ctx.fillText('dB', cx, gy + sw * 0.2);
+    const hx = sx + 8, hw2 = sw - 16, hy = sy + sh * 0.74, hh = sh * 0.17, now = performance.now();       // 최근 6초 기록
+    ctx.fillStyle = rgba(T.muted, 0.08); ctx.fillRect(hx, hy, hw2, hh);
+    if (hist.length > 1) {
+      ctx.strokeStyle = T.accent; ctx.lineWidth = 1.6; ctx.lineJoin = 'round'; ctx.beginPath();
+      hist.forEach(([t, v], i) => { const px = hx + hw2 - (now - t) / 6000 * hw2, py = hy + hh - clamp((v - 55) / 35, 0, 1) * hh; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); }); ctx.stroke();
+    }
+    ctx.font = `500 9px ${T.font}`; ctx.fillStyle = T.muted; ctx.fillText('최근 6초', cx, hy + hh + 9);
+  } else {
+    ctx.font = `700 12px ${T.font}`; ctx.fillStyle = T.ink; ctx.fillText('소리 발생기', cx, sy + 24);
+    ctx.font = `600 ${Math.round(sw * 0.3)}px ${T.mono}`; ctx.fillStyle = T.ink; ctx.fillText(String(S.f), cx, sy + sh * 0.36);
+    ctx.font = `500 11px ${T.font}`; ctx.fillStyle = T.muted; ctx.fillText('Hz · 사인파', cx, sy + sh * 0.36 + sw * 0.21);
+    const wy = sy + sh * 0.6, ww = sw * 0.7; ctx.strokeStyle = T.accent; ctx.lineWidth = 2; ctx.beginPath();
+    for (let i = 0; i <= 60; i++) { const px = cx - ww / 2 + i / 60 * ww, py = wy - Math.sin(i / 60 * 4 * Math.PI - theta * 3) * sh * 0.045; i ? ctx.lineTo(px, py) : ctx.moveTo(px, py); } ctx.stroke();
+    const by = sy + sh * 0.82, br = sw * 0.14;
+    ctx.fillStyle = T.accent; ctx.beginPath(); ctx.arc(cx, by, br, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillStyle = T.surface; ctx.fillRect(cx - br * 0.32, by - br * 0.32, br * 0.64, br * 0.64);
+  }
+  const gl = ctx.createLinearGradient(sx, sy, sx + sw, sy + sh * 0.6); gl.addColorStop(0, rgba(T['glass-hi'], 0.14)); gl.addColorStop(0.45, rgba(T['glass-hi'], 0.02)); gl.addColorStop(0.46, rgba(T['glass-hi'], 0)); ctx.fillStyle = gl; ctx.fillRect(sx, sy, sw, sh);
+  ctx.restore();
+  if (jackOut) return { x: cx, y: y + h };
+}
+function cable(a, b, g) {                              // 발생기 폰 → 스피커 (이어폰 단자 선)
+  const lx = 12;
+  ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const path = () => { ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.bezierCurveTo(a.x, a.y + 26, lx, a.y + 30, lx, a.y - 30); ctx.lineTo(lx, b.y + 40); ctx.bezierCurveTo(lx, b.y - 6, b.x - 60, b.y, b.x, b.y); };
+  ctx.strokeStyle = rgba(T.shadow, 0.18); ctx.lineWidth = 4; ctx.translate(2, 3); path(); ctx.stroke(); ctx.translate(-2, -3);
+  ctx.strokeStyle = T['speaker-2']; ctx.lineWidth = 2.6; path(); ctx.stroke();
+  ctx.strokeStyle = rgba(T['glass-hi'], 0.25); ctx.lineWidth = 0.8; path(); ctx.stroke();
+  ctx.fillStyle = metalV(a.x - 3, a.x + 3); ctx.fillRect(a.x - 3, a.y, 6, 9);
+  ctx.restore(); void g;
+}
+function drawZoom(g, cx, cy, R) {                      // 끝보정 돋보기: 관 입구 확대
+  const M = 2 * R * 0.92 / 0.13, zc = 0.004, Yz = z => cy + (z - zc) * M, e = ecorr(), rin = S.r * M, wl = 0.0025 * M;
+  const k = 2 * Math.PI / lam(), A = Math.max(0.35, ampAt(S.y)), s = z => Math.abs(Math.sin(k * (S.y - z)));
+  shadowed(() => { ctx.fillStyle = T.surface; ctx.beginPath(); ctx.arc(cx, cy, R + 5, 0, 2 * Math.PI); ctx.fill(); }, 18, 5, 8, 0.3);
+  ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, R, 0, 2 * Math.PI); ctx.clip();
+  const wg = ctx.createLinearGradient(0, cy - R, 0, cy + R); wg.addColorStop(0, T['wall-1']); wg.addColorStop(1, T['wall-2']); ctx.fillStyle = wg; ctx.fillRect(cx - R, cy - R, 2 * R, 2 * R);
+  const sy1 = Yz(-GAP);                                // 스피커 아랫면
+  ctx.fillStyle = darkH(sy1 - 40, sy1); ctx.fillRect(cx - R, sy1 - 40, 2 * R, 40);
+  ctx.fillStyle = rgba(T.shadow, 0.5); for (let x = cx - R; x < cx + R; x += 7) ctx.fillRect(x, sy1 - 5, 3, 3.5);
+  ctx.fillStyle = rgba(T.glass, 0.18); ctx.fillRect(cx - rin, Yz(0), 2 * rin, cy + R - Yz(0));
+  ctx.save(); ctx.shadowColor = rgba(T.accent, 0.4); ctx.shadowBlur = 6; ctx.strokeStyle = T.accent; ctx.lineWidth = 3;
+  for (const sg of [1, -1]) { ctx.beginPath(); for (let j = 0; j <= 40; j++) { const z = j / 40 * 0.08; const x = cx + sg * (rin - 4) * A * s(z); j ? ctx.lineTo(x, Yz(z)) : ctx.moveTo(x, Yz(z)); } ctx.stroke(); }
+  ctx.setLineDash([5, 4]); for (const sg of [1, -1]) { ctx.beginPath(); for (let j = 0; j <= 12; j++) { const z = -e + j / 12 * e; const x = cx + sg * (rin - 4) * A * s(z); j ? ctx.lineTo(x, Yz(z)) : ctx.moveTo(x, Yz(z)); } ctx.stroke(); } ctx.setLineDash([]);
+  ctx.restore();
+  glassWalls(cx - rin, cx + rin, Yz(0), cy + R + 4, wl);
+  ctx.strokeStyle = T['glass-edge']; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.ellipse(cx, Yz(0), rin + wl, (rin + wl) * 0.2, 0, 0, 2 * Math.PI); ctx.stroke();
+  const ya = Yz(-e); ctx.strokeStyle = T.hi; ctx.lineWidth = 2; ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.moveTo(cx - R, ya); ctx.lineTo(cx + R, ya); ctx.stroke(); ctx.setLineDash([]);
+  ctx.strokeStyle = T.ink; ctx.lineWidth = 1.6; const dx = cx + rin + wl + 12; ctx.beginPath(); ctx.moveTo(dx - 5, ya); ctx.lineTo(dx + 5, ya); ctx.moveTo(dx, ya); ctx.lineTo(dx, Yz(0)); ctx.moveTo(dx - 5, Yz(0)); ctx.lineTo(dx + 5, Yz(0)); ctx.stroke();
+  ctx.font = `700 15px ${T.font}`; ctx.fillStyle = T.hi; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText('e', dx + 7, (ya + Yz(0)) / 2);
+  ctx.restore();
+  const rg = ctx.createLinearGradient(cx - R, cy - R, cx + R, cy + R); rg.addColorStop(0, T['metal-hi']); rg.addColorStop(0.5, T['metal-lo']); rg.addColorStop(1, T['stand-1']);
+  ctx.strokeStyle = rg; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(cx, cy, R + 1.5, 0, 2 * Math.PI); ctx.stroke();
+  ctx.strokeStyle = rgba(T['glass-hi'], 0.55); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy, R - 6, Math.PI * 1.1, Math.PI * 1.45); ctx.stroke();
+  pill(`e ≈ 0.6r = ${(e * 100).toFixed(1)} cm`, cx, cy + R + 22, T.hi, 'center', 14);
+  pill('A', cx - R + 18, ya, T.anti, 'center', 14);
+  const mx = g.tx, my = g.ytop, mr = g.tw + g.wall + 7;           // 본 그림의 관 입구와 잇는 선
+  ctx.strokeStyle = rgba(T.ink, 0.45); ctx.lineWidth = 1.4; ctx.setLineDash([4, 4]);
+  ctx.beginPath(); ctx.arc(mx, my, mr, 0, 2 * Math.PI); ctx.stroke();
+  const ang = Math.atan2(cy - my, cx - mx); ctx.beginPath(); ctx.moveTo(mx + mr * Math.cos(ang), my + mr * Math.sin(ang)); ctx.lineTo(cx - (R + 4) * Math.cos(ang), cy - (R + 4) * Math.sin(ang)); ctx.stroke(); ctx.setLineDash([]);
+}
+function drawPanel(g) {                         // 수면 깊이에 맞춘 소리 크기 그래프
+  const { px0, px1, ytop, ybot, Y } = g, top = ytop - 52, bot = ybot + 14, Lp = 16, Rp = 16, V0 = 60, V1 = 90;
+  shadowed(() => { ctx.fillStyle = rgba(T.surface, 0.92); ctx.beginPath(); ctx.roundRect(px0, top, px1 - px0, bot - top, 16); ctx.fill(); }, 24, 4, 10, 0.18);
+  ctx.strokeStyle = T.line; ctx.lineWidth = 1; ctx.beginPath(); ctx.roundRect(px0 + 0.5, top + 0.5, px1 - px0 - 1, bot - top - 1, 16); ctx.stroke();
+  const X = v => px0 + Lp + (clamp(v, V0, V1) - V0) / (V1 - V0) * (px1 - px0 - Lp - Rp);
+  ctx.font = `700 14px ${T.font}`; ctx.fillStyle = T.muted; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.fillText('관 입구의 소리 크기 (dB)', px0 + 14, top + 10);
+  ctx.font = `500 14px ${T.mono}`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+  for (let v = V0; v <= V1; v += 5) { ctx.strokeStyle = v % 10 ? rgba(T.line, 0.55) : T.line; ctx.beginPath(); ctx.moveTo(X(v), ytop - 6); ctx.lineTo(X(v), ybot); ctx.stroke(); if (v % 10 === 0) { ctx.fillStyle = T.muted; ctx.fillText(v, X(v), ytop - 8); } }
+  ctx.strokeStyle = rgba(T.line, 0.75);
+  for (let z = 0; z <= 1.2001; z += 0.1) { ctx.beginPath(); ctx.moveTo(px0 + Lp, Y(z)); ctx.lineTo(px1 - Rp, Y(z)); ctx.stroke(); }
+  const line = (map, dashed) => {
+    const pts = [...map.entries()].sort((a, b) => a[0] - b[0]);
+    if (!dashed && pts.length > 1) {
+      ctx.beginPath(); ctx.moveTo(X(V0), Y(pts[0][0] / 1000));
+      pts.forEach(([mm, v]) => ctx.lineTo(X(v), Y(mm / 1000))); ctx.lineTo(X(V0), Y(pts[pts.length - 1][0] / 1000)); ctx.closePath();
+      const fg = ctx.createLinearGradient(px0, 0, px1, 0); fg.addColorStop(0, rgba(T.accent, 0.02)); fg.addColorStop(1, rgba(T.accent, 0.25)); ctx.fillStyle = fg; ctx.fill();
+    }
+    ctx.save(); if (!dashed) { ctx.shadowColor = rgba(T.accent, 0.45); ctx.shadowBlur = 6; }
+    ctx.strokeStyle = dashed ? T.muted : T.accent; ctx.lineWidth = dashed ? 1.8 : 2.8; ctx.setLineDash(dashed ? [6, 5] : []); ctx.lineJoin = 'round'; ctx.beginPath();
+    pts.forEach(([mm, v], i) => { if (i && mm - pts[i - 1][0] <= 3) ctx.lineTo(X(v), Y(mm / 1000)); else ctx.moveTo(X(v), Y(mm / 1000)); });
+    ctx.stroke(); ctx.restore();
+  };
+  if (prev) { line(prev.map, true); ctx.font = `600 14px ${T.font}`; ctx.fillStyle = T.muted; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; ctx.fillText(`점선 ${prev.label}`, px1 - 14, top + 10); }
+  line(trace, false);
+  if (!trace.size) { ctx.font = `500 15px ${T.font}`; ctx.fillStyle = T.muted; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('물통을 내리면 기록됩니다', (px0 + px1) / 2, (ytop + ybot) / 2); }
+  [...marks].sort((a, b) => a - b).forEach((v, i) => {
+    ctx.strokeStyle = rgba(T.band, 0.9); ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]); ctx.beginPath(); ctx.moveTo(g.tx + g.tw + g.wall + 40, Y(v)); ctx.lineTo(px1 - Rp, Y(v)); ctx.stroke(); ctx.setLineDash([]);
+    pill(`${i < 3 ? `y${'₁₂₃'[i]} = ` : ''}${m3(v)} m`, px1 - Rp - 6, Y(v) - 15, T.s2, 'right', 14);
+  });
+  const ys = Y(S.y), d = dBat(S.y);
+  ctx.strokeStyle = rgba(T.ink, 0.45); ctx.lineWidth = 1.2; ctx.setLineDash([2, 4]); ctx.beginPath(); ctx.moveTo(g.rx + g.rw + 6, ys); ctx.lineTo(X(d), ys); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = T.ink; ctx.beginPath(); ctx.arc(X(d), ys, 6, 0, 2 * Math.PI); ctx.fill(); ctx.strokeStyle = T.surface; ctx.lineWidth = 2; ctx.stroke();
+}
+const HIT = { res: null, tube: null };
+function draw() {
+  ctx.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); ctx.globalAlpha = 1; ctx.setLineDash([]); ctx.filter = 'none';
+  measure();
+  const g = geo();
+  drawRoom(g); drawStand(g);
+  if (g.panel) drawPanel(g);
+  HIT.res = drawReservoir(g);
+  drawTube(g);
+  tubeClamp(g, 0.22); tubeClamp(g, 1.08);
+  const spk = drawSpeaker(g);
+  HIT.tube = { x0: g.tx - g.tw - 24, x1: g.tx + g.tw + 24, y0: g.ytop - 10, y1: g.ybot };
+  if (!g.narrow) {
+    const pw = g.phoneW, ph = pw * 1.85, x = 20;
+    const gen = phone(x, g.benchY - 18 - ph, pw, ph, 'gen', true);
+    cable(gen, spk, g);
+    if (S.endc) { const R = clamp(pw * 0.76, 64, 84); drawZoom(g, Math.max(R + 12, x + pw / 2 + 6), Math.max(g.ytop + 24, O.pb.b + R + 12), R); }
+    else phone(x, Math.max(O.pb.b + 12, g.ytop - 24), pw, ph, 'meter');
+  }
+}
+
+/* ---------- 상태 ---------- */
+function startLower(v, auto = 0) { S.lowerV = v; S.auto = auto; S.lowering = true; Object.assign(LW, { phase: 'down', hold: 0, acc: 0, pk: { max: -1, y: S.y }, armed: true }); if (S.y >= yMax() - 0.005) S.y = YMIN; sync(); }
+function stopLower() { S.lowering = false; S.auto = 0; sync(); }
+function addMark(y) { if (marks.some(m => Math.abs(m - y) < 0.03)) return false; marks.push(+m3(y)); marks.sort((a, b) => a - b); flashMark = { y: +m3(y), t: performance.now() }; return true; }
+function stepWater(dy) {                         // 1 mm씩 내리며 기록하고, 자동 측정이면 봉우리를 찾는다
+  const n = Math.max(1, Math.round(dy * 1000));
+  for (let i = 0; i < n; i++) {
+    S.y = +Math.min(yMax(), S.y + 0.001).toFixed(4);
+    const d = dBat(S.y); trace.set(Math.round(S.y * 1000), d);
+    if (S.auto) {
+      if (!LW.armed) { if (d < 78) Object.assign(LW, { armed: true, pk: { max: -1, y: S.y } }); }
+      else if (d > LW.pk.max) LW.pk = { max: d, y: S.y };
+      else if (LW.pk.max > 80 && d < LW.pk.max - 1.5) { LW.phase = 'back'; return; }      // 봉우리를 지났다 → 되돌아가 표시
+    }
+    if (S.y >= yMax()) { stopLower(); return; }
+  }
+}
+function lowerTick(raw) {
+  if (LW.phase === 'hold') { LW.hold -= raw; if (LW.hold <= 0) { if (S.auto && marks.length >= S.auto) stopLower(); else { LW.phase = 'down'; LW.armed = false; } } return; }
+  if (LW.phase === 'back') {
+    S.y = Math.max(LW.pk.y, +(S.y - 0.015 * raw).toFixed(4)); trace.set(Math.round(S.y * 1000), dBat(S.y));
+    if (S.y <= LW.pk.y + 1e-6) { S.y = LW.pk.y; addMark(S.y); LW.phase = 'hold'; LW.hold = 1.2; }
+    return;
+  }
+  const d = dBat(S.y), w = clamp((d - 72) / 10, 0, 1), v = S.lowerV * (1 - w) + 0.008 * w;   // 소리가 커질수록 천천히
+  LW.acc = (LW.acc || 0) + v * raw;
+  if (LW.acc >= 0.001) { const step = Math.floor(LW.acc * 1000) / 1000; LW.acc -= step; stepWater(step); }
+}
+function setY(y) { S.y = Math.round(clamp(y, YMIN, yMax()) * 1000) / 1000; trace.set(Math.round(S.y * 1000), dBat(S.y)); }
+function stopPreset() { S.preset = -1; }
+function applyPreset(i) { stopSound(); S.preset = i; PRESETS[i].run(); sync(); try { localStorage.setItem('restube3-preset', String(i)); } catch (err) {} }
+
+/* ---------- 측정값 카드 ---------- */
+let lastRO = '';
+function updateReadout() {
+  const d = dBat(S.y), A = ampAt(S.y), me = measured(), ys = me.ys;
+  const yv = i => ys[i] !== undefined ? `${m3(ys[i])} m` : '—';
+  let h = `<div class="ro"><span>진동수 f</span><b>${S.f} Hz</b></div><div class="ro"><span>수면 위치 y</span><b>${m3(S.y)} m</b></div>
+    <div class="ro-db"><b>${Math.round(d)}</b><small>dB</small>${A > 0.8 ? '<span class="state" data-s="plus">공명</span>' : ''}</div><div class="meter"><i style="width:${clamp((d - 40) / 50 * 100, 0, 100)}%"></i></div>
+    <div class="ro-sep"></div>
+    <div class="ro y ro-opt"><span>y₁</span><b>${yv(0)}</b></div><div class="ro y ro-opt"><span>y₂</span><b>${yv(1)}</b></div><div class="ro y ro-opt"><span>y₃</span><b>${yv(2)}</b></div>
+    <div class="ro l"><span>λ = 2(yₙ₊₁ − yₙ)</span><b>${me.lam ? m3(me.lam) + ' m' : '—'}</b></div>
+    <div class="ro v"><span>v = fλ</span><b>${me.v ? me.v.toFixed(1) + ' m/s' : '—'}</b></div>
+    <div class="ro-sub">331.5 + 0.6t = ${vSound().toFixed(1)} m/s</div>`;
+  if (S.endc && ys.length) {
+    h += `<div class="ro-sep ro-opt"></div><div class="ro ro-opt"><span>4y₁ (λ보다 짧음)</span><b>${m3(4 * ys[0])} m</b></div>`;
+    if (ys.length >= 2) h += `<div class="ro e"><span>e = (y₂ − 3y₁)/2</span><b>${((ys[1] - 3 * ys[0]) / 2 * 100).toFixed(1)} cm</b></div>`;
+  }
+  if (h !== lastRO) { roEl.innerHTML = h; lastRO = h; }
+}
+function sync() {
+  $('#presets').querySelectorAll('.chip').forEach((b, i) => b.setAttribute('aria-pressed', String(i === S.preset)));
+  document.querySelectorAll('[data-tg]').forEach(b => b.setAttribute('aria-pressed', String(!!S[b.dataset.tg])));
+  document.querySelectorAll('[data-seg]').forEach(sg => sg.querySelectorAll('button').forEach(b => {
+    const k = sg.dataset.seg; b.setAttribute('aria-pressed', String(Math.abs(S[k] - +b.dataset.v) < 1e-9));
+  }));
+  $('#y').max = yMax(); $('#y').value = S.y; $('#yOut').textContent = `${m3(S.y)} m`;
+  $('#thickBtn').setAttribute('aria-pressed', String(S.r > 0.02));
+  $('#lowerBtn').textContent = S.lowering ? '멈추기' : '천천히 내리기'; $('#lowerBtn').setAttribute('aria-pressed', String(S.lowering));
+  $('#playBtn').textContent = S.run ? '❚❚' : '▶';
+  $('#capBtn').setAttribute('aria-pressed', String(S.cap));
+  const cap = S.preset >= 0 ? PRESETS[S.preset].cap : '';
+  capEl.textContent = cap; capEl.hidden = !S.cap || !cap;
+  $('#sndBtn').setAttribute('aria-pressed', String(S.sound)); $('#sndBtn').textContent = S.sound ? '소리 끄기' : '소리 켜기';
+  $('#timenote').textContent = S.run ? `화면 속 진동은 실제보다 약 ${Math.round(S.f / (FD * S.speed)).toLocaleString('ko-KR')}배 느림` : '일시정지';
+  updateReadout();
+}
+
+/* ---------- 소리: 소리 발생기의 사인파. 크기는 관 입구에서 잰 dB를 따라 부드럽게 바뀐다 ---------- */
+const AU = { ctx: null, osc: null, gain: null, g: -1 };
+function ensureAudio() {
+  if (AU.ctx) { if (AU.ctx.state !== 'running') AU.ctx.resume(); return true; }
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -6; comp.knee.value = 4; comp.ratio.value = 12; comp.attack.value = 0.003; comp.release.value = 0.25;
+    const master = ctx.createGain(); master.gain.value = 0.85; master.connect(comp).connect(ctx.destination);
+    const osc = ctx.createOscillator(), gain = ctx.createGain(); osc.type = 'sine'; osc.frequency.value = S.f; gain.gain.value = 0;
+    osc.connect(gain).connect(master); osc.start();
+    Object.assign(AU, { ctx, osc, gain, g: 0 }); return true;
+  } catch (err) { AU.ctx = null; return false; }
+}
+function toggleSound() { if (!S.sound && !ensureAudio()) return; S.sound = !S.sound; sync(); }
+function stopSound() { S.sound = false; }
+function updateAudio() {
+  if (!AU.ctx) return; const t = AU.ctx.currentTime;
+  AU.osc.frequency.setTargetAtTime(S.f, t, 0.03);
+  const g = S.sound ? Math.min(0.32, 0.3 * Math.pow(10, (dBat(S.y) - 85) / 20)) : 0;
+  if (Math.abs(g - AU.g) > 1e-4) { AU.gain.gain.setTargetAtTime(g, t, 0.06); AU.g = g; }
+}
+
+/* ---------- 이벤트 ---------- */
+$('#presets').innerHTML = PRESETS.map((p, i) => `<button class="chip" data-p="${i}" title="${i + 1}"><b>${i + 1}</b>${p.label}</button>`).join('');
+$('#presets').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) applyPreset(+b.dataset.p); });
+$('#playBtn').addEventListener('click', () => { S.run = !S.run; sync(); });
+$('#sndBtn').addEventListener('click', toggleSound);
+$('#capBtn').addEventListener('click', () => { S.cap = !S.cap; sync(); });
+$('#fsBtn').addEventListener('click', () => {
+  const el = $('#app');
+  if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+  else el.requestFullscreen?.().catch(() => {});
+});
+document.addEventListener('fullscreenchange', () => { $('#fsBtn').textContent = document.fullscreenElement ? '전체 화면 끝' : '전체 화면'; });
+document.querySelectorAll('[data-seg]').forEach(sg => sg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; const k = sg.dataset.seg, v = +b.dataset.v;
+  if (k === 'speed') { S.speed = v; sync(); return; }
+  if (S[k] === v) return;
+  stopPreset();
+  if (trace.size > 50) prev = { map: trace, label: k === 'f' ? `${S.f} Hz` : k === 't' ? `${S.t} °C` : S.r > 0.02 ? '굵은 관' : '가는 관' };
+  S[k] = v; trace = new Map(); marks = []; stopLower();
+}));
+document.querySelectorAll('[data-tg]').forEach(b => b.addEventListener('click', () => { const k = b.dataset.tg; S[k] = !S[k]; sync(); }));
+$('#dock').addEventListener('click', e => {
+  const a = e.target.closest('[data-act]'); if (!a) return;
+  const act = a.dataset.act;
+  if (act === 'up') { stopLower(); setY(S.y - 0.001); }
+  else if (act === 'dn') { stopLower(); setY(S.y + 0.001); }
+  else if (act === 'lower') { stopPreset(); S.lowering ? stopLower() : startLower(0.05, 0); }
+  else if (act === 'mark') { stopPreset(); addMark(S.y); }
+  else if (act === 'clear') { stopPreset(); marks = []; trace = new Map(); prev = null; }
+  else if (act === 'thick') {                        // 물의 양은 그대로, 관만 바꿔 끼운다
+    stopPreset(); if (trace.size > 50) prev = { map: trace, label: S.r > 0.02 ? '굵은 관' : '가는 관' };
+    S.r = S.r > 0.02 ? 0.015 : 0.03; S.y = clamp(S.y, YMIN, yMax()); trace = new Map(); marks = []; stopLower();
+  }
+  sync();
+});
+$('#y').addEventListener('input', e => { stopPreset(); S.lowering = false; setY(+e.target.value); sync(); });
+function zAt(e) { const r = cv.getBoundingClientRect(), g = geo(); return { x: e.clientX - r.left, y: e.clientY - r.top, z: (e.clientY - r.top - g.ytop) / g.ppm, g }; }
+const inside = (b, p) => b && p.x > b.x0 && p.x < b.x1 && p.y > b.y0 && p.y < b.y1;
+cv.addEventListener('pointerdown', e => {
+  const p = zAt(e);
+  if (inside(HIT.res, p)) drag = { kind: 'res', off: p.z - resBottom() };          // 물통을 잡고 끌기 (잡은 자리 유지)
+  else if (inside(HIT.tube, p)) drag = { kind: 'tube', off: p.z - S.y };            // 관 속 수면을 직접 끌기
+  else return;
+  stopPreset(); S.lowering = false; cv.setPointerCapture(e.pointerId); sync();
+});
+cv.addEventListener('pointermove', e => {
+  const p = zAt(e);
+  if (drag) { setY(drag.kind === 'res' ? yFromResBottom(p.z - drag.off) : p.z - drag.off); $('#y').value = S.y; $('#yOut').textContent = `${m3(S.y)} m`; }
+  else cv.style.cursor = inside(HIT.res, p) || inside(HIT.tube, p) ? 'ns-resize' : 'default';
+});
+const endDrag = () => { if (drag) { drag = null; sync(); } };
+cv.addEventListener('pointerup', endDrag); cv.addEventListener('pointercancel', endDrag);
+document.addEventListener('keydown', e => {
+  if (e.target.matches?.('input, textarea, select')) return;
+  if (e.key === ' ') { e.preventDefault(); S.run = !S.run; sync(); }
+  else if (/^[1-9]$/.test(e.key) && +e.key <= PRESETS.length) applyPreset(+e.key - 1);
+  else if (e.key === 'f' || e.key === 'F') $('#fsBtn').click();
+  else if (e.key === 'c' || e.key === 'C') $('#capBtn').click();
+  else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); stopPreset(); S.lowering = false; setY(S.y + (e.key === 'ArrowDown' ? 1 : -1) * (e.shiftKey ? 0.01 : 0.001)); sync(); }
+  else if (e.key === 'Enter' && !e.target.matches?.('button, a')) { stopPreset(); addMark(S.y); sync(); }
+});
+
+/* ---------- 시작 ---------- */
+resize();
+let startP = 0;
+try { startP = +(localStorage.getItem('restube3-preset') || 0) || 0; } catch (err) {}
+applyPreset(clamp(startP, 0, PRESETS.length - 1));
+document.fonts?.ready.then(() => { lastRO = ''; updateReadout(); });
+let last = performance.now(), tick = 0, lastHist = 0;
+function loop(now) {
+  const raw = Math.min(0.5, (now - last) / 1000), dt = Math.min(0.05, raw); last = now;
+  if (S.run) theta += 2 * Math.PI * FD * S.speed * dt;
+  if (S.lowering) { lowerTick(raw); if ((tick % 3) === 0) { $('#y').value = S.y; $('#yOut').textContent = `${m3(S.y)} m`; } }
+  if (now - lastHist > 100) { hist.push([now, dBat(S.y)]); lastHist = now; while (hist.length && now - hist[0][0] > 6000) hist.shift(); }
+  draw(); updateAudio();
+  if ((tick = (tick + 1) % 3) === 0) updateReadout();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>

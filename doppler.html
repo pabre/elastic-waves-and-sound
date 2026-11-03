@@ -1,0 +1,1737 @@
+<title>도플러 효과</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* TEACHER-DEMO v3 · 교사용 시연 도구: 위 막대(장면 번호) · 큰 무대(캔버스 + 유리 카드) · 아래 조작대 */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --ink: #16202b;
+  --muted: #5a6675;
+  --line: #d3dae2;
+  --accent: #0b6b70;
+  --accent-ink: #ffffff;
+  --on-cone: #ffffff;
+  --a: #d9631e;
+  --b: #6a45c2;
+  --wave: #1fa6ba;
+  --wave2: #ef8a2c;
+  --cone: #e0344a;
+  --asphalt: #585e65;
+  --asphalt-2: #6b7279;
+  --lane-w: #f4f4ef;
+  --lane-y: #f0c232;
+  --curb: #d8d5cd;
+  --walk: #e6e2d9;
+  --walk-j: #cfcac0;
+  --grass: #b4ca9b;
+  --grass-2: #a0bb85;
+  --tree: #739e5d;
+  --tree-2: #4f7d43;
+  --tree-hi: #a3c983;
+  --trunk: #6b4f36;
+  --water: #79b6d0;
+  --water-2: #a7d3e4;
+  --pad: #6f9e4f;
+  --pad-2: #4f7f3b;
+  --sky: #9cc8e8;
+  --sky-2: #e8f1f6;
+  --mtn: #b3c4d1;
+  --mtn-2: #93abbb;
+  --cloud: #ffffff;
+  --veh-w: #fbfcfd;
+  --veh-w2: #c3c9d1;
+  --glass: #1d2933;
+  --glass-hi: #6f8ea5;
+  --red: #e1343a;
+  --blue: #2b67de;
+  --amb-red: #d8232f;
+  --lamp: #fff3c4;
+  --tail: #c8162b;
+  --tyre: #1b1e22;
+  --trim: #2a2f36;
+  --deck: #737a82;
+  --hose: #e3b23c;
+  --fire: #d42f27;
+  --fire-2: #9e1f1a;
+  --car: #3f6fb5;
+  --car-b: #4a46b4;
+  --police: #1f4fbf;
+  --chrome: #d3d8de;
+  --jet: #c8ced6;
+  --jet-2: #7d8896;
+  --flame: #ff9a3c;
+  --flame-core: #fff4d2;
+  --shirt: #3b6db3;
+  --shirt-2: #c0582a;
+  --pants: #2f3a4c;
+  --shoe: #1d1f23;
+  --hair: #2b2420;
+  --skin: #e2bd98;
+  --tripod: #30353c;
+  --phone: #16191d;
+  --screen: #0d2a1e;
+  --beetle: #1d2614;
+  --beetle-2: #56682f;
+  --beetle-rim: #d2ad48;
+  --scope: #0b1611;
+  --scope-grid: #1d3a2c;
+  --scope-trace: #5df2a0;
+  --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1217; --surface: #161d24; --surface-2: #1d262f; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+    --accent: #45bfb4; --accent-ink: #0d1217; --on-cone: #ffffff; --a: #f0924e; --b: #ab8cf0; --wave: #5fd3e2; --wave2: #f6a85a; --cone: #ff6377;
+    --asphalt: #2c3238; --asphalt-2: #363d44; --lane-w: #c9cdd1; --lane-y: #c9a12c; --curb: #4a5057; --walk: #30363d; --walk-j: #3b424a;
+    --grass: #26352a; --grass-2: #2e4031; --tree: #3a5a3f; --tree-2: #243c2a; --tree-hi: #4f7552; --trunk: #3d2d20;
+    --water: #123c4d; --water-2: #1b5165; --pad: #2f5130; --pad-2: #22401f;
+    --sky: #0a1420; --sky-2: #1d2e3e; --mtn: #1c2a36; --mtn-2: #16212b; --cloud: #2c3c4c;
+    --veh-w: #e3e6ea; --veh-w2: #9aa2ab; --glass: #0b1116; --glass-hi: #46607a; --red: #ff4a50; --blue: #4d84f0;
+    --amb-red: #e0343e; --lamp: #fff0b0; --tail: #e0263a; --tyre: #0b0d0f; --trim: #1a1e23; --deck: #4f565e; --hose: #c0952e;
+    --fire: #c22a23; --fire-2: #7e1814; --car: #4f80c8; --car-b: #5f5bd0; --police: #3a6ae0; --chrome: #a9b1b9; --jet: #a9b2bc; --jet-2: #66717d;
+    --flame: #ff9a3c; --flame-core: #fff4d2;
+    --shirt: #4f86d1; --shirt-2: #d06a3a; --pants: #252e3c; --shoe: #0f1012; --hair: #120e0c; --skin: #c79f7b;
+    --tripod: #5a616a; --phone: #0e1013; --screen: #0a2318; --beetle: #1d2614; --beetle-2: #56682f; --beetle-rim: #c29f42;
+    --scope: #071009; --scope-grid: #173022; --scope-trace: #5df2a0;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1217; --surface: #161d24; --surface-2: #1d262f; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+  --accent: #45bfb4; --accent-ink: #0d1217; --on-cone: #ffffff; --a: #f0924e; --b: #ab8cf0; --wave: #5fd3e2; --wave2: #f6a85a; --cone: #ff6377;
+  --asphalt: #2c3238; --asphalt-2: #363d44; --lane-w: #c9cdd1; --lane-y: #c9a12c; --curb: #4a5057; --walk: #30363d; --walk-j: #3b424a;
+  --grass: #26352a; --grass-2: #2e4031; --tree: #3a5a3f; --tree-2: #243c2a; --tree-hi: #4f7552; --trunk: #3d2d20;
+  --water: #123c4d; --water-2: #1b5165; --pad: #2f5130; --pad-2: #22401f;
+  --sky: #0a1420; --sky-2: #1d2e3e; --mtn: #1c2a36; --mtn-2: #16212b; --cloud: #2c3c4c;
+  --veh-w: #e3e6ea; --veh-w2: #9aa2ab; --glass: #0b1116; --glass-hi: #46607a; --red: #ff4a50; --blue: #4d84f0;
+  --amb-red: #e0343e; --lamp: #fff0b0; --tail: #e0263a; --tyre: #0b0d0f; --trim: #1a1e23; --deck: #4f565e; --hose: #c0952e;
+  --fire: #c22a23; --fire-2: #7e1814; --car: #4f80c8; --car-b: #5f5bd0; --police: #3a6ae0; --chrome: #a9b1b9; --jet: #a9b2bc; --jet-2: #66717d;
+  --flame: #ff9a3c; --flame-core: #fff4d2;
+  --shirt: #4f86d1; --shirt-2: #d06a3a; --pants: #252e3c; --shoe: #0f1012; --hair: #120e0c; --skin: #c79f7b;
+  --tripod: #5a616a; --phone: #0e1013; --screen: #0a2318; --beetle: #1d2614; --beetle-2: #56682f; --beetle-rim: #c29f42;
+  --scope: #071009; --scope-grid: #173022; --scope-trace: #5df2a0;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app {
+  min-height: 100vh; display: flex; flex-direction: column; gap: 10px;
+  padding-block: 10px 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg);
+}
+.app:fullscreen { padding-block: 12px; }
+
+/* 상단 바 */
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tag { font: 500 12px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; white-space: nowrap; }
+h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; }
+.presets { display: flex; flex-wrap: wrap; gap: 6px; flex: 1 1 520px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 11px 4px 4px; cursor: pointer; font-size: 13.5px; font-weight: 500; white-space: nowrap; transition: background .15s, border-color .15s; }
+.chip b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font: 600 12px var(--mono); }
+.chip:hover { border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.chip[aria-pressed="true"] b { background: var(--accent); color: var(--accent-ink); }
+.tools { display: flex; gap: 6px; margin-left: auto; }
+.tbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 6px 12px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.tbtn:hover { border-color: var(--muted); }
+.tbtn[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+
+/* 무대 */
+.stage { position: relative; flex: 1 1 auto; height: clamp(420px, calc(100vh - 200px), 1100px); border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--surface-2); }
+.app:fullscreen .stage { height: auto; }
+#scene { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.glass { background: color-mix(in srgb, var(--surface) 86%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid color-mix(in srgb, var(--line) 85%, transparent); border-radius: 14px; box-shadow: 0 8px 28px rgb(10 20 30 / .10); }
+.readout { position: absolute; top: 12px; right: 12px; width: 236px; padding: 12px 14px 12px; display: flex; flex-direction: column; gap: 3px; }
+.ro { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 13px; color: var(--muted); }
+.ro b { font: 500 18px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ro b small { font: 500 13px var(--font); color: var(--muted); margin-left: 3px; }
+.ro span { min-width: 0; }
+.ro-k { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--muted); margin-top: 2px; }
+.ro-k i { width: 9px; height: 9px; border-radius: 50%; flex: none; }
+.ro-sub { text-align: right; font: 500 14px var(--mono); color: var(--muted); margin-top: -2px; white-space: nowrap; }
+.ro-f { text-align: right; font: 500 13px var(--mono); color: var(--ink); background: var(--surface-2); border-radius: 7px; padding: 3px 7px; margin-top: 2px; white-space: nowrap; overflow-x: auto; }
+.ro-sep { height: 1px; background: var(--line); margin: 6px 0; }
+.ro-db { display: flex; align-items: baseline; justify-content: flex-end; gap: 6px; }
+.ro-db b { font: 600 36px var(--mono); line-height: 1.05; font-variant-numeric: tabular-nums; letter-spacing: -.02em; white-space: nowrap; }
+.ro-db small { color: var(--muted); font-size: 14px; }
+
+.playbar { position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; padding: 6px; flex-wrap: wrap; max-width: calc(100% - 272px); }
+.timenote { font-size: 12px; color: var(--muted); padding: 0 8px 0 4px; white-space: nowrap; }
+@media (min-width: 900px) and (min-height: 560px) {
+  html, body { height: 100%; }
+  .app { height: 100%; min-height: 0; }
+  .stage { height: auto; flex: 1 1 0; min-height: 360px; }
+}
+.bottom { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap-reverse; justify-content: space-between; align-items: flex-end; gap: 10px; pointer-events: none; }
+.bottom > * { pointer-events: auto; }
+.caption { padding: 9px 16px; font-size: 18px; font-weight: 500; max-width: 720px; text-wrap: balance; }
+.graph-card { width: min(400px, 100%); padding: 8px 10px 4px; margin-left: auto; }
+.graph-card .gt { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--muted); padding: 0 2px 2px; }
+#gcv { display: block; width: 100%; height: 112px; }
+
+/* 조작 독 */
+.dock { display: flex; flex-wrap: wrap; gap: 8px; }
+.dg { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 7px 12px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dg > span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.dg.slider { flex: 1 1 170px; }
+.dg.slider label { font-size: 12px; color: var(--muted); white-space: nowrap; display: flex; flex-direction: column; line-height: 1.2; }
+.dg.slider output { font: 600 17px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.dg.slider output small { font: 500 12px var(--font); color: var(--muted); margin-left: 3px; }
+.dg input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent); height: 28px; }
+.dg input[type="range"]:disabled { opacity: .45; }
+.seg { display: flex; gap: 3px; background: var(--surface-2); border-radius: 9px; padding: 3px; }
+.seg button, .tg { border: 0; background: transparent; border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / .14); }
+.seg.snd button[aria-pressed="true"] { background: var(--cone); color: var(--on-cone); }
+.seg .dot, .tg .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.tgs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tg { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); }
+.tg[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.pbtn { border: 0; border-radius: 9px; padding: 7px 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--accent-ink); white-space: nowrap; }
+.pbtn.alt { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+.pbtn:disabled { opacity: .5; cursor: not-allowed; }
+
+@media (max-width: 720px) {
+  h1 { font-size: 18px; }
+  .readout { width: 150px; padding: 8px 10px; }
+  .ro-opt, .ro-f { display: none !important; }
+  .ro { flex-wrap: wrap; gap: 0 8px; } .ro span { white-space: nowrap; } .ro b { margin-left: auto; }
+  .ro-sub { white-space: normal; text-wrap: balance; font-size: 12px; }
+  .ro b { font-size: 15px; } .ro-db b { font-size: 24px; }
+  .caption { font-size: 15px; }
+  .graph-card { display: none; }
+  .stage { height: clamp(380px, 62vh, 700px); }
+  .playbar { max-width: calc(100% - 186px); }
+  .playbar .seg.speed, .timenote { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand"><span class="tag">Ⅲ-03 · 98~103쪽</span><h1>도플러 효과</h1></div>
+    <nav class="presets" id="chips" aria-label="수업 장면"></nav>
+    <div class="tools">
+      <button class="tbtn" id="capBtn" aria-pressed="true" title="C">설명</button>
+      <button class="tbtn" id="fsBtn" title="F">전체 화면</button>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-label="도플러 효과 장면">
+    <canvas id="scene" tabindex="0"></canvas>
+    <div class="glass playbar" id="playbar"></div>
+    <div class="glass readout" id="readout" aria-live="polite"></div>
+    <div class="bottom">
+      <div class="glass caption" id="caption"></div>
+      <div class="glass graph-card" id="gpanel" hidden><div class="gt"><span id="gTitle"></span><span id="gUnit"></span></div><canvas id="gcv"></canvas></div>
+    </div>
+  </section>
+
+  <div class="dock" id="dock"></div>
+</div>
+
+<script>
+(() => {
+'use strict';
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const $ = s => document.querySelector(s);
+const V = 340;                                  // 소리의 속력 (m/s)
+const TAU = 2 * Math.PI;
+const kmh = u => Math.round(u * 3.6).toLocaleString('ko-KR');
+const f1 = x => x == null || !isFinite(x) ? '—' : x >= 10000 ? Math.round(x).toLocaleString('ko-KR') : x >= 100 ? x.toFixed(1) : x.toFixed(2);
+const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+const html = (el, s) => { if (el && el.innerHTML !== s) el.innerHTML = s; };
+const txt = (el, s) => { if (el && el.textContent !== s) el.textContent = s; };
+
+/* ---------- 테마 ---------- */
+const T = {};
+const TOK = ['surface', 'surface-2', 'ink', 'muted', 'line', 'accent', 'a', 'b', 'wave', 'wave2', 'cone', 'asphalt', 'asphalt-2', 'lane-w', 'lane-y', 'curb', 'walk', 'walk-j',
+  'grass', 'grass-2', 'tree', 'tree-2', 'tree-hi', 'trunk', 'water', 'water-2', 'pad', 'pad-2', 'sky', 'sky-2', 'mtn', 'mtn-2', 'cloud',
+  'veh-w', 'veh-w2', 'glass', 'glass-hi', 'red', 'blue', 'amb-red', 'lamp', 'tail', 'tyre', 'trim', 'deck', 'hose', 'fire', 'fire-2', 'car', 'car-b', 'police', 'chrome',
+  'jet', 'jet-2', 'flame', 'flame-core', 'shirt', 'shirt-2', 'pants', 'shoe', 'hair', 'skin', 'tripod', 'phone', 'screen', 'beetle', 'beetle-2', 'beetle-rim',
+  'scope', 'scope-grid', 'scope-trace'];
+let themeStamp = 0;
+function readTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of TOK) T[k] = cs.getPropertyValue('--' + k).trim();
+  T.font = getComputedStyle(document.body).fontFamily; T.mono = cs.getPropertyValue('--mono').trim();
+  const dt = document.documentElement.dataset.theme;
+  T.dark = dt === 'dark' || (dt !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
+  themeStamp++; if (typeof BG !== 'undefined') BG.key = '';
+}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
+new MutationObserver(readTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+function rgba(hex, a) {
+  let c = (hex || '#888888').trim(); if (c[0] !== '#') return c;
+  if (c.length === 4) c = '#' + [...c.slice(1)].map(h => h + h).join('');
+  const n = parseInt(c.slice(1, 7), 16); return `rgba(${n >> 16 & 255},${n >> 8 & 255},${n & 255},${a})`;
+}
+function mix(h1, h2, t) {               // 두 색 섞기 (그라디언트용)
+  const p = h => { let c = h.trim(); if (c.length === 4) c = '#' + [...c.slice(1)].map(x => x + x).join(''); const n = parseInt(c.slice(1, 7), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const a = p(h1), b = p(h2); return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * t)).join(',')})`;
+}
+
+/* ---------- 캔버스와 보기 ---------- */
+const cv = $('#scene'), ctx = cv.getContext('2d');
+const D = { dpr: 1, w: 1, h: 1 };
+function fit(c) {
+  const r = c.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
+  const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
+  if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+  D.dpr = dpr; return [Math.max(1, r.width), Math.max(1, r.height)];
+}
+function resize() { [D.w, D.h] = fit(cv); BG.key = ''; }
+const VW = { cx: 0, cy: 0, sc: 1 };
+function setView(v) { VW.cx = v.cx; VW.cy = v.cy; VW.sc = Math.min(D.w / v.w, D.h / v.h); }
+const X = x => D.w / 2 + (x - VW.cx) * VW.sc, Y = y => D.h / 2 + (y - VW.cy) * VW.sc;
+const toW = (px, py) => ({ x: VW.cx + (px - D.w / 2) / VW.sc, y: VW.cy + (py - D.h / 2) / VW.sc });
+
+/* ---------- 재질 (반복 무늬, 세계 좌표에 고정) ---------- */
+const TILE = new Map();
+function rnd(seed) { let s = (seed >>> 0) || 1; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+function pattern(g, name, base, spots, n, rmin, rmax, alpha, seed) {
+  const key = name + themeStamp;
+  let c = TILE.get(key);
+  if (!c) {
+    c = document.createElement('canvas'); c.width = c.height = 192; const t = c.getContext('2d'), R = rnd(seed);
+    t.fillStyle = base; t.fillRect(0, 0, 192, 192);
+    for (let i = 0; i < n; i++) {
+      const x = R() * 192, y = R() * 192, r = rmin + R() * (rmax - rmin);
+      t.fillStyle = rgba(spots[i % spots.length], alpha * (0.35 + R() * 0.65));
+      for (const dx of [-192, 0, 192]) for (const dy of [-192, 0, 192]) { t.beginPath(); t.arc(x + dx, y + dy, r, 0, TAU); t.fill(); }
+    }
+    TILE.set(key, c);
+  }
+  const p = g.createPattern(c, 'repeat');
+  try { p.setTransform(new DOMMatrix([1, 0, 0, 1, ((X(0) % 192) + 192) % 192, ((Y(0) % 192) + 192) % 192])); } catch (e) {}
+  return p;
+}
+
+/* ---------- 그리기 도구 ---------- */
+function shadow(blur, ox, oy, a = 0.32) { ctx.shadowColor = `rgba(0,0,0,${a})`; ctx.shadowBlur = blur * D.dpr; ctx.shadowOffsetX = ox * D.dpr; ctx.shadowOffsetY = oy * D.dpr; }
+function noShadow() { ctx.shadowColor = 'transparent'; ctx.shadowBlur = 0; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0; }
+function rr(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, Math.max(0, Math.min(r, Math.abs(w) / 2, Math.abs(h) / 2))); }
+// 빛은 언제나 화면 왼쪽 위에서: 180° 돌린 물체도 그라디언트는 화면 기준 (LS = -1이면 좌표를 뒤집음)
+let LS = 1;
+function lg(x1, y1, x2, y2, stops) { const g = ctx.createLinearGradient(x1 * LS, y1 * LS, x2 * LS, y2 * LS); stops.forEach(([o, c]) => g.addColorStop(o, c)); return g; }
+function pill(text, x, y, color = T.ink, align = 'center', size = 16) {
+  ctx.font = `600 ${size}px ${T.font}`;
+  const w = ctx.measureText(text).width + 18, h = size + 11;
+  let bx = align === 'center' ? x - w / 2 : align === 'right' ? x - w : x;
+  bx = clamp(bx, 4, D.w - w - 4); const by = clamp(y - h / 2, 4, D.h - h - 4);
+  shadow(10, 0, 2, 0.22); ctx.fillStyle = rgba(T.surface, 0.93); rr(bx, by, w, h, h / 2); ctx.fill(); noShadow();
+  ctx.strokeStyle = rgba(color, 0.35); ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = color; ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillText(text, bx + 9, by + h / 2 + 0.5);
+  return { x: bx, y: by, w, h };
+}
+function arrowPx(x1, y1, x2, y2, color, w = 3) {
+  const a = Math.atan2(y2 - y1, x2 - x1), hl = 7 + w * 2;
+  ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const path = () => { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - Math.cos(a) * hl * 0.7, y2 - Math.sin(a) * hl * 0.7); };
+  const head = () => { ctx.beginPath(); ctx.moveTo(x2, y2); ctx.lineTo(x2 - hl * Math.cos(a - 0.42), y2 - hl * Math.sin(a - 0.42)); ctx.lineTo(x2 - hl * Math.cos(a + 0.42), y2 - hl * Math.sin(a + 0.42)); ctx.closePath(); };
+  ctx.strokeStyle = rgba(T.surface, 0.85); ctx.fillStyle = rgba(T.surface, 0.85); ctx.lineWidth = w + 4; path(); ctx.stroke(); head(); ctx.lineWidth = 4; ctx.stroke();
+  shadow(3, 1, 1.5, 0.22);
+  ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = w; path(); ctx.stroke(); head(); ctx.fill();
+  ctx.restore();
+}
+function scaleBar(m, label) {
+  const L = m * VW.sc, x = D.w - 18 - L, y = D.h - 18;
+  const path = () => { ctx.beginPath(); ctx.moveTo(x, y - 7); ctx.lineTo(x, y); ctx.lineTo(x + L, y); ctx.lineTo(x + L, y - 7); };
+  ctx.lineCap = 'round'; ctx.strokeStyle = rgba(T.surface, 0.9); ctx.lineWidth = 6; path(); ctx.stroke();
+  ctx.strokeStyle = T.ink; ctx.lineWidth = 2.2; path(); ctx.stroke(); ctx.lineCap = 'butt';
+  ctx.font = `600 15px ${T.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom'; ctx.lineJoin = 'round';
+  ctx.lineWidth = 4; ctx.strokeStyle = rgba(T.surface, 0.9); ctx.strokeText(label, x + L / 2, y - 9); ctx.fillStyle = T.ink; ctx.fillText(label, x + L / 2, y - 9);
+}
+function flashRing(o, x, y, col) {
+  if (reduce) return;
+  const fl = o.flash ? Math.max(0, 1 - (performance.now() - o.flash) / 280) : 0;
+  if (fl <= 0) return;
+  ctx.strokeStyle = col; ctx.globalAlpha = fl; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(x, y, 24 + (1 - fl) * 16, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1;
+}
+function edgeTag(xw, yw, text, col) {     // 화면 밖으로 나간 물체를 가장자리 표지로
+  const x = X(xw), y = Y(yw);
+  if (x <= 40) pill('◀ ' + text, 10, y, col, 'left', 16);
+  else if (x >= D.w - 40) pill(text + ' ▶', D.w - 10, y, col, 'right', 16);
+}
+
+/* ======================= 위에서 본 차량 (앞 = +x) ======================= */
+const VEH = { amb: [6.2, 2.04], police: [4.9, 1.86], car: [4.6, 1.85], fire: [8.4, 2.5] };
+const vehK = (opt = {}) => Math.max(VW.sc, opt.minK ?? 8);
+const SPK = 6.2 / 2 - 0.25;      // 구급차 사이렌 스피커(앞 범퍼)와 차 중심 사이 거리 (m)
+function bodyPath(L, W, rf, rb) {
+  const hl = L / 2, hw = W / 2;
+  ctx.beginPath();
+  ctx.moveTo(-hl + rb, -hw);
+  ctx.lineTo(hl - rf, -hw);
+  ctx.bezierCurveTo(hl - rf * 0.3, -hw, hl, -hw * 0.72, hl, 0);
+  ctx.bezierCurveTo(hl, hw * 0.72, hl - rf * 0.3, hw, hl - rf, hw);
+  ctx.lineTo(-hl + rb, hw);
+  ctx.bezierCurveTo(-hl + rb * 0.3, hw, -hl, hw * 0.78, -hl, 0);
+  ctx.bezierCurveTo(-hl, -hw * 0.78, -hl + rb * 0.3, -hw, -hl + rb, -hw);
+  ctx.closePath();
+}
+function shadeBody(L, W, k = 1) {    // 둥근 옆면: 화면 위쪽 모서리는 밝고 아래쪽 모서리는 어둡게
+  const hw = W / 2, hl = L / 2;
+  ctx.fillStyle = lg(0, -hw, 0, hw, [[0, 'rgba(255,255,255,.34)'], [0.13, 'rgba(255,255,255,.10)'], [0.45, 'rgba(255,255,255,0)'], [0.82, 'rgba(0,0,0,.08)'], [1, 'rgba(0,0,0,.34)']]);
+  ctx.fill();
+  ctx.fillStyle = lg(-hl, 0, hl, 0, [[0, 'rgba(255,255,255,.10)'], [0.07, 'rgba(255,255,255,0)'], [0.93, 'rgba(0,0,0,0)'], [1, 'rgba(0,0,0,.14)']]);
+  ctx.fill();
+}
+function tyres(xs, W, k) {
+  ctx.fillStyle = T.tyre;
+  for (const x of xs) for (const s of [-1, 1]) { rr(x - 0.34 * k, s * (W / 2 - 0.08 * k) - 0.12 * k, 0.68 * k, 0.24 * k, 0.08 * k); ctx.fill(); }
+}
+function mirrors(x, W, k, col, big = false) {
+  for (const s of [-1, 1]) {
+    ctx.fillStyle = col; ctx.beginPath(); ctx.ellipse(x, s * (W / 2 + (big ? 0.16 : 0.1) * k), (big ? 0.12 : 0.1) * k, (big ? 0.11 : 0.075) * k, s * 0.25, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 1; ctx.stroke();
+  }
+}
+function headTail(L, W, k, rf, rb) {     // 차체 윤곽을 따라 붙은 전조등·후미등 (차체 밖으로 나가는 부분은 잘라냄)
+  const hl = L / 2, hw = W / 2;
+  ctx.save(); bodyPath(L, W, rf, rb); ctx.clip();
+  for (const s of [-1, 1]) {
+    ctx.fillStyle = T.lamp; ctx.beginPath(); ctx.ellipse(hl - 0.04 * k, s * (hw - 0.3 * k), 0.17 * k, 0.3 * k, s * 0.5, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.75)'; ctx.beginPath(); ctx.ellipse(hl - 0.1 * k, s * (hw - 0.34 * k), 0.04 * k, 0.1 * k, s * 0.5, 0, TAU); ctx.fill();
+    ctx.fillStyle = T.tail; ctx.beginPath(); ctx.ellipse(-hl + 0.02 * k, s * (hw - 0.28 * k), 0.11 * k, 0.3 * k, -s * 0.35, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.stroke();
+  }
+  ctx.restore();
+}
+function lightGlow(cx, W, k, siren) {        // 경광등 빛이 길바닥에 번짐 (차체 아래에 먼저 그림)
+  if (!siren) return;
+  const ph = reduce ? -1 : Math.floor(performance.now() / 210) % 2;
+  ctx.save(); ctx.globalCompositeOperation = T.dark ? 'lighter' : 'source-over';
+  for (const s of [-1, 1]) {
+    const col = s < 0 ? T.red : T.blue, on = ph < 0 || ph === (s < 0 ? 0 : 1);
+    if (!on) continue;
+    const R = 2.6 * k, cy = s * W * 0.25, g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R);
+    g.addColorStop(0, rgba(col, T.dark ? 0.55 : 0.32)); g.addColorStop(1, rgba(col, 0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU); ctx.fill();
+  }
+  ctx.restore();
+}
+function lightBar(cx, len, wid, k, siren) {   // len: 앞뒤 길이, wid: 좌우 폭
+  const ph = !siren ? -2 : reduce ? -1 : Math.floor(performance.now() / 210) % 2;
+  shadow(0.12 * k, 0.04 * k, 0.06 * k, 0.4);
+  ctx.fillStyle = T.trim; rr(cx - len / 2, -wid / 2, len, wid, 0.08 * k); ctx.fill(); noShadow();
+  for (const s of [-1, 1]) {
+    const col = s < 0 ? T.red : T.blue, lit = ph === -1 || ph === (s < 0 ? 0 : 1);
+    const y0 = s < 0 ? -wid / 2 + 0.04 * k : 0.02 * k, h = wid / 2 - 0.06 * k;
+    ctx.fillStyle = lg(cx - len / 2, y0, cx + len / 2, y0 + h, [[0, rgba(col, lit ? 1 : 0.55)], [1, rgba(col, lit ? 0.85 : 0.35)]]);
+    rr(cx - len / 2 + 0.04 * k, y0, len - 0.08 * k, h, 0.05 * k); ctx.fill();
+    if (lit && ph !== -2) { ctx.fillStyle = 'rgba(255,255,255,.7)'; rr(cx - len * 0.25, y0 + h * 0.3, len * 0.5, h * 0.4, 0.04 * k); ctx.fill(); }
+  }
+}
+function roofText(text, cx, k, size, col) {
+  ctx.save(); ctx.translate(cx, 0); if (LS < 0) ctx.rotate(Math.PI);
+  ctx.font = `700 ${size}px ${T.font}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = col; ctx.fillText(text, 0, size * 0.04); ctx.restore();
+}
+function sedanCabin(L, W, k, roofCol) {     // 유리(앞·옆·뒤)를 따로 그리고 그 사이를 기둥(차체 색)으로 남김
+  const hw = W / 2, glassFill = () => lg(-hw, -hw, hw, hw, [[0, T['glass-hi']], [0.55, T.glass], [1, T.glass]]);
+  const xf = L * 0.24, xr = -L * 0.33, wf = hw * 0.8, wr = hw * 0.74, wm = hw * 0.86;
+  const rf = L * 0.075, rb = -L * 0.21, rw = hw * 0.68, p = 0.07 * k, xb = -L * 0.065;
+  ctx.beginPath(); ctx.moveTo(xf, -wf); ctx.quadraticCurveTo(xf + 0.16 * k, 0, xf, wf);
+  ctx.bezierCurveTo(xf - 0.35 * k, wm + 0.04 * k, xr + 0.35 * k, wm + 0.04 * k, xr, wr);
+  ctx.quadraticCurveTo(xr - 0.1 * k, 0, xr, -wr); ctx.bezierCurveTo(xr + 0.35 * k, -wm - 0.04 * k, xf - 0.35 * k, -wm - 0.04 * k, xf, -wf); ctx.closePath();
+  ctx.fillStyle = mix(roofCol, '#000000', 0.12); ctx.fill();
+  ctx.fillStyle = glassFill();
+  ctx.beginPath(); ctx.moveTo(xf - p * 0.6, -wf + p); ctx.quadraticCurveTo(xf + 0.12 * k, 0, xf - p * 0.6, wf - p); ctx.lineTo(rf + p * 0.4, rw - p * 0.2); ctx.lineTo(rf + p * 0.4, -rw + p * 0.2); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(xr + p * 0.6, -wr + p); ctx.quadraticCurveTo(xr - 0.06 * k, 0, xr + p * 0.6, wr - p); ctx.lineTo(rb - p * 0.4, rw - p * 0.2); ctx.lineTo(rb - p * 0.4, -rw + p * 0.2); ctx.closePath(); ctx.fill();
+  for (const s of [-1, 1]) for (const [a, b] of [[rf - p * 0.2, xb + p * 0.5], [xb - p * 0.5, rb + p * 0.2]]) {
+    ctx.beginPath(); ctx.moveTo(a, s * (rw + p * 0.3)); ctx.lineTo(b, s * (rw + p * 0.3)); ctx.lineTo(b, s * (wm - p * 0.4)); ctx.lineTo(a, s * (wm - p * 0.3)); ctx.closePath(); ctx.fill();
+  }
+  rr(rb, -rw, rf - rb, 2 * rw, 0.24 * k); ctx.fillStyle = roofCol; ctx.fill();
+  ctx.fillStyle = lg(0, -rw, 0, rw, [[0, 'rgba(255,255,255,.26)'], [0.35, 'rgba(255,255,255,.06)'], [1, 'rgba(0,0,0,.12)']]); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.14)'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.3)'; ctx.lineWidth = Math.max(1, 0.05 * k);
+  ctx.beginPath(); ctx.moveTo(xf - 0.12 * k, -wf * 0.5); ctx.lineTo(rf + 0.16 * k, -wf * 0.08); ctx.stroke();
+  return { rf, rb, rw };
+}
+function vehicle(kind, x, y, dir = 1, opt = {}) {
+  const k = vehK(opt), dims = VEH[kind === 'car2' ? 'car' : kind];
+  const L = dims[0] * k, W = dims[1] * k, hl = L / 2, hw = W / 2;
+  ctx.save(); ctx.translate(x, y); if (dir < 0) ctx.rotate(Math.PI); LS = dir < 0 ? -1 : 1;
+  ctx.globalAlpha = opt.alpha ?? 1;
+  const siren = !!opt.siren;
+  if (kind === 'amb') {
+    lightGlow(hl - 1.4 * k, W, k, siren);
+    tyres([hl - 1.05 * k, -hl + 1.35 * k], W, k);
+    mirrors(hl - 0.95 * k, W, k, T.trim, true);
+    shadow(0.7 * k, 0.26 * k, 0.4 * k, 0.42);
+    bodyPath(L, W, 0.62 * k, 0.12 * k); ctx.fillStyle = T['veh-w']; ctx.fill(); noShadow();
+    shadeBody(L, W);
+    ctx.strokeStyle = 'rgba(0,0,0,.38)'; ctx.lineWidth = 1; bodyPath(L, W, 0.62 * k, 0.12 * k); ctx.stroke();
+    // 보닛과 앞유리
+    ctx.fillStyle = lg(hl - 0.75 * k, 0, hl, 0, [[0, 'rgba(0,0,0,.06)'], [1, 'rgba(255,255,255,.12)']]);
+    ctx.fillRect(hl - 0.74 * k, -hw * 0.9, 0.5 * k, W * 0.9);
+    ctx.strokeStyle = 'rgba(0,0,0,.12)'; ctx.beginPath(); for (const s of [-1, 1]) { ctx.moveTo(hl - 0.72 * k, s * hw * 0.42); ctx.lineTo(hl - 0.28 * k, s * hw * 0.5); } ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(hl - 0.76 * k, -hw * 0.86); ctx.quadraticCurveTo(hl - 0.62 * k, 0, hl - 0.76 * k, hw * 0.86);
+    ctx.lineTo(hl - 1.3 * k, hw * 0.9); ctx.quadraticCurveTo(hl - 1.22 * k, 0, hl - 1.3 * k, -hw * 0.9); ctx.closePath();
+    ctx.fillStyle = lg(-hw, -hw, hw, hw, [[0, T['glass-hi']], [0.5, T.glass], [1, T.glass]]); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.3)'; ctx.lineWidth = Math.max(1, 0.05 * k); ctx.beginPath(); ctx.moveTo(hl - 0.86 * k, -hw * 0.6); ctx.lineTo(hl - 1.1 * k, -hw * 0.05); ctx.stroke();
+    // 하이루프 상자
+    const bx0 = -hl + 0.08 * k, bx1 = hl - 1.32 * k;
+    rr(bx0, -hw + 0.1 * k, bx1 - bx0, W - 0.2 * k, 0.2 * k);
+    ctx.fillStyle = lg(-hl, -hw, hl, hw, [[0, T['veh-w']], [1, mix(T['veh-w'], T['veh-w2'], 0.45)]]); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.16)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = Math.max(1, 0.04 * k); ctx.beginPath(); ctx.moveTo(bx0 + 0.2 * k, -hw + 0.16 * k); ctx.lineTo(bx1 - 0.2 * k, -hw + 0.16 * k); ctx.stroke();
+    // 옆면 빨간 띠 (위에서 보면 모서리에 보임)
+    ctx.fillStyle = T['amb-red']; for (const s of [-1, 1]) ctx.fillRect(-hl + 0.2 * k, s < 0 ? -hw + 0.015 * k : hw - 0.085 * k, L - 1.0 * k, 0.07 * k);
+    // 지붕 장비: 에어컨, 환기구, 뒤 경광등
+    shadow(0.12 * k, 0.05 * k, 0.07 * k, 0.3);
+    ctx.fillStyle = lg(0, -0.4 * k, 0, 0.4 * k, [[0, T.chrome], [1, T['veh-w2']]]); rr(-hl + 0.55 * k, -0.42 * k, 0.95 * k, 0.84 * k, 0.12 * k); ctx.fill(); noShadow();
+    ctx.strokeStyle = 'rgba(0,0,0,.22)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.beginPath(); for (let i = 1; i < 5; i++) { const xx = -hl + 0.55 * k + i * 0.19 * k; ctx.moveTo(xx, -0.3 * k); ctx.lineTo(xx, 0.3 * k); } ctx.stroke();
+    ctx.fillStyle = T.tail; for (const s of [-1, 1]) { rr(-hl + 0.12 * k, s * (hw - 0.32 * k) - 0.12 * k, 0.18 * k, 0.24 * k, 0.05 * k); ctx.fill(); }
+    roofText('119', -0.42 * k, k, 1.05 * k, T['amb-red']);
+    lightBar(hl - 1.48 * k, 0.3 * k, W * 0.86, k, siren);
+    headTail(L, W, k, 0.62 * k, 0.12 * k);
+    ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.beginPath(); ctx.moveTo(-hl + 0.03 * k, 0); ctx.lineTo(-hl + 0.4 * k, 0); ctx.stroke();
+  } else if (kind === 'fire') {
+    lightGlow(hl - 0.9 * k, W, k, siren);
+    tyres([hl - 1.25 * k, -hl + 2.1 * k, -hl + 1.0 * k], W, k);
+    mirrors(hl - 0.55 * k, W, k, T.trim, true);
+    shadow(0.8 * k, 0.3 * k, 0.45 * k, 0.42);
+    bodyPath(L, W, 0.3 * k, 0.12 * k); ctx.fillStyle = T.fire; ctx.fill(); noShadow();
+    shadeBody(L, W);
+    ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.lineWidth = 1; bodyPath(L, W, 0.3 * k, 0.12 * k); ctx.stroke();
+    // 캡: 앞유리, 지붕
+    ctx.beginPath(); ctx.moveTo(hl - 0.2 * k, -hw * 0.88); ctx.quadraticCurveTo(hl - 0.1 * k, 0, hl - 0.2 * k, hw * 0.88); ctx.lineTo(hl - 0.52 * k, hw * 0.9); ctx.lineTo(hl - 0.52 * k, -hw * 0.9); ctx.closePath();
+    ctx.fillStyle = lg(-hw, -hw, hw, hw, [[0, T['glass-hi']], [0.5, T.glass], [1, T.glass]]); ctx.fill();
+    const c0 = hl - 2.3 * k, c1 = hl - 0.55 * k;
+    rr(c0, -hw + 0.1 * k, c1 - c0, W - 0.2 * k, 0.22 * k);
+    ctx.fillStyle = lg(c0, -hw, c1, hw, [[0, mix(T.fire, '#ffffff', 0.16)], [1, T.fire]]); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.stroke();
+    roofText('119', c0 + 0.62 * k, k, 0.82 * k, rgba('#ffffff', 0.92));
+    lightBar(c1 - 0.24 * k, 0.28 * k, W * 0.84, k, siren);
+    // 뒤 차체 지붕: 체크 철판, 호스 적재함, 사다리
+    const d0 = -hl + 0.15 * k, d1 = c0 - 0.12 * k;
+    rr(d0, -hw + 0.14 * k, d1 - d0, W - 0.28 * k, 0.12 * k);
+    ctx.fillStyle = lg(d0, -hw, d1, hw, [[0, mix(T.deck, '#ffffff', 0.18)], [1, T.deck]]); ctx.fill();
+    ctx.save(); ctx.clip(); ctx.strokeStyle = 'rgba(255,255,255,.10)'; ctx.lineWidth = 1; ctx.beginPath();
+    for (let xx = d0 - W; xx < d1; xx += 0.16 * k) { ctx.moveTo(xx, -hw); ctx.lineTo(xx + W, hw); } ctx.stroke(); ctx.restore();
+    ctx.fillStyle = T.hose; for (let i = 0; i < 5; i++) { rr(-hl + 0.32 * k, 0.12 * k + i * 0.18 * k, 2.6 * k, 0.13 * k, 0.06 * k); ctx.fill(); }
+    ctx.fillStyle = 'rgba(0,0,0,.18)'; for (let i = 0; i < 5; i++) ctx.fillRect(-hl + 0.32 * k, 0.22 * k + i * 0.18 * k, 2.6 * k, 0.03 * k);
+    const lx0 = -hl + 0.25 * k, lx1 = c0 - 0.25 * k, ly0 = -hw + 0.32 * k, ly1 = -0.12 * k;
+    shadow(0.15 * k, 0.08 * k, 0.12 * k, 0.4);
+    ctx.strokeStyle = T.chrome; ctx.lineWidth = Math.max(1.6, 0.08 * k); ctx.beginPath();
+    ctx.moveTo(lx0, ly0); ctx.lineTo(lx1, ly0); ctx.moveTo(lx0, ly1); ctx.lineTo(lx1, ly1);
+    for (let xx = lx0 + 0.15 * k; xx < lx1; xx += 0.3 * k) { ctx.moveTo(xx, ly0); ctx.lineTo(xx, ly1); }
+    ctx.stroke(); noShadow();
+    ctx.fillStyle = rgba('#ffffff', 0.85); for (const s of [-1, 1]) ctx.fillRect(-hl + 0.12 * k, s < 0 ? -hw + 0.03 * k : hw - 0.09 * k, L - 0.5 * k, 0.06 * k);
+    ctx.fillStyle = T.trim; rr(-hl + 0.05 * k, -0.5 * k, 0.12 * k, 1.0 * k, 0.04 * k); ctx.fill();
+    for (const s of [-1, 1]) { ctx.fillStyle = s < 0 ? T.red : T.blue; rr(-hl + 0.06 * k, s * 0.35 * k - 0.1 * k, 0.1 * k, 0.2 * k, 0.03 * k); ctx.fill(); }
+    headTail(L, W, k, 0.3 * k, 0.12 * k);
+  } else {
+    const isPol = kind === 'police', col = isPol ? T['veh-w'] : kind === 'car2' ? T.a : opt.color || T['car-b'];
+    if (isPol) lightGlow(-L * 0.06, W, k, siren);
+    tyres([hl - 0.95 * k, -hl + 1.0 * k], W, k);
+    mirrors(L * 0.22, W, k, col);
+    shadow(0.6 * k, 0.24 * k, 0.36 * k, 0.42);
+    bodyPath(L, W, 0.62 * k, 0.4 * k); ctx.fillStyle = col; ctx.fill(); noShadow();
+    shadeBody(L, W);
+    ctx.strokeStyle = 'rgba(0,0,0,.38)'; ctx.lineWidth = 1; bodyPath(L, W, 0.62 * k, 0.4 * k); ctx.stroke();
+    ctx.strokeStyle = 'rgba(0,0,0,.13)'; ctx.beginPath(); for (const s of [-1, 1]) { ctx.moveTo(L * 0.27, s * hw * 0.34); ctx.lineTo(hl - 0.3 * k, s * hw * 0.44); ctx.moveTo(-L * 0.35, s * hw * 0.5); ctx.lineTo(-hl + 0.2 * k, s * hw * 0.5); } ctx.stroke();
+    if (isPol) { ctx.fillStyle = T.police; for (const s of [-1, 1]) ctx.fillRect(-hl + 0.35 * k, s < 0 ? -hw + 0.02 * k : hw - 0.1 * k, L - 0.95 * k, 0.08 * k); }
+    sedanCabin(L, W, k, col);
+    if (isPol) lightBar(-L * 0.06, 0.26 * k, W * 0.7, k, siren);
+    headTail(L, W, k, 0.62 * k, 0.4 * k);
+  }
+  ctx.restore(); LS = 1; ctx.globalAlpha = 1;
+  return { L, Wd: W, k };
+}
+
+/* ======================= 사람·측정기 ======================= */
+/* 위에서 본 사람: 어깨너비 sw(px), face = 바라보는 방향 */
+function personTop(x, y, sw, face = 0, shirt = T.shirt, ring = null) {
+  const s = sw;
+  ctx.save(); ctx.translate(x, y);
+  if (ring) { ctx.strokeStyle = rgba(ring, 0.22); ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(0, 0, s * 0.95, 0, TAU); ctx.stroke(); ctx.strokeStyle = rgba(ring, 0.95); ctx.lineWidth = 3; ctx.stroke(); }
+  ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.filter = `blur(${Math.max(1, s * 0.07)}px)`;
+  ctx.beginPath(); ctx.ellipse(s * 0.16, s * 0.22, s * 0.3, s * 0.52, face, 0, TAU); ctx.fill(); ctx.filter = 'none';
+  ctx.rotate(face);
+  const c = Math.cos(face), sn = Math.sin(face), lx = -0.7 * c - 0.7 * sn, ly = 0.7 * sn - 0.7 * c;    // 화면 왼쪽 위 빛을 몸 좌표로
+  const grad = (cx, cy, r, c1) => { const g = ctx.createRadialGradient(cx + lx * r * 0.5, cy + ly * r * 0.5, r * 0.08, cx, cy, r); g.addColorStop(0, mix(c1, '#ffffff', 0.3)); g.addColorStop(0.6, c1); g.addColorStop(1, mix(c1, '#000000', 0.3)); return g; };
+  for (const sg of [-1, 1]) {            // 팔 (소매) + 손등
+    ctx.fillStyle = grad(s * 0.02, sg * s * 0.43, s * 0.15, mix(shirt, '#000000', 0.1));
+    ctx.beginPath(); ctx.ellipse(s * 0.02, sg * s * 0.43, s * 0.19, s * 0.095, sg * 0.12, 0, TAU); ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,.22)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = T.skin; ctx.beginPath(); ctx.ellipse(s * 0.2, sg * s * 0.45, s * 0.055, s * 0.05, 0, 0, TAU); ctx.fill();
+  }
+  ctx.fillStyle = grad(0, 0, s * 0.42, shirt);                  // 어깨
+  ctx.beginPath(); ctx.moveTo(-s * 0.13, -s * 0.36); ctx.quadraticCurveTo(0, -s * 0.42, s * 0.14, -s * 0.33); ctx.quadraticCurveTo(s * 0.2, 0, s * 0.14, s * 0.33);
+  ctx.quadraticCurveTo(0, s * 0.42, -s * 0.13, s * 0.36); ctx.quadraticCurveTo(-s * 0.2, 0, -s * 0.13, -s * 0.36); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.strokeStyle = 'rgba(0,0,0,.14)'; ctx.beginPath(); ctx.moveTo(-s * 0.12, 0); ctx.lineTo(-s * 0.02, 0); ctx.stroke();
+  ctx.fillStyle = T.skin; ctx.beginPath(); ctx.ellipse(s * 0.07, 0, s * 0.15, s * 0.135, 0, 0, TAU); ctx.fill();   // 얼굴 (앞쪽에 살짝 보임)
+  ctx.fillStyle = grad(s * 0.02, 0, s * 0.16, T.hair); ctx.beginPath(); ctx.ellipse(s * 0.01, 0, s * 0.15, s * 0.14, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = mix(T.skin, '#000000', 0.12); for (const sg of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * 0.04, sg * s * 0.14, s * 0.03, s * 0.02, 0, 0, TAU); ctx.fill(); }
+  ctx.restore();
+}
+/* 삼각대에 꽂은 스마트폰 (진동수 측정 앱, 101쪽 탐구). face = 음원 쪽 */
+function meterTop(x, y, size, face, col, lit) {
+  ctx.save(); ctx.translate(x, y);
+  ctx.strokeStyle = rgba(col, 0.22); ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(0, 0, size * 0.62, 0, TAU); ctx.stroke(); ctx.strokeStyle = rgba(col, 0.95); ctx.lineWidth = 3; ctx.stroke();
+  ctx.rotate(face);
+  for (const a of [Math.PI, Math.PI / 3, -Math.PI / 3]) {
+    const ex = Math.cos(a) * size * 0.5, ey = Math.sin(a) * size * 0.5;
+    shadow(size * 0.06, size * 0.03, size * 0.05, 0.4);
+    ctx.strokeStyle = T.tripod; ctx.lineWidth = Math.max(2.5, size * 0.07); ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(ex, ey); ctx.stroke(); noShadow();
+    ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = Math.max(1, size * 0.02); ctx.beginPath(); ctx.moveTo(ex * 0.15, ey * 0.15 - 1); ctx.lineTo(ex * 0.9, ey * 0.9 - 1); ctx.stroke();
+    ctx.fillStyle = T.tyre; ctx.beginPath(); ctx.arc(ex, ey, Math.max(2, size * 0.045), 0, TAU); ctx.fill();
+  }
+  ctx.lineCap = 'butt';
+  ctx.fillStyle = lg(-size * 0.08, -size * 0.08, size * 0.08, size * 0.08, [[0, T.chrome], [1, T.tripod]]); ctx.beginPath(); ctx.arc(0, 0, size * 0.08, 0, TAU); ctx.fill();
+  ctx.rotate(-face);                     // 화면은 언제나 가로로 똑바로
+  const pw = size * 0.62, ph = size * 0.34;
+  shadow(size * 0.12, size * 0.06, size * 0.09, 0.45);
+  ctx.fillStyle = T.phone; rr(-pw / 2, -ph / 2, pw, ph, size * 0.06); ctx.fill(); noShadow();
+  ctx.strokeStyle = 'rgba(255,255,255,.4)'; ctx.lineWidth = 1; ctx.stroke();
+  const sx = -pw / 2 + size * 0.04, sy = -ph / 2 + size * 0.03, sw = pw - size * 0.08, shh = ph - size * 0.06;
+  ctx.fillStyle = T.screen; rr(sx, sy, sw, shh, size * 0.03); ctx.fill();
+  ctx.strokeStyle = rgba(T['scope-trace'], 0.25); ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(sx + 2, sy + shh * 0.86); ctx.lineTo(sx + sw - 2, sy + shh * 0.86); ctx.stroke();
+  ctx.strokeStyle = rgba(T['scope-trace'], lit ? 1 : 0.8); ctx.lineWidth = Math.max(1.3, size * 0.026); ctx.lineJoin = 'round'; ctx.beginPath();
+  for (let i = 0; i <= 20; i++) { const pk = Math.exp(-Math.pow((i - 10) / 1.3, 2)), xx = sx + sw * (0.06 + 0.88 * i / 20), yy = sy + shh * (0.86 - 0.72 * pk - 0.05 * Math.abs(Math.sin(i * 2.3))); i ? ctx.lineTo(xx, yy) : ctx.moveTo(xx, yy); }
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.16)'; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + sw * 0.45, sy); ctx.lineTo(sx, sy + shh * 0.8); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+/* 옆에서 본 사람 (서서 비행기를 올려다봄) */
+function personSide(x, yg, h, shirt) {
+  ctx.save(); ctx.translate(x, yg);
+  ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(h * 0.08, -h * 0.005, h * 0.3, h * 0.04, 0, 0, TAU); ctx.fill();
+  const pants = (x0) => { ctx.fillStyle = lg(x0, 0, x0 + h * 0.12, 0, [[0, mix(T.pants, '#ffffff', 0.15)], [1, T.pants]]); rr(x0, -h * 0.5, h * 0.11, h * 0.47, h * 0.04); ctx.fill(); };
+  pants(h * 0.02); pants(-h * 0.08);
+  ctx.fillStyle = T.shoe; for (const x0 of [-h * 0.12, -h * 0.02]) { ctx.beginPath(); ctx.ellipse(x0 + h * 0.03, -h * 0.025, h * 0.085, h * 0.033, 0, 0, TAU); ctx.fill(); }
+  ctx.fillStyle = mix(shirt, '#000000', 0.25); rr(h * 0.04, -h * 0.79, h * 0.08, h * 0.32, h * 0.04); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(-h * 0.12, -h * 0.47); ctx.lineTo(h * 0.12, -h * 0.47); ctx.quadraticCurveTo(h * 0.15, -h * 0.66, h * 0.11, -h * 0.8); ctx.quadraticCurveTo(0, -h * 0.85, -h * 0.11, -h * 0.8); ctx.quadraticCurveTo(-h * 0.15, -h * 0.66, -h * 0.12, -h * 0.47); ctx.closePath();
+  ctx.fillStyle = lg(-h * 0.15, -h * 0.85, h * 0.15, -h * 0.47, [[0, mix(shirt, '#ffffff', 0.25)], [0.6, shirt], [1, mix(shirt, '#000000', 0.25)]]); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = T.skin; ctx.fillRect(-h * 0.03, -h * 0.87, h * 0.06, h * 0.06);
+  ctx.strokeStyle = shirt; ctx.lineCap = 'round'; ctx.lineWidth = h * 0.075;
+  ctx.beginPath(); ctx.moveTo(-h * 0.06, -h * 0.76); ctx.lineTo(-h * 0.2, -h * 0.94); ctx.lineTo(-h * 0.27, -h * 1.08); ctx.stroke(); ctx.lineCap = 'butt';
+  ctx.fillStyle = T.skin; ctx.beginPath(); ctx.arc(-h * 0.285, -h * 1.11, h * 0.04, 0, TAU); ctx.fill();
+  const hx = -h * 0.01, hy = -h * 0.94, hr = h * 0.1;
+  const hg = ctx.createRadialGradient(hx - hr * 0.4, hy - hr * 0.4, hr * 0.1, hx, hy, hr); hg.addColorStop(0, mix(T.skin, '#ffffff', 0.2)); hg.addColorStop(1, mix(T.skin, '#000000', 0.15));
+  ctx.fillStyle = hg; ctx.beginPath(); ctx.arc(hx, hy, hr, 0, TAU); ctx.fill();
+  ctx.fillStyle = T.hair; ctx.beginPath(); ctx.arc(hx + hr * 0.08, hy - hr * 0.05, hr * 1.02, -Math.PI * 0.85, Math.PI * 0.32); ctx.closePath(); ctx.fill();
+  ctx.restore();
+}
+
+/* ======================= 그 밖의 그림 ======================= */
+/* 옆에서 본 초음속 제트기. 기수 끝 = (xn, y) = 충격파 원뿔의 꼭짓점 */
+function jetSide(xn, y, L, burner) {
+  ctx.save(); ctx.translate(xn, y); ctx.scale(L, L);
+  const u = 1 / L;
+  if (burner) {
+    const fl = 0.34 + (reduce ? 0 : 0.03 * Math.sin(performance.now() / 37)), x0 = -1.035;
+    const g = ctx.createLinearGradient(x0, 0, x0 - fl, 0); g.addColorStop(0, rgba(T['flame-core'], 0.95)); g.addColorStop(0.3, rgba(T.flame, 0.8)); g.addColorStop(1, rgba(T.flame, 0));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x0, -0.027); ctx.quadraticCurveTo(x0 - fl * 0.45, -0.032, x0 - fl, 0); ctx.quadraticCurveTo(x0 - fl * 0.45, 0.032, x0, 0.027); ctx.closePath(); ctx.fill();
+    for (let i = 1; i <= 3; i++) { ctx.fillStyle = rgba(T['flame-core'], 0.6 / i); ctx.beginPath(); ctx.ellipse(x0 - i * 0.07, 0, 0.02, 0.012, 0, 0, TAU); ctx.fill(); }
+  }
+  const body = new Path2D();
+  body.moveTo(0, 0);
+  body.bezierCurveTo(-0.05, -0.012, -0.12, -0.038, -0.22, -0.046);
+  body.lineTo(-0.8, -0.048);
+  body.bezierCurveTo(-0.9, -0.048, -0.97, -0.043, -1.0, -0.036);
+  body.lineTo(-1.0, 0.03);
+  body.bezierCurveTo(-0.93, 0.04, -0.8, 0.05, -0.6, 0.058);
+  body.lineTo(-0.36, 0.06);
+  body.bezierCurveTo(-0.24, 0.058, -0.11, 0.034, 0, 0);
+  const fin = new Path2D(); fin.moveTo(-0.73, -0.046); fin.lineTo(-0.89, -0.25); fin.lineTo(-0.965, -0.25); fin.lineTo(-0.995, -0.04); fin.closePath();
+  const stab = new Path2D(); stab.moveTo(-0.83, 0.006); stab.lineTo(-1.05, -0.002); stab.lineTo(-1.05, 0.016); stab.lineTo(-0.86, 0.022); stab.closePath();
+  const wing = new Path2D(); wing.moveTo(-0.37, 0.028); wing.lineTo(-0.75, 0.018); wing.lineTo(-0.76, 0.034); wing.lineTo(-0.4, 0.046); wing.closePath();
+  shadow(14, 4, 8, 0.25);
+  ctx.fillStyle = lg(0, -0.25, 0, 0.06, [[0, mix(T.jet, '#ffffff', 0.2)], [1, T['jet-2']]]); ctx.fill(fin);
+  const bg = ctx.createLinearGradient(0, -0.05, 0, 0.06); bg.addColorStop(0, mix(T.jet, '#ffffff', 0.35)); bg.addColorStop(0.35, T.jet); bg.addColorStop(1, T['jet-2']);
+  ctx.fillStyle = bg; ctx.fill(body); noShadow();
+  ctx.lineWidth = 1.1 * u; ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.stroke(body); ctx.stroke(fin);
+  ctx.fillStyle = mix(T['jet-2'], '#000000', 0.15); ctx.fill(wing); ctx.fill(stab);
+  ctx.fillStyle = mix(T.jet, '#000000', 0.22); ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(-0.025, -0.006, -0.05, -0.016, -0.07, -0.022); ctx.lineTo(-0.07, 0.017); ctx.bezierCurveTo(-0.045, 0.012, -0.02, 0.005, 0, 0); ctx.fill();
+  ctx.fillStyle = T.trim; ctx.beginPath(); ctx.moveTo(-0.27, 0.036); ctx.lineTo(-0.43, 0.036); ctx.lineTo(-0.43, 0.059); ctx.lineTo(-0.29, 0.057); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = mix(T['jet-2'], '#000000', 0.35); ctx.fillRect(-1.035, -0.034, 0.04, 0.062);
+  ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.lineWidth = 0.8 * u; ctx.beginPath(); ctx.moveTo(-1.02, -0.034); ctx.lineTo(-1.02, 0.028); ctx.stroke();
+  const cp = new Path2D(); cp.moveTo(-0.12, -0.04); cp.bezierCurveTo(-0.16, -0.085, -0.28, -0.092, -0.36, -0.048); cp.closePath();
+  const cg = ctx.createLinearGradient(-0.12, -0.09, -0.3, -0.04); cg.addColorStop(0, T['glass-hi']); cg.addColorStop(0.55, T.glass); cg.addColorStop(1, T.glass);
+  ctx.fillStyle = cg; ctx.fill(cp); ctx.strokeStyle = 'rgba(0,0,0,.4)'; ctx.lineWidth = 1 * u; ctx.stroke(cp);
+  ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = 1.4 * u; ctx.beginPath(); ctx.moveTo(-0.16, -0.07); ctx.quadraticCurveTo(-0.21, -0.083, -0.27, -0.08); ctx.stroke();
+  ctx.strokeStyle = 'rgba(0,0,0,.16)'; ctx.lineWidth = 0.8 * u; ctx.beginPath();
+  for (const xx of [-0.45, -0.6, -0.72]) { ctx.moveTo(xx, -0.047); ctx.lineTo(xx, 0.055); } ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.4)'; ctx.lineWidth = 1.2 * u; ctx.beginPath(); ctx.moveTo(-0.24, -0.044); ctx.lineTo(-0.78, -0.046); ctx.stroke();
+  ctx.restore();
+}
+/* 속도 측정기: 길가 기둥에서 차로 위로 뻗은 팔 끝의 초음파 송수신기 (송신 = 위, 수신 = 아래) */
+function speedSensor(x, Ly) {
+  const k = VW.sc, X0 = X(x), yP = Y(8.9), yB = Y(Ly), bw = Math.max(8, 0.32 * k);
+  shadow(10, 8, 12, 0.32);
+  ctx.fillStyle = lg(0, 0, bw, 0, [[0, T.chrome], [1, T['jet-2']]]); rr(X0 + 0.2 * k - bw / 2, yB, bw, yP - yB, 3); ctx.fill(); noShadow();
+  ctx.strokeStyle = 'rgba(0,0,0,.25)'; ctx.lineWidth = 1; ctx.stroke();
+  const g = ctx.createRadialGradient(X0 + 0.2 * k - bw * 0.3, yP - bw * 0.3, 1, X0 + 0.2 * k, yP, bw * 1.1); g.addColorStop(0, T.chrome); g.addColorStop(1, T['jet-2']);
+  shadow(10, 6, 9, 0.35); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(X0 + 0.2 * k, yP, bw * 1.1, 0, TAU); ctx.fill(); noShadow(); ctx.stroke();
+  const bx = Math.max(26, 0.95 * k), by = Math.max(40, 1.45 * k);
+  shadow(12, 6, 9, 0.42);
+  ctx.fillStyle = lg(-bx, -by, bx, by, [[0, mix(T.trim, '#ffffff', 0.32)], [1, T.trim]]); rr(X0 - bx / 2, yB - by / 2, bx, by, 6); ctx.fill(); noShadow();
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1; ctx.stroke();
+  for (const [s, col] of [[-1, T.wave], [1, T.wave2]]) {
+    const cy = yB + s * by * 0.24, r = by * 0.19;
+    ctx.fillStyle = T.chrome; ctx.beginPath(); ctx.arc(X0 - bx / 2, cy, r, 0, TAU); ctx.fill();
+    ctx.fillStyle = T.tyre; ctx.beginPath(); ctx.arc(X0 - bx / 2, cy, r * 0.72, 0, TAU); ctx.fill();
+    ctx.strokeStyle = rgba(col, 0.9); ctx.lineWidth = 2.2; ctx.beginPath(); ctx.arc(X0 - bx / 2, cy, r * 0.72, 0, TAU); ctx.stroke();
+  }
+  return { bottom: yB + by / 2 };
+}
+/* 위에서 본 물방개 (몸길이 Lb px, 머리 = +x) */
+function beetle(x, y, Lb, swim) {
+  const t = performance.now() / 1000, ph = reduce ? 0.3 : Math.sin(t * (swim ? 9 : 7));
+  ctx.save(); ctx.translate(x, y);
+  ctx.fillStyle = 'rgba(0,0,0,.2)'; ctx.filter = `blur(${Math.max(1, Lb * 0.06)}px)`; ctx.beginPath(); ctx.ellipse(Lb * 0.1, Lb * 0.14, Lb * 0.5, Lb * 0.32, 0, 0, TAU); ctx.fill(); ctx.filter = 'none';
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (const s of [-1, 1]) {
+    const th = 0.62 + 0.38 * ph, bx = -0.06 * Lb, by = s * 0.2 * Lb;
+    const kx = bx - Math.cos(th) * 0.26 * Lb, ky = by + s * Math.sin(th) * 0.26 * Lb;
+    const th2 = th - 0.7, ex = kx - Math.cos(th2) * 0.42 * Lb, ey = ky + s * Math.sin(th2) * 0.42 * Lb;
+    ctx.strokeStyle = T.beetle; ctx.lineWidth = Math.max(2.2, 0.06 * Lb); ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(kx, ky); ctx.stroke();
+    const nx = -(ey - ky), ny = ex - kx, nl = Math.hypot(nx, ny) || 1, ox = nx / nl * s * -1, oy = ny / nl * s * -1;
+    ctx.strokeStyle = rgba(T['beetle-rim'], 0.55); ctx.lineWidth = 1; ctx.beginPath();
+    for (let i = 2; i <= 10; i++) { const f = i / 11, px = kx + (ex - kx) * f, py = ky + (ey - ky) * f; ctx.moveTo(px, py); ctx.lineTo(px + ox * Lb * 0.07 * (1 - f * 0.4), py + oy * Lb * 0.07 * (1 - f * 0.4)); }
+    ctx.stroke();
+    ctx.fillStyle = mix(T.beetle, T['beetle-2'], 0.35); ctx.beginPath(); ctx.moveTo(kx, ky);
+    ctx.quadraticCurveTo((kx + ex) / 2 + ox * Lb * 0.05, (ky + ey) / 2 + oy * Lb * 0.05, ex, ey); ctx.quadraticCurveTo((kx + ex) / 2 - ox * Lb * 0.02, (ky + ey) / 2 - oy * Lb * 0.02, kx, ky); ctx.fill();
+    ctx.strokeStyle = T.beetle; ctx.lineWidth = Math.max(1.4, 0.032 * Lb); ctx.beginPath();
+    ctx.moveTo(0.04 * Lb, s * 0.2 * Lb); ctx.lineTo(-0.06 * Lb, s * 0.4 * Lb); ctx.lineTo(-0.2 * Lb, s * (0.47 + 0.04 * ph) * Lb);
+    ctx.moveTo(0.2 * Lb, s * 0.16 * Lb); ctx.lineTo(0.3 * Lb, s * 0.29 * Lb); ctx.lineTo(0.4 * Lb, s * 0.3 * Lb);
+    ctx.stroke();
+  }
+  const el = new Path2D(); el.moveTo(0.16 * Lb, -0.25 * Lb);
+  el.bezierCurveTo(0.0, -0.31 * Lb, -0.3 * Lb, -0.32 * Lb, -0.42 * Lb, -0.2 * Lb); el.quadraticCurveTo(-0.53 * Lb, -0.06 * Lb, -0.5 * Lb, 0);
+  el.quadraticCurveTo(-0.53 * Lb, 0.06 * Lb, -0.42 * Lb, 0.2 * Lb); el.bezierCurveTo(-0.3 * Lb, 0.32 * Lb, 0.0, 0.31 * Lb, 0.16 * Lb, 0.25 * Lb); el.closePath();
+  const bg = ctx.createRadialGradient(-0.2 * Lb, -0.14 * Lb, Lb * 0.02, -0.12 * Lb, 0, Lb * 0.5);
+  bg.addColorStop(0, T['beetle-2']); bg.addColorStop(0.45, mix(T.beetle, T['beetle-2'], 0.3)); bg.addColorStop(1, mix(T.beetle, '#000000', 0.4));
+  ctx.fillStyle = bg; ctx.fill(el);
+  ctx.strokeStyle = T['beetle-rim']; ctx.lineWidth = Math.max(1.6, 0.045 * Lb); ctx.stroke(el);
+  ctx.strokeStyle = 'rgba(0,0,0,.6)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.moveTo(0.15 * Lb, 0); ctx.lineTo(-0.48 * Lb, 0); ctx.stroke();
+  const pr = new Path2D(); pr.moveTo(0.15 * Lb, -0.26 * Lb); pr.quadraticCurveTo(0.27 * Lb, -0.24 * Lb, 0.3 * Lb, -0.15 * Lb); pr.lineTo(0.3 * Lb, 0.15 * Lb); pr.quadraticCurveTo(0.27 * Lb, 0.24 * Lb, 0.15 * Lb, 0.26 * Lb); pr.closePath();
+  ctx.fillStyle = lg(0.15 * Lb, -0.25 * Lb, 0.3 * Lb, 0.25 * Lb, [[0, T['beetle-2']], [1, T.beetle]]); ctx.fill(pr);
+  ctx.strokeStyle = T['beetle-rim']; ctx.lineWidth = Math.max(1.4, 0.035 * Lb); ctx.stroke(pr);
+  ctx.fillStyle = mix(T.beetle, '#000000', 0.2); ctx.beginPath(); ctx.ellipse(0.35 * Lb, 0, 0.075 * Lb, 0.12 * Lb, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = rgba(T['beetle-rim'], 0.8); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(0.35 * Lb, 0, 0.1 * Lb, -0.9, 0.9); ctx.stroke();
+  ctx.fillStyle = mix(T['beetle-rim'], '#000000', 0.72); for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(0.36 * Lb, s * 0.085 * Lb, 0.03 * Lb, 0.04 * Lb, 0, 0, TAU); ctx.fill(); }
+  ctx.strokeStyle = T.beetle; ctx.lineWidth = 1.2; ctx.beginPath(); for (const s of [-1, 1]) { ctx.moveTo(0.41 * Lb, s * 0.06 * Lb); ctx.quadraticCurveTo(0.5 * Lb, s * 0.1 * Lb, 0.52 * Lb, s * 0.18 * Lb); } ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.beginPath(); ctx.ellipse(-0.12 * Lb, -0.14 * Lb, 0.2 * Lb, 0.035 * Lb, -0.1, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.beginPath(); ctx.ellipse(0.22 * Lb, -0.12 * Lb, 0.04 * Lb, 0.02 * Lb, -0.4, 0, TAU); ctx.fill();
+  ctx.restore();
+}
+function buoy(x, y, col) {
+  ctx.save(); ctx.translate(x, y);
+  ctx.fillStyle = 'rgba(0,0,0,.2)'; ctx.beginPath(); ctx.ellipse(3, 5, 13, 11, 0, 0, TAU); ctx.fill();
+  const g = ctx.createRadialGradient(-4, -4, 1, 0, 0, 12); g.addColorStop(0, '#ffffff'); g.addColorStop(1, T.chrome);
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 11, 0, TAU); ctx.fill();
+  ctx.fillStyle = T.red; for (const a of [0, Math.PI]) { ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, 11, a - 0.55, a + 0.55); ctx.closePath(); ctx.fill(); }
+  ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.ellipse(-4, -4.5, 4, 2.2, -0.6, 0, TAU); ctx.fill();
+  ctx.strokeStyle = 'rgba(0,0,0,.35)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(0, 0, 11, 0, TAU); ctx.stroke();
+  ctx.fillStyle = T.trim; ctx.beginPath(); ctx.arc(0, 0, 2.6, 0, TAU); ctx.fill();
+  if (col) { ctx.strokeStyle = rgba(col, 0.9); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, 17, 0, TAU); ctx.stroke(); }
+  ctx.restore();
+}
+
+/* ---------- 배경 (크기·장면·카메라가 바뀔 때만 다시 그림) ---------- */
+const BG = { cv: document.createElement('canvas'), key: '' };
+function drawBackground(kind) {
+  const key = [kind, cv.width, cv.height, themeStamp, VW.cx.toFixed(3), VW.cy, VW.sc].join('|');
+  if (BG.key !== key) {
+    if (BG.cv.width !== cv.width || BG.cv.height !== cv.height) { BG.cv.width = cv.width; BG.cv.height = cv.height; }
+    const g = BG.cv.getContext('2d'); g.setTransform(D.dpr, 0, 0, D.dpr, 0, 0);
+    bgPainters[kind](g); BG.key = key;
+  }
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(BG.cv, 0, 0); ctx.restore();
+}
+const grassFill = g => pattern(g, 'grass', T.grass, T.dark ? [T['grass-2'], T.tree] : [T['grass-2'], T.tree, '#ffffff'], 1100, 0.5, 2.0, T.dark ? 0.5 : 0.3, 7);
+const SPR = new Map();
+function treeSprite(r, seed) {         // 위에서 본 가로수 (잎 덩어리 여러 개 + 그림자)
+  const dpr = D.dpr, key = `${Math.round(r * 2)}|${seed}|${themeStamp}|${dpr}`;
+  let sp = SPR.get(key); if (sp) return sp;
+  const S = Math.ceil(r * 3.4), c = document.createElement('canvas'); c.width = c.height = Math.ceil(S * dpr);
+  const g = c.getContext('2d'); g.scale(dpr, dpr); const cx = S * 0.4, cy = S * 0.4, R = rnd(seed * 97 + 13);
+  g.save(); g.filter = `blur(${Math.max(1, r * 0.18)}px)`; g.fillStyle = 'rgba(0,0,0,.3)'; g.beginPath(); g.arc(cx + r * 0.38, cy + r * 0.48, r * 0.95, 0, TAU); g.fill(); g.restore();
+  const n = 7 + (seed % 3), lobes = [];
+  for (let i = 0; i < n; i++) { const a = i / n * TAU + R() * 0.5, d = r * (0.42 + R() * 0.12); lobes.push([cx + Math.cos(a) * d, cy + Math.sin(a) * d, r * (0.42 + R() * 0.14)]); }
+  lobes.push([cx, cy, r * 0.62]);
+  lobes.sort((p, q) => (q[0] + q[1]) - (p[0] + p[1]));
+  for (const [x, y, rl] of lobes) {
+    const gr = g.createRadialGradient(x - rl * 0.35, y - rl * 0.4, rl * 0.08, x, y, rl);
+    gr.addColorStop(0, T['tree-hi']); gr.addColorStop(0.55, T.tree); gr.addColorStop(1, T['tree-2']);
+    g.fillStyle = gr; g.beginPath(); g.arc(x, y, rl, 0, TAU); g.fill();
+  }
+  for (let i = 0; i < 46; i++) { const a = R() * TAU, d = Math.sqrt(R()) * r * 0.9; g.fillStyle = R() < 0.5 ? 'rgba(255,255,255,.07)' : 'rgba(0,0,0,.09)'; g.beginPath(); g.arc(cx + Math.cos(a) * d, cy + Math.sin(a) * d, r * (0.05 + R() * 0.07), 0, TAU); g.fill(); }
+  sp = { c, S, ox: cx, oy: cy }; SPR.set(key, sp); return sp;
+}
+const bgPainters = {
+  road(g) { paintRoad(g, 0); },
+  roadSide(g) { paintRoad(g, 14); },
+  sky(g) { paintSky(g); },
+  water(g) {
+    const gr = g.createLinearGradient(0, 0, D.w, D.h); gr.addColorStop(0, T['water-2']); gr.addColorStop(1, T.water);
+    g.fillStyle = gr; g.fillRect(0, 0, D.w, D.h);
+    const R = rnd(11);
+    for (let i = 0; i < 60; i++) { g.fillStyle = rgba('#ffffff', (0.025 + R() * 0.04) * (T.dark ? 0.4 : 1)); g.beginPath(); g.ellipse(R() * D.w, R() * D.h, 30 + R() * 110, 8 + R() * 26, R() * 3, 0, TAU); g.fill(); }
+    g.lineCap = 'round';
+    for (let i = 0; i < 220; i++) {                 // 물속에 비친 빛 무늬
+      const x = R() * D.w, y = R() * D.h, a = R() * TAU, l = 10 + R() * 26;
+      g.strokeStyle = rgba('#ffffff', 0.04 + R() * 0.05); g.lineWidth = 1 + R() * 1.6;
+      g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a + 1) * l * 0.6, y + Math.sin(a + 1) * l * 0.6, x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+    }
+    for (const [px, py, pr, rot] of [[0.6, -0.035, 0.07, 0.6], [0.69, -0.01, 0.042, 2.4], [1.13, 0.965, 0.075, 3.6], [1.24, 0.94, 0.04, 1.2]]) {
+      const x = X(px), y = Y(py), r = pr * VW.sc;
+      g.save(); g.translate(x, y); g.rotate(rot);
+      g.fillStyle = 'rgba(0,0,0,.18)'; g.beginPath(); g.ellipse(r * 0.12, r * 0.16, r, r, 0, 0, TAU); g.fill();
+      const pg = g.createRadialGradient(-r * 0.3, -r * 0.3, r * 0.1, 0, 0, r); pg.addColorStop(0, mix(T.pad, '#ffffff', 0.15)); pg.addColorStop(1, T['pad-2']);
+      g.fillStyle = pg; g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, r, 0.18, TAU - 0.18); g.closePath(); g.fill();
+      g.strokeStyle = 'rgba(0,0,0,.16)'; g.lineWidth = 1; g.beginPath(); for (let i = 1; i < 9; i++) { const a = 0.18 + i * (TAU - 0.36) / 9; g.moveTo(0, 0); g.lineTo(Math.cos(a) * r * 0.9, Math.sin(a) * r * 0.9); } g.stroke();
+      g.restore();
+    }
+    vignette(g);
+  }
+};
+function vignette(g) {
+  const v = g.createRadialGradient(D.w * 0.4, D.h * 0.35, Math.min(D.w, D.h) * 0.3, D.w / 2, D.h / 2, Math.hypot(D.w, D.h) * 0.62);
+  v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(0,0,0,.16)'); g.fillStyle = v; g.fillRect(0, 0, D.w, D.h);
+}
+function paintRoad(g, clearZone) {
+  g.fillStyle = grassFill(g); g.fillRect(0, 0, D.w, D.h);
+  const sc = VW.sc, span = D.w / sc, xw0 = VW.cx - span / 2 - 3, xw1 = VW.cx + span / 2 + 3;
+  for (const s of [-1, 1]) {           // 보도 (판석)와 연석
+    const a = Y(s * 7.25), b = Y(s * 10.4), top = Math.min(a, b), h = Math.abs(b - a);
+    if (top > D.h || top + h < 0) continue;
+    g.fillStyle = T.walk; g.fillRect(0, top, D.w, h);
+    const sw = 1.5, rows = 2, rh = h / rows;
+    for (let xi = Math.floor(xw0 / sw) - 1; xi * sw < xw1; xi++) for (let r = 0; r < rows; r++) {
+      const R = rnd(xi * 31 + r * 7 + (s > 0 ? 5003 : 0) + 100000), v = R(), off = r % 2 ? sw / 2 : 0;
+      g.fillStyle = v < 0.5 ? `rgba(0,0,0,${((0.5 - v) * 0.09).toFixed(3)})` : `rgba(255,255,255,${((v - 0.5) * 0.14).toFixed(3)})`;
+      g.fillRect(X(xi * sw + off), top + r * rh, sw * sc, rh);
+    }
+    g.strokeStyle = T['walk-j']; g.lineWidth = 1; g.beginPath();
+    for (let r = 1; r < rows; r++) { g.moveTo(0, top + r * rh); g.lineTo(D.w, top + r * rh); }
+    for (let xi = Math.floor(xw0 / sw) - 1; xi * sw < xw1; xi++) for (let r = 0; r < rows; r++) { const xx = X(xi * sw + (r % 2 ? sw / 2 : 0)); g.moveTo(xx, top + r * rh); g.lineTo(xx, top + (r + 1) * rh); }
+    g.stroke();
+    const c0 = s > 0 ? a : a - 0.24 * sc;
+    g.fillStyle = T.curb; g.fillRect(0, c0, D.w, 0.24 * sc);
+    g.fillStyle = 'rgba(255,255,255,.28)'; g.fillRect(0, s > 0 ? c0 + 0.16 * sc : c0, D.w, Math.max(1, 0.06 * sc));
+    g.fillStyle = 'rgba(0,0,0,.14)'; g.fillRect(0, s > 0 ? b : b - 3, D.w, 3);
+  }
+  const t0 = Y(-7.25), t1 = Y(7.25);
+  g.fillStyle = pattern(g, 'asphalt', T.asphalt, [T['asphalt-2'], '#000000', '#ffffff'], 3200, 0.35, 1.2, T.dark ? 0.12 : 0.2, 3); g.fillRect(0, t0, D.w, t1 - t0);
+  const sh = g.createLinearGradient(0, t0, 0, t0 + 0.9 * sc); sh.addColorStop(0, 'rgba(0,0,0,.3)'); sh.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = sh; g.fillRect(0, t0, D.w, 0.9 * sc);
+  for (const ly of [-5.25, -1.75, 1.75, 5.25]) for (const s of [-0.78, 0.78]) {     // 바퀴 자국
+    const gy = g.createLinearGradient(0, Y(ly + s) - 0.35 * sc, 0, Y(ly + s) + 0.35 * sc);
+    gy.addColorStop(0, 'rgba(0,0,0,0)'); gy.addColorStop(0.5, 'rgba(0,0,0,.08)'); gy.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = gy; g.fillRect(0, Y(ly + s) - 0.35 * sc, D.w, 0.7 * sc);
+  }
+  const lw = Math.max(2, 0.15 * sc);
+  g.fillStyle = T['lane-w']; g.fillRect(0, Y(-6.95) - lw / 2, D.w, lw); g.fillRect(0, Y(6.95) - lw / 2, D.w, lw);
+  g.fillStyle = T['lane-y']; g.fillRect(0, Y(-0.16) - lw / 2, D.w, lw); g.fillRect(0, Y(0.16) - lw / 2, D.w, lw);
+  g.fillStyle = T['lane-w'];
+  const per = 8, x0 = Math.floor(xw0 / per) * per;
+  for (const ly of [-3.5, 3.5]) for (let x = x0; x < xw1; x += per) g.fillRect(X(x), Y(ly) - lw / 2, 3 * sc, lw);
+  for (const s of [-1, 1]) for (let x = Math.floor(xw0 / 10) * 10 - 10; x < xw1 + 10; x += 10) {
+    const R = rnd(Math.round(x / 10) * 7 + s * 13 + 50000);
+    const tx = x + R() * 4, ty = s * (13.6 + R() * 2.2), r = (2.2 + R() * 1.0) * sc;
+    if (Y(ty) + r < 0 || Y(ty) - r > D.h) continue;
+    if (s > 0 && clearZone && Math.abs(tx) < clearZone) continue;
+    const sp = treeSprite(r, Math.abs(Math.round(x / 10) * 3 + (s > 0 ? 1 : 0)) % 7);
+    g.drawImage(sp.c, X(tx) - sp.ox, Y(ty) - sp.oy, sp.S, sp.S);
+  }
+  vignette(g);
+}
+const GROUND = 22;     // ⑤ 장면의 땅 높이 (비행 높이 22 m)
+function paintSky(g) {
+  const yg = Y(GROUND);
+  const sk = g.createLinearGradient(0, 0, 0, yg); sk.addColorStop(0, T.sky); sk.addColorStop(1, T['sky-2']);
+  g.fillStyle = sk; g.fillRect(0, 0, D.w, yg);
+  const sun = g.createRadialGradient(D.w * 0.08, -D.h * 0.1, 10, D.w * 0.08, -D.h * 0.1, D.h * 0.9); sun.addColorStop(0, rgba('#ffffff', T.dark ? 0.06 : 0.5)); sun.addColorStop(1, rgba('#ffffff', 0));
+  g.fillStyle = sun; g.fillRect(0, 0, D.w, yg);
+  const R = rnd(5);
+  for (let i = 0; i < 5; i++) {        // 구름
+    const cx = D.w * (0.08 + i * 0.21 + R() * 0.08), cy = yg * (0.12 + R() * 0.32), w = 60 + R() * 90;
+    g.save(); g.filter = `blur(${6 + R() * 6}px)`; g.fillStyle = rgba(T.cloud, T.dark ? 0.35 : 0.75);
+    for (let j = 0; j < 5; j++) { g.beginPath(); g.ellipse(cx + (j - 2) * w * 0.28, cy - Math.sin(j / 4 * Math.PI) * w * 0.12, w * 0.3, w * 0.16, 0, 0, TAU); g.fill(); }
+    g.restore();
+  }
+  for (const [col, base, amp, seed] of [[T.mtn, yg - 0.17 * D.h, 0.08, 3], [T['mtn-2'], yg - 0.08 * D.h, 0.06, 9]]) {
+    const Rm = rnd(seed), ph = [R(), Rm(), Rm(), Rm()].map(v => v * TAU);
+    g.fillStyle = col; g.beginPath(); g.moveTo(0, yg);
+    for (let x = 0; x <= D.w; x += 6) { const u = x / D.w; g.lineTo(x, base - D.h * amp * (0.55 * Math.sin(u * 5.1 + ph[1]) + 0.3 * Math.sin(u * 11.7 + ph[2]) + 0.15 * Math.sin(u * 23 + ph[3]) + 0.6)); }
+    g.lineTo(D.w, yg); g.closePath(); g.fill();
+  }
+  const gd = g.createLinearGradient(0, yg, 0, D.h); gd.addColorStop(0, T['grass-2']); gd.addColorStop(1, mix(T.grass, '#000000', 0.12));
+  g.fillStyle = gd; g.fillRect(0, yg, D.w, D.h - yg);
+  g.fillStyle = grassFill(g); g.globalAlpha = 0.6; g.fillRect(0, yg, D.w, D.h - yg); g.globalAlpha = 1;
+  g.fillStyle = 'rgba(0,0,0,.12)'; g.fillRect(0, yg, D.w, 2);
+  const Rt = rnd(21);
+  for (const xw of [-62, -54, -47, -31, 24, 33, 47, 55]) {            // 옆에서 본 나무
+    const h = (6 + Rt() * 4) * VW.sc, x = X(xw), cr = h * 0.33;
+    g.fillStyle = lg2(g, x - h * 0.03, 0, x + h * 0.03, 0, T.trunk); g.fillRect(x - h * 0.03, yg - h * 0.55, h * 0.06, h * 0.55);
+    for (let j = 0; j < 6; j++) {
+      const a = j / 6 * TAU + Rt(), d = cr * 0.45, lx = x + Math.cos(a) * d, ly = yg - h * 0.62 + Math.sin(a) * d * 0.9, r = cr * (0.55 + Rt() * 0.2);
+      const tg = g.createRadialGradient(lx - r * 0.35, ly - r * 0.4, r * 0.1, lx, ly, r); tg.addColorStop(0, T['tree-hi']); tg.addColorStop(0.6, T.tree); tg.addColorStop(1, T['tree-2']);
+      g.fillStyle = tg; g.beginPath(); g.arc(lx, ly, r, 0, TAU); g.fill();
+    }
+    g.fillStyle = 'rgba(0,0,0,.2)'; g.beginPath(); g.ellipse(x + h * 0.1, yg + 3, h * 0.28, 4, 0, 0, TAU); g.fill();
+  }
+  vignette(g);
+}
+function lg2(g, x1, y1, x2, y2, col) { const gr = g.createLinearGradient(x1, y1, x2, y2); gr.addColorStop(0, mix(col, '#ffffff', 0.2)); gr.addColorStop(1, mix(col, '#000000', 0.25)); return gr; }
+
+/* =====================================================================
+   소리 (단추·키를 누른 뒤에만 시작). 모든 소리는 장면 버스 → 마스터 → 리미터 → 스피커
+   ===================================================================== */
+const AU = { ctx: null, master: null, bus: null, srcs: [], key: null, siren: null, jet: null, buf: null, last: '' };
+function audioOK() {
+  if (!AU.ctx) {
+    try {
+      const C = window.AudioContext || window.webkitAudioContext, c = new C();
+      const lim = c.createDynamicsCompressor(); lim.threshold.value = -10; lim.knee.value = 6; lim.ratio.value = 14; lim.attack.value = 0.002; lim.release.value = 0.22;
+      const m = c.createGain(); m.gain.value = 0.85; m.connect(lim); lim.connect(c.destination);
+      AU.ctx = c; AU.master = m;
+    } catch (e) { AU.ctx = null; return false; }
+  }
+  if (AU.ctx.state === 'suspended') AU.ctx.resume();
+  return true;
+}
+const keep = s => (AU.srcs.push(s), s);
+function newBus() {
+  stopAudio();
+  const c = AU.ctx, b = c.createGain();
+  b.gain.setValueAtTime(0, c.currentTime); b.gain.setTargetAtTime(1, c.currentTime, 0.03); b.connect(AU.master);
+  AU.bus = b; AU.srcs = []; return b;
+}
+function stopAudio() {
+  AU.key = null; AU.siren = null; AU.jet = null; AU.last = '';
+  if (!AU.ctx || !AU.bus) return;
+  const c = AU.ctx, now = c.currentTime, b = AU.bus, srcs = AU.srcs;
+  try { b.gain.cancelScheduledValues(now); b.gain.setValueAtTime(b.gain.value, now); b.gain.linearRampToValueAtTime(0, now + 0.09); } catch (e) {}
+  for (const s of srcs) { try { s.stop(now + 0.14); } catch (e) {} }
+  setTimeout(() => { try { b.disconnect(); } catch (e) {} }, 400);
+  AU.bus = null; AU.srcs = [];
+}
+function biquad(type, f, Q = 0.7, gain = 0) { const b = AU.ctx.createBiquadFilter(); b.type = type; b.frequency.value = f; b.Q.value = Q; b.gain.value = gain; return b; }
+function amp(v) { const g = AU.ctx.createGain(); g.gain.value = v; return g; }
+function chain(...n) { for (let i = 0; i < n.length - 1; i++) n[i].connect(n[i + 1]); return n[n.length - 1]; }
+const CURVES = {};
+function curve(name, fn) { if (!CURVES[name]) { const a = new Float32Array(2048); for (let i = 0; i < 2048; i++) a[i] = fn(i / 2047 * 2 - 1); CURVES[name] = a; } return CURVES[name]; }
+function noise(when) {
+  const c = AU.ctx;
+  if (!AU.buf) { const n = Math.round(c.sampleRate * 3), b = c.createBuffer(1, n, c.sampleRate), d = b.getChannelData(0); for (let i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; AU.buf = b; }
+  const s = c.createBufferSource(); s.buffer = AU.buf; s.loop = true; s.start(when ?? c.currentTime, Math.random() * 2.5); return keep(s);
+}
+/* 119 구급차 "삐-뽀" 두 음 사이렌: 높은 음 fHi, 낮은 음 0.75 fHi, 한 쌍 약 0.9초.
+   음 높이 = 패턴(Hz) × D,  삐뽀 빠르기 = 1.1 Hz × D  → 도플러 비 D가 사이렌 전체에 연속으로 곱해진다.
+   음색: 사각파 + 톱니파 → 혼 스피커(고역·중역 강조) → 살짝 찌그러짐 */
+const SIREN = { lo: 0.75, rate: 1.1 };
+function sirenVoice(out, fHi, D = 1, t0, steady = false) {
+  const c = AU.ctx, t = t0 ?? c.currentTime;
+  const mid = c.createConstantSource(); mid.offset.value = steady ? fHi : fHi * (1 + SIREN.lo) / 2;
+  const lfo = c.createOscillator(); lfo.type = 'sine'; lfo.frequency.value = SIREN.rate * D;
+  const dev = amp(steady ? 0 : fHi * (1 - SIREN.lo) / 2);
+  const sq = c.createWaveShaper(); sq.curve = curve('sq', x => Math.tanh(16 * x) / Math.tanh(16));
+  chain(lfo, sq, dev);
+  const mul = amp(D); mid.connect(mul); dev.connect(mul);
+  const o1 = c.createOscillator(); o1.type = 'square'; o1.frequency.value = 0;
+  const o2 = c.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = 0; o2.detune.value = 7;
+  mul.connect(o1.frequency); mul.connect(o2.frequency);
+  const mix1 = amp(1); chain(o1, amp(0.5), mix1); chain(o2, amp(0.32), mix1);
+  const sh = c.createWaveShaper(); sh.curve = curve('clip', x => Math.tanh(1.7 * x) / Math.tanh(1.7)); sh.oversample = '2x';
+  const air = biquad('lowpass', 16000, 0.4), vol = amp(0);
+  chain(mix1, biquad('highpass', 330, 0.7), biquad('peaking', 1800, 0.9, 5), biquad('lowpass', 5200, 0.5), sh, air, vol);
+  let pan = null;
+  if (c.createStereoPanner) { pan = c.createStereoPanner(); vol.connect(pan); pan.connect(out); } else vol.connect(out);
+  for (const s of [mid, lfo, o1, o2]) { s.start(t); keep(s); }
+  return {
+    mid, lfo, dev, mul, vol, air, pan,
+    set(f, d, tc = 0.03) {
+      const now = c.currentTime;
+      mid.offset.setTargetAtTime(steady ? f : f * (1 + SIREN.lo) / 2, now, tc); dev.gain.setTargetAtTime(steady ? 0 : f * (1 - SIREN.lo) / 2, now, tc);
+      mul.gain.setTargetAtTime(d, now, tc); lfo.frequency.setTargetAtTime(SIREN.rate * d, now, tc);
+    }
+  };
+}
+/* 제트기 굉음: 낮은 우르릉 + 넓은 쉬익 + 터빈 소리 */
+function jetVoice(out) {
+  const c = AU.ctx, vol = amp(0), air = biquad('lowpass', 5000, 0.5);
+  air.connect(vol); vol.connect(out);
+  chain(noise(), biquad('lowpass', 180, 0.8), biquad('lowpass', 260, 0.6), amp(3.2), air);
+  const hiss = biquad('bandpass', 1400, 0.45); chain(noise(), hiss, amp(0.55), air);
+  const wo = keep(c.createOscillator()); wo.type = 'triangle'; wo.frequency.value = 950;
+  const wb = biquad('bandpass', 950, 4); chain(wo, wb, amp(0.09), air); wo.start();
+  return {
+    ep: -1, boomed: false, a: -1, d: -1,
+    set(a, d) {
+      if (Math.abs(a - this.a) < 0.004 && Math.abs(d - this.d) < 0.004) return; this.a = a; this.d = d;
+      const now = c.currentTime;
+      vol.gain.setTargetAtTime(a, now, 0.06); wo.frequency.setTargetAtTime(clamp(950 * d, 120, 11000), now, 0.05); wb.frequency.setTargetAtTime(clamp(950 * d, 120, 11000), now, 0.05);
+      hiss.frequency.setTargetAtTime(clamp(1400 * d, 300, 9000), now, 0.05); air.frequency.setTargetAtTime(clamp(4500 * Math.sqrt(d), 1200, 16000), now, 0.08);
+    }
+  };
+}
+/* 소닉 붐: N파(압력이 확 올랐다가 고르게 내려가 확 돌아옴 → "쾅-쾅") + 땅 반사 + 낮은 울림 */
+function sonicBoom(out) {
+  const c = AU.ctx, sr = c.sampleRate, n = Math.round(sr * 2.4), b = c.createBuffer(1, n, sr), d = b.getChannelData(0);
+  const N = (t, Tn) => t < 0 || t > Tn ? 0 : 1 - 2 * t / Tn;
+  let lp = 0;
+  for (let i = 0; i < n; i++) {
+    const t = i / sr;
+    let v = 0.85 * N(t, 0.14) + 0.4 * N(t - 0.018, 0.14);
+    lp += 0.015 * ((Math.random() * 2 - 1) - lp);
+    v += lp * 6 * Math.exp(-t / 0.5) * Math.min(1, t / 0.03);
+    d[i] = v * Math.min(1, i / 24);
+  }
+  const s = c.createBufferSource(); s.buffer = b; chain(s, biquad('lowpass', 3800, 0.6), amp(0.95), out); s.start(); keep(s);
+}
+
+/* ---------- 측정 모형: 지금 도착한 소리가 언제 어디서 나왔는가 ---------- */
+function retard(t, S, O, v = V) {
+  const o = O(t); let te = t;
+  for (let i = 0; i < 16; i++) { const s = S(te); te = t - Math.hypot(o.x - s.x, o.y - s.y) / v; }
+  return te;
+}
+const gateF = (f0, teFn, t, gate) => f0 * (teFn(t) - teFn(t - gate)) / gate;
+
+/* ---------- 파면 엔진 (느린 화면) ---------- */
+function WS(o) {
+  const w = Object.assign({ fronts: [], t: 0, t0: 0, ep: 0, rxs: [], rfs: [] }, o);
+  w.tEnd = wsTEnd(w); wsRestart(w);
+  return w;
+}
+const wp = (w, o, t) => ({ x: o.x + (o.vx || 0) * (t - w.t0), y: o.y });
+function wsTEnd(w) {
+  let te = Infinity;
+  for (const o of [...w.ems, ...w.rxs, ...w.rfs]) { const vx = o.vx || 0; if (vx > 0 && o.xmax != null) te = Math.min(te, (o.xmax - o.x) / vx); if (vx < 0 && o.xmin != null) te = Math.min(te, (o.x - o.xmin) / -vx); }
+  return Math.max(0.0005, te);
+}
+function wsEmit(w) {
+  for (const e of w.ems) {
+    let n = 0; const T1 = (e.skip || 1) / e.f;
+    while (e.next <= w.t && n++ < 2000) { const p = wp(w, e, e.next); w.fronts.push({ cx: p.x, cy: p.y, t0: e.next, src: e.id, ep: w.ep, hit: 0, col: e.col, arc: e.arc, clip: e.clip }); e.next += T1; }
+  }
+}
+function wsRestart(w) {
+  w.t0 = w.t; w.ep++;
+  for (const e of w.ems) e.next = w.t - (e.pre || 0);
+  for (const r of w.rxs) { r.hits = 0; r.first = null; }
+  wsEmit(w);                           // 미리 퍼져 있던 파면을 곧바로 그림 (멈춘 채 시작해도 무늬가 보이게)
+}
+function wsStep(w, dt) {
+  if (dt <= 0) return;
+  w.t += dt;
+  if (w.t - w.t0 > w.tEnd) wsRestart(w);
+  wsEmit(w);
+  const L = [...w.rxs, ...w.rfs];
+  for (let fi = 0; fi < w.fronts.length; fi++) {
+    const f = w.fronts[fi]; if (f.ep !== w.ep) continue;
+    const r = w.v * (w.t - f.t0);
+    for (let i = 0; i < L.length; i++) {
+      const o = L[i]; if (o.src !== f.src || (f.hit & (1 << i))) continue;
+      const p = wp(w, o, w.t); if (Math.hypot(p.x - f.cx, p.y - f.cy) > r) continue;
+      f.hit |= 1 << i;
+      // 파면이 지나간 정확한 시각: v(t − t0) = |O(t) − C|
+      const ux = o.vx || 0, dt0 = f.t0 - w.t0, qx = o.x + ux * dt0 - f.cx, qy = o.y - f.cy;
+      const a = w.v * w.v - ux * ux, b = qx * ux, q2 = qx * qx + qy * qy, tc = f.t0 + (b + Math.sqrt(b * b + a * q2)) / a;
+      if (o.reflect) { const q = wp(w, o, tc); w.fronts.push({ cx: q.x, cy: q.y, t0: tc, src: o.id, ep: w.ep, hit: 0, col: o.col, arc: o.arc, clip: o.clip }); }
+      else { o.hits++; o.flash = performance.now(); if (o.first == null || tc < o.first) o.first = tc; }
+    }
+  }
+  const maxR = Math.hypot(D.w, D.h) / VW.sc * 1.1;
+  w.fronts = w.fronts.filter(f => w.v * (w.t - f.t0) < maxR + Math.hypot(f.cx - VW.cx, f.cy - VW.cy));
+}
+function wsDraw(w, opt = {}) {
+  const maxR = Math.hypot(D.w, D.h) / VW.sc, e0 = w.ems[0], lamPx = w.v * (e0.skip || 1) / e0.f * VW.sc;
+  ctx.lineWidth = opt.lw || clamp(lamPx * 0.11, 1.2, 2.6);
+  for (const f of w.fronts) {
+    const r = w.v * (w.t - f.t0), rp = r * VW.sc; if (rp < 1.5) continue;
+    const fade = Math.pow(Math.max(0, 1 - r / maxR), 0.75) * Math.min(1, rp / 16);
+    const a = (f.ep === w.ep ? (T.dark ? 0.8 : 0.95) : 0.3) * fade; if (a < 0.02) continue;
+    ctx.save();
+    if (f.clip) { const x0 = opt.cut && f.src === opt.cut.src ? opt.cut.x : 0; ctx.beginPath(); ctx.rect(x0, Y(f.clip[0]), D.w - x0, Y(f.clip[1]) - Y(f.clip[0])); ctx.clip(); }
+    ctx.strokeStyle = f.col || T.wave; ctx.globalAlpha = a;
+    ctx.beginPath();
+    if (f.arc === 'L') ctx.arc(X(f.cx), Y(f.cy), rp, Math.PI / 2, 1.5 * Math.PI);
+    else if (f.arc === 'R') ctx.arc(X(f.cx), Y(f.cy), rp, -Math.PI / 2, Math.PI / 2);
+    else ctx.arc(X(f.cx), Y(f.cy), rp, 0, TAU);
+    ctx.stroke(); ctx.restore();
+  }
+  if (opt.centers) {          // 중심 사이가 12px 이상 되도록 n번째마다 하나씩
+    const n = Math.max(1, Math.ceil(12 / Math.max(1e-6, Math.abs(e0.vx || 0) * (e0.skip || 1) / e0.f * VW.sc)));
+    for (const f of w.fronts) if (f.src === opt.centers && f.ep === w.ep && Math.round((f.t0 - w.t0) * e0.f / (e0.skip || 1)) % n === 0) { ctx.fillStyle = rgba(T.surface, 0.95); ctx.beginPath(); ctx.arc(X(f.cx), Y(f.cy), 4.2, 0, TAU); ctx.fill(); ctx.fillStyle = f.col || T.wave; ctx.beginPath(); ctx.arc(X(f.cx), Y(f.cy), 2.8, 0, TAU); ctx.fill(); }
+  }
+}
+// 파장 자: 같은 직선 위에서 이웃한 두 파면의 앞끝(또는 뒤끝) 사이
+function rulers(w, eid, y, opt) {
+  const fs = w.fronts.filter(f => f.src === eid && f.ep === w.ep), out = {};
+  if (fs.length < 5) return out;
+  const e = w.ems.find(e => e.id === eid), sp = e.vx || 0, a = fs[fs.length - 4], b = fs[fs.length - 3];
+  const ra = w.v * (w.t - a.t0), rb = w.v * (w.t - b.t0);
+  if (sp < w.v) out.ahead = Math.abs((a.cx + ra) - (b.cx + rb));
+  out.behind = Math.abs((a.cx - ra) - (b.cx - rb));
+  if (!opt.show) return out;
+  const draw = (x1, x2, dy, lab, col) => {
+    const X1 = X(Math.min(x1, x2)), X2 = X(Math.max(x1, x2)), yy = Y(y) + dy;
+    if (X2 < 0 || X1 > D.w) return;
+    const path = () => { ctx.beginPath(); ctx.moveTo(X1, yy - 11); ctx.lineTo(X1, yy + 11); ctx.moveTo(X2, yy - 11); ctx.lineTo(X2, yy + 11); ctx.moveTo(X1, yy); ctx.lineTo(X2, yy); };
+    ctx.lineCap = 'round'; ctx.strokeStyle = rgba(T.surface, 0.95); ctx.lineWidth = 7; path(); ctx.stroke(); ctx.strokeStyle = col; ctx.lineWidth = 3; path(); ctx.stroke(); ctx.lineCap = 'butt';
+    pill(lab, (X1 + X2) / 2, yy + (dy < 0 ? -24 : 24), col, 'center', 16);
+  };
+  const dy = Math.max(54, 2.5 * VW.sc);
+  if (out.ahead) draw(a.cx + ra, b.cx + rb, -dy, `${opt.names[0]} ${out.ahead.toFixed(2)} m`, T.b);
+  draw(a.cx - ra, b.cx - rb, dy, `${opt.names[1]} ${out.behind.toFixed(2)} m`, T.a);
+  return out;
+}
+
+/* ---------- 유리 카드 ---------- */
+const S = { i: 0, playing: !reduce, speed: 1, caption: true, formula: false };
+const ro = o => o;
+
+/* =====================================================================
+   장면 (수업 순서)
+   ===================================================================== */
+const SLOW = reduce ? 160 : 60;
+const LY = 5.25;   // 오른쪽으로 달리는 바깥 차로의 중심선
+const sirenSound = {          // ①②④ 공통: '원래 소리 / A / B' 단추
+  listen(id) { const s = this.sound(id); AU.siren = sirenVoice(AU.bus, s.f, s.D); AU.siren.vol.gain.setTargetAtTime(0.3, AU.ctx.currentTime, 0.05); }
+};
+
+function sirenScene(moving) {        // ① 정지한 사이렌, ② 다가오는 구급차
+  const A = -17, B = 17;
+  return Object.assign(Object.create(sirenSound), {
+    chip: moving ? '다가오는 구급차' : '정지한 사이렌',
+    cap: moving ? '앞(B)은 파장이 짧아져 높은 소리, 뒤(A)는 파장이 길어져 낮은 소리 · 99쪽' : '멈춘 음원: 앞뒤 어디서나 파장과 진동수가 같다 · 99쪽',
+    view: { cx: 0, cy: 2.4, w: 40, h: 21 }, bg: 'road', K: SLOW,
+    p: { f: 500, u: moving ? 30 : 0, centers: false, rulers: true },
+    enter() { this.build(); },
+    build() {
+      const u = this.p.u, x0 = u ? -6 : SPK;
+      this.w = WS({ v: V, ems: [{ id: 's', x: x0, y: LY, vx: u, f: this.p.f, xmax: B - 4, pre: u > 0 ? Math.min(0.16, (x0 - A - 2) / u) : 0.16 }],
+        rxs: [{ id: 'A', src: 's', x: A, y: LY }, { id: 'B', src: 's', x: B, y: LY }] });
+    },
+    step(dt) { wsStep(this.w, dt / this.K); },
+    draw() {
+      const w = this.w, e = w.ems[0], p = wp(w, e, w.t), u = this.p.u, k = vehK();
+      wsDraw(w, { centers: this.p.centers ? 's' : null });
+      for (const [rx, col, face] of [[w.rxs[0], T.a, 0], [w.rxs[1], T.b, Math.PI]]) {
+        const x = X(rx.x), y = Y(rx.y), sz = Math.max(54, 1.8 * VW.sc); flashRing(rx, x, y, col);
+        meterTop(x, y, sz, face, col, rx.flash && performance.now() - rx.flash < 120);
+        pill(rx.id, x, y + sz * 0.62 + 20, col, 'center', 17);
+      }
+      const vh = vehicle('amb', X(p.x) - SPK * k, Y(p.y), 1, { siren: true });
+      if (u) arrowPx(X(p.x) + 12, Y(p.y), X(p.x) + 46 + Math.min(40, u * 0.8), Y(p.y), T.ink, 4);
+      this.lam = rulers(w, 's', LY, { show: this.p.rulers, names: u ? ['λ′', 'λ″'] : ['λ', 'λ'] });
+      scaleBar(5, '5 m');
+    },
+    vals() { const f = this.p.f, u = this.p.u; return { fA: f * V / (V + u), fB: f * V / (V - u), lA: (V + u) / f, lB: (V - u) / f }; },
+    hud() {
+      const v = this.vals(), f = this.p.f, u = this.p.u;
+      return {
+        L: [ro({ k: 'A에서 들리는 소리', dot: T.a, v: f1(v.fA), u: 'Hz', s: `파장 ${v.lA.toFixed(2)} m`, f: u ? `340/(340 + ${u}) × ${f}` : `λ = 340 ÷ ${f}` })],
+        M: [ro({ k: u ? '구급차' : '구급차 (정지)', v: `${u}`, u: u ? `m/s · ${kmh(u)} km/h` : 'm/s', s: `사이렌 높은 음 ${f} Hz` })],
+        R: [ro({ k: 'B에서 들리는 소리', dot: T.b, v: f1(v.fB), u: 'Hz', s: `파장 ${v.lB.toFixed(2)} m`, f: u ? `340/(340 − ${u}) × ${f}` : `λ = 340 ÷ ${f}` })]
+      };
+    },
+    dock() {
+      const d = [{ t: 'play' }, { t: 'restart' }];
+      if (moving) d.push({ t: 'slider', label: '구급차 속력', key: 'u', min: 0, max: 50, step: 5, fmt: v => `${v} <small>m/s · ${kmh(v)} km/h</small>` });
+      d.push({ t: 'slider', label: '사이렌 (높은 음)', key: 'f', min: 300, max: 1000, step: 50, fmt: v => `${v} <small>Hz</small>`, narrow: true });
+      d.push({ t: 'sound', id: 'o', label: '원래 소리' }, { t: 'sound', id: 'A', label: 'A', dot: T.a }, { t: 'sound', id: 'B', label: 'B', dot: T.b });
+      if (moving) d.push({ t: 'toggle', key: 'centers', label: '파면 중심' });
+      d.push({ t: 'toggle', key: 'rulers', label: '파장 자' }, { t: 'formula' });
+      return d;
+    },
+    sound(id) { const u = this.p.u; return { f: this.p.f, D: { o: 1, A: V / (V + u), B: V / (V - u) }[id] }; },
+    onParam() { this.build(); }
+  });
+}
+
+const SCENES = [
+  sirenScene(false),
+  sirenScene(true),
+
+  /* ③ 길옆에서 듣는 지나가는 구급차: 실제 속도 + 소리 + 진동수 그래프 */
+  {
+    chip: '지나가는 구급차', cap: '길옆에서는 나를 향하는 속도 성분만 진동수를 바꿔, 소리가 부드럽게 낮아진다 · 98쪽',
+    get view() { return { cx: 0, cy: 8.5, w: clamp(D.w / 6.5, 44, 90), h: 44 }; },   // 좁은 화면에서는 가까이
+    bg: 'roadSide', K: 1, realtime: true, dmax: 20,
+    p: { u: 20, d: 6, los: false, waves: false },
+    x0: -44, x1: 48, f0: 500,
+    enter() { this.t = 0; this.run = false; this.fin = false; this.trace = []; this.prev = null; this.Ttot = 0; this.wv = null; this.drag = false; this.uRun = this.p.u; },
+    obs() { return { x: 0, y: LY + this.p.d }; },
+    Tr() { return (this.x1 - this.x0) / this.uRun; },
+    amb(te) { return { x: this.x0 + this.uRun * te, y: LY }; },          // 사이렌 스피커(앞 범퍼) 위치
+    te(t) { return retard(t, te => this.amb(te), () => this.obs()); },
+    heard(t) { return this.f0 * (this.te(t + 0.005) - this.te(t - 0.005)) / 0.01; },     // 지금 들리는 진동수 = f0 · dte/dt
+    primary() { this.start(); },
+    start() {
+      if (this.run) return;
+      if (this.trace.length) this.prev = { pts: this.trace, d: this.dRun, u: this.uRun };
+      this.trace = []; this.t = 0; this.run = true; this.fin = false; this.dRun = this.p.d; this.uRun = this.p.u;
+      this.Ttot = this.Tr() + 0.8;
+      this.wv = WS({ v: V, ems: [{ id: 's', x: this.x0, y: LY, vx: this.uRun, f: this.f0, skip: 40, pre: 0.3 }], rxs: [] });
+      this.aStart = audioOK() ? passBySound(this) : null;
+    },
+    step(dt) {
+      if (!this.run) return;
+      const tPrev = this.t;
+      this.t = this.aStart != null && AU.ctx && AU.key === 'pass' ? Math.max(0, AU.ctx.currentTime - this.aStart) : this.t + dt;
+      if (this.wv) wsStep(this.wv, this.t - tPrev);
+      if (this.t > 0.025) this.trace.push([this.t, this.heard(this.t)]);
+      if (this.t >= this.Ttot) { this.run = false; this.fin = true; }
+    },
+    draw() {
+      const o = this.obs(), te = this.run ? this.t : 0, a = this.amb(te), k = vehK();
+      if (this.p.waves && this.wv && this.run) wsDraw(this.wv, { lw: 2.2 });
+      const dx = X(o.x) + 56;
+      ctx.strokeStyle = rgba(T.surface, 0.9); ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(dx, Y(LY)); ctx.lineTo(dx, Y(o.y)); ctx.stroke();
+      ctx.strokeStyle = T.ink; ctx.lineWidth = 2; ctx.setLineDash([5, 4]); ctx.beginPath(); ctx.moveTo(dx - 7, Y(LY)); ctx.lineTo(dx + 7, Y(LY)); ctx.moveTo(dx, Y(LY)); ctx.lineTo(dx, Y(o.y)); ctx.stroke(); ctx.setLineDash([]);
+      pill(`${this.p.d} m`, dx + 10, (Y(LY) + Y(o.y)) / 2, T.ink, 'left', 16);
+      if (this.p.los && this.run) {
+        const tr = this.te(this.t), g = this.amb(tr);
+        vehicle('amb', X(g.x) - SPK * k, Y(g.y), 1, { alpha: 0.32 });
+        ctx.setLineDash([9, 7]); ctx.strokeStyle = rgba(T.surface, 0.9); ctx.lineWidth = 6; ctx.beginPath(); ctx.moveTo(X(g.x), Y(g.y)); ctx.lineTo(X(o.x), Y(o.y)); ctx.stroke();
+        ctx.strokeStyle = T.b; ctx.lineWidth = 3; ctx.stroke(); ctx.setLineDash([]);
+        const th = Math.atan2(o.y - g.y, o.x - g.x);
+        ctx.strokeStyle = T.b; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(X(g.x), Y(g.y), 44, Math.min(0, th), Math.max(0, th), th < 0); ctx.stroke();
+        pill(`θ ${Math.round(Math.abs(th) * 180 / Math.PI)}°`, X(g.x) + 66 * Math.cos(th / 2), Y(g.y) + 66 * Math.sin(th / 2), T.b, 'center', 16);
+      }
+      vehicle('amb', X(a.x) - SPK * k, Y(a.y), 1, { siren: this.run });
+      personTop(X(o.x), Y(o.y), 30, -Math.PI / 2, T.shirt, this.drag ? T.accent : T.b);
+      pill('나', X(o.x), Y(o.y) + 42, T.b, 'center', 17);
+      scaleBar(10, '10 m');
+    },
+    hud() {
+      const f = this.run && this.trace.length ? this.trace[this.trace.length - 1][1] : null;
+      let fm = null;
+      if (this.run) {
+        const tr = this.te(this.t), g = this.amb(tr), o = this.obs(), c = (o.x - g.x) / Math.hypot(o.x - g.x, o.y - g.y), uc = this.uRun * Math.abs(c);
+        fm = `340/(340 ${c >= 0 ? '−' : '+'} ${uc.toFixed(1)}) × 500`;
+      }
+      return {
+        L: [],
+        M: [ro({ k: '구급차', v: `${this.p.u}`, u: `m/s · ${kmh(this.p.u)} km/h`, s: '사이렌 높은 음 500 Hz' })],
+        R: [ro({ k: '내가 듣는 소리', dot: T.b, v: f ? f1(f) : '—', u: 'Hz', big: true, f: fm || 'v/(v − v<sub>S</sub> cos θ) × f' })]
+      };
+    },
+    graph() {
+      const c = $('#gcv'), last = this.prev && this.prev.pts.length ? this.prev.pts[this.prev.pts.length - 1][0] : 0, xm = Math.ceil(Math.max(6, this.Ttot || this.Tr() + 0.8, last));
+      const us = [this.run || this.fin ? this.uRun : this.p.u]; if (this.prev) us.push(this.prev.u);
+      const um = Math.max(...us), hi = this.f0 * V / (V - um), lo = this.f0 * V / (V + um), st = um > 25 ? 50 : 25;
+      const y0 = Math.floor((lo - 6) / st) * st, y1 = Math.ceil((hi + 6) / st) * st, yt = []; for (let v = y0; v <= y1; v += st) yt.push(v);
+      const ser = []; if (this.prev) ser.push({ pts: this.prev.pts, col: T.muted, w: 2, alpha: 0.7 }); ser.push({ pts: this.trace, col: T.b, w: 3 });
+      plot(c, { x0: 0, x1: xm, y0, y1, yt, xt: Array.from({ length: Math.floor(xm / 2) + 1 }, (_, i) => i * 2), xf: v => v + ' s', series: ser, hl: [{ y: 500 }] });
+      return [this.prev ? `내가 들은 진동수 · 흐린 선: 이전 (${this.prev.d} m, ${kmh(this.prev.u)} km/h)` : '내가 들은 진동수', 'Hz'];
+    },
+    dock() {
+      return [{ t: 'go', label: '출발', busy: () => this.run }, { t: 'slider', label: '구급차 속력', key: 'u', min: 10, max: 40, step: 5, fmt: v => `${v} <small>m/s · ${kmh(v)} km/h</small>`, lock: () => this.run },
+        { t: 'slider', label: '길에서 나까지', key: 'd', min: 2, max: 20, step: 1, fmt: v => `${v} <small>m</small>`, lock: () => this.run, narrow: true },
+        { t: 'toggle', key: 'los', label: '시선 방향' }, { t: 'toggle', key: 'waves', label: '파면' }, { t: 'formula' }];
+    },
+    down(p) { const o = this.obs(); if (!this.run && Math.hypot(p.x - o.x, p.y - o.y) < Math.max(3, 34 / VW.sc)) { this.drag = true; return true; } },
+    move(p) { if (this.drag) { this.p.d = clamp(Math.round(p.y - LY), 2, 20); syncBars(); } },
+    up() { this.drag = false; },
+    onParam() { if (!this.run) this.uRun = this.p.u; }
+  },
+
+  /* ④ 관찰자가 움직일 때 */
+  Object.assign(Object.create(sirenSound), {
+    chip: '관찰자 이동', cap: '관찰자가 움직이면 파장은 그대로, 1초에 만나는 파면 수가 달라진다 · 100쪽',
+    view: { cx: 2, cy: -3.6, w: 40, h: 21 }, bg: 'road', K: SLOW,
+    p: { f: 500, u: 30, rulers: true },
+    Ly: -1.75,
+    enter() { this.build(); },
+    build() {
+      const u = this.p.u, Ly = this.Ly;
+      this.w = WS({ v: V, ems: [{ id: 's', x: 0, y: Ly, vx: 0, f: this.p.f, pre: 0.16 }],
+        rxs: [{ id: 'A', src: 's', x: -7, y: Ly, vx: -u, xmin: -21 }, { id: 'B', src: 's', x: 19, y: Ly, vx: -u, xmin: 10 }] });
+    },
+    step(dt) { wsStep(this.w, dt / this.K); },
+    draw() {
+      const w = this.w, k = vehK();
+      wsDraw(w);
+      vehicle('amb', X(SPK), Y(this.Ly), -1, { siren: true });
+      for (const [rx, col, kind] of [[w.rxs[0], T.a, 'car2'], [w.rxs[1], T.b, 'car']]) {
+        const p = wp(w, rx, w.t), x = X(p.x), y = Y(p.y); flashRing(rx, x, y, col);
+        const vh = vehicle(kind, x, y, -1, {});
+        if (this.p.u) arrowPx(x - vh.L / 2 - 10, y, x - vh.L / 2 - 48, y, col, 4);
+        pill(rx.id === 'A' ? 'A · 멀어짐' : 'B · 다가감', x, y + Math.max(40, 1.95 * VW.sc), col, 'center', 17);
+      }
+      rulers(w, 's', this.Ly, { show: this.p.rulers, names: ['λ', 'λ'] });
+      scaleBar(5, '5 m');
+    },
+    hud() {
+      const f = this.p.f, u = this.p.u;
+      return {
+        L: [ro({ k: 'A가 듣는 소리', dot: T.a, v: f1(f * (V - u) / V), u: 'Hz', s: `소리와 만나는 속력 ${V - u} m/s`, f: `(340 − ${u})/340 × ${f}` })],
+        M: [ro({ k: '관찰자 차', v: `${u}`, u: `m/s · ${kmh(u)} km/h`, s: `파장 ${(V / f).toFixed(2)} m 그대로` })],
+        R: [ro({ k: 'B가 듣는 소리', dot: T.b, v: f1(f * (V + u) / V), u: 'Hz', s: `소리와 만나는 속력 ${V + u} m/s`, f: `(340 + ${u})/340 × ${f}` })]
+      };
+    },
+    dock() {
+      return [{ t: 'play' }, { t: 'restart' }, { t: 'slider', label: '관찰자 속력', key: 'u', min: 0, max: 50, step: 5, fmt: v => `${v} <small>m/s · ${kmh(v)} km/h</small>` },
+        { t: 'sound', id: 'o', label: '원래 소리' }, { t: 'sound', id: 'A', label: 'A', dot: T.a }, { t: 'sound', id: 'B', label: 'B', dot: T.b },
+        { t: 'toggle', key: 'rulers', label: '파장 자' }, { t: 'formula' }];
+    },
+    sound(id) { const u = this.p.u; return { f: this.p.f, D: { o: 1, A: (V - u) / V, B: (V + u) / V }[id] }; },
+    onParam() { this.build(); }
+  }),
+
+  /* ⑤ 음속 돌파: 충격파 (옆에서 본 모습) */
+  {
+    chip: '음속 돌파', cap: '음원이 소리보다 빠르면 파면이 겹쳐 원뿔 모양의 충격파가 생긴다 · 107쪽',
+    view: { cx: -8, cy: 0, w: 130, h: 62 }, bg: 'sky', K: reduce ? 60 : 25,
+    p: { u: 400, cone: true },
+    enter() { this.build(); },
+    build() {
+      this.w = WS({ v: V, ems: [{ id: 's', x: -70, y: 0, vx: this.p.u, f: 100, xmax: 44, pre: 0.12, clip: [-1000, GROUND] }], rxs: [{ id: 'B', src: 's', x: 0, y: GROUND - 1.6 }] });
+    },
+    step(dt) { wsStep(this.w, dt / this.K); },
+    jetPos(t) { const w = this.w, e = w.ems[0]; return { x: e.x + e.vx * (t - w.t0), y: 0 }; },
+    draw() {
+      const w = this.w, p = this.jetPos(w.t), x = X(p.x), y = Y(p.y), u = this.p.u, yg = Y(GROUND);
+      wsDraw(w, { lw: 2.2 });
+      const rx = w.rxs[0], bx = X(rx.x);
+      if (rx.first != null && !reduce) { const age = (w.t - rx.first) * this.K; if (age >= 0 && age < 0.7) { const g = ctx.createRadialGradient(bx, yg - 20, 0, bx, yg - 20, 50 + age * 160); g.addColorStop(0, rgba(T.cone, 0.45 * (1 - age / 0.7))); g.addColorStop(1, rgba(T.cone, 0)); ctx.fillStyle = g; ctx.beginPath(); ctx.arc(bx, yg - 20, 50 + age * 160, 0, TAU); ctx.fill(); } }
+      flashRing(rx, bx, Y(rx.y), T.b);
+      personSide(bx, yg, Math.max(46, 1.75 * VW.sc * 2.4), T.shirt);
+      pill('B', bx, yg + 26, T.b, 'center', 17);
+      if (u > V && this.p.cone) {
+        const fs = w.fronts.filter(f => f.ep === w.ep);
+        if (fs.length) {
+          const age = w.t - fs[0].t0, Lc = age * Math.sqrt(u * u - V * V) * VW.sc, a = Math.asin(V / u);
+          ctx.save(); ctx.beginPath(); ctx.rect(0, 0, D.w, yg); ctx.clip();
+          const g = ctx.createLinearGradient(x, y, x - Lc * Math.cos(a), y); g.addColorStop(0, rgba(T.cone, 0.95)); g.addColorStop(1, rgba(T.cone, 0.2));
+          ctx.strokeStyle = g; ctx.lineWidth = 4; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x - Lc * Math.cos(a), y - Lc * Math.sin(a)); ctx.moveTo(x, y); ctx.lineTo(x - Lc * Math.cos(a), y + Lc * Math.sin(a)); ctx.stroke(); ctx.lineCap = 'butt';
+          ctx.restore();
+          ctx.strokeStyle = rgba(T.cone, 0.9); ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, 92, Math.PI, Math.PI + a); ctx.stroke();
+          pill(`θ ${(a * 180 / Math.PI).toFixed(0)}°`, x - 118 * Math.cos(a / 2), y - 118 * Math.sin(a / 2), T.cone, 'center', 16);
+        }
+      }
+      jetSide(x, y, Math.max(150, 15 * VW.sc), u > V);
+      scaleBar(20, '20 m');
+    },
+    hud() {
+      const u = this.p.u, rx = this.w.rxs[0], heard = rx.first != null && this.w.t >= rx.first;
+      let Bv, Bu = '', Bs;
+      if (u > V) { Bv = heard ? '쾅!' : '조용'; Bs = heard ? '충격파 도착' : '보이지만 아직 안 들림'; }
+      else { const fB = gateF(100, t => retard(t, tt => this.jetPos(tt), () => rx), this.w.t, 0.002); Bv = f1(fB); Bu = 'Hz'; Bs = '제트기 소리 100 Hz 기준'; }
+      return {
+        L: [ro({ k: '마하 수', v: (u / V).toFixed(2), s: `${u} m/s · ${kmh(u)} km/h`, big: true, f: `${u} ÷ 340` })],
+        M: u > V ? [ro({ k: '충격파 반꼭지각', dot: T.cone, v: `${(Math.asin(V / u) * 180 / Math.PI).toFixed(0)}°`, f: `sin θ = 340 ÷ ${u}` })] : [],
+        R: [ro({ k: 'B (땅)', dot: T.b, v: Bv, u: Bu, s: Bs })]
+      };
+    },
+    dock() {
+      return [{ t: 'play' }, { t: 'restart' }, { t: 'slider', label: '비행 속력', key: 'u', min: 100, max: 600, step: 10, fmt: v => `${v} <small>m/s · 마하 ${(v / V).toFixed(2)}</small>` },
+        { t: 'sound', id: 'B', label: 'B에서 듣기', dot: T.b }, { t: 'toggle', key: 'cone', label: '충격파 선' }, { t: 'formula' }];
+    },
+    listen() { AU.jet = jetVoice(AU.bus); },
+    tickAudio() {
+      const J = AU.jet; if (!J) return;
+      const w = this.w, rx = w.rxs[0], u = this.p.u, t = w.t;
+      if (J.ep !== w.ep) { J.ep = w.ep; J.boomed = false; }
+      let a = 0, d = 1;
+      if (u < V) {
+        d = clamp(gateF(1, tt => retard(tt, x => this.jetPos(x), () => rx), t, 0.002), 0.3, 9);
+        const s = this.jetPos(retard(t, x => this.jetPos(x), () => rx)), r = Math.hypot(s.x - rx.x, s.y - rx.y);
+        a = 0.9 * Math.min(1, 26 / r);
+      } else if (rx.first != null && t >= rx.first) {          // 충격파가 닿기 전엔 아무 소리도 없다가 "쾅", 그 뒤에 굉음이 밀려옴
+        if (!J.boomed) { J.boomed = true; J.boomAt = performance.now(); sonicBoom(AU.bus); }
+        const s = this.jetPos(t), r = Math.hypot(s.x - rx.x, s.y - rx.y), ct = (s.x - rx.x) / r;
+        d = clamp(V / (V + u * ct), 0.3, 1.2); a = 0.6 * Math.min(1, 26 / r) * clamp((performance.now() - J.boomAt - 250) / 900, 0, 1);
+      }
+      J.set(a, d);
+    },
+    onParam() { this.build(); }
+  },
+
+  /* ⑥ 스피드 건: 반사된 초음파 */
+  {
+    chip: '스피드 건', cap: '다가오는 차에서 반사된 파동은 진동수가 커진다 (도플러 효과가 두 번) · 102쪽',
+    view: { cx: 3, cy: 1.2, w: 40, h: 21 }, bg: 'road', K: SLOW,
+    p: { u: 30 }, Ly: 1.75, gx: 15,
+    enter() { this.build(); },
+    build() {
+      const f = 40000, skip = Math.round(0.75 / (V / f)), Ly = this.Ly, gx = this.gx - 0.48;
+      this.skip = skip;
+      this.w = WS({ v: V, ems: [{ id: 'g', x: gx, y: Ly, f, skip, arc: 'L', pre: 0.12, clip: [Ly - 2.2, Ly - 0.06] }],
+        rfs: [{ id: 'c', src: 'g', x: -8, y: Ly, vx: this.p.u, xmax: 8.4, reflect: true, col: T.wave2, arc: 'R', clip: [Ly + 0.06, Ly + 2.2] }] });   // x = 자동차 앞 범퍼
+    },
+    step(dt) { wsStep(this.w, dt / this.K); },
+    draw() {
+      const w = this.w, c = w.rfs[0], fx = wp(w, c, w.t).x, k = vehK(), Ly = this.Ly, gX = X(this.gx - 0.48);
+      for (const [y0, y1, col] of [[Ly - 2.2, Ly - 0.06, T.wave], [Ly + 0.06, Ly + 2.2, T.wave2]]) {
+        const beam = ctx.createLinearGradient(gX, 0, X(fx), 0); beam.addColorStop(0, rgba(col, 0.16)); beam.addColorStop(1, rgba(col, 0.03));
+        ctx.fillStyle = beam; ctx.fillRect(X(fx), Y(y0), gX - X(fx), Y(y1) - Y(y0));
+      }
+      wsDraw(w, { lw: 2.6, cut: { src: 'g', x: X(fx) } });
+      const vh = vehicle('car', X(fx) - VEH.car[0] / 2 * k, Y(Ly), 1, { color: T.car });
+      if (this.p.u) arrowPx(X(fx) + 10, Y(Ly), X(fx) + 48, Y(Ly), T.ink, 4);
+      const ss = speedSensor(this.gx, Ly);
+      pill('측정기', X(this.gx) + 18, ss.bottom + 20, T.ink, 'left', 16);
+      pill('보낸 초음파', gX - 70, Y(Ly - 2.2) - 18, T.wave, 'center', 15);
+      pill('반사파', gX - 70, Y(Ly + 2.2) + 18, T.wave2, 'center', 15);
+      scaleBar(5, '5 m');
+    },
+    hud() {
+      const u = this.p.u, f = 40000, fr = f * (V + u) / (V - u);
+      return {
+        L: [ro({ k: '자동차', dot: T.car, v: `${u}`, u: `m/s · ${kmh(u)} km/h` })],
+        M: [ro({ k: '보낸 초음파', dot: T.wave, v: '40,000', u: 'Hz' })],
+        R: [ro({ k: '되돌아온 초음파', dot: T.wave2, v: f1(fr), u: 'Hz', s: `+${f1(fr - f)} Hz`, f: `(340 + ${u})/(340 − ${u}) × 40,000` })]
+      };
+    },
+    dock() { return [{ t: 'play' }, { t: 'restart' }, { t: 'slider', label: '자동차 속력', key: 'u', min: 0, max: 60, step: 5, fmt: v => `${v} <small>m/s · ${kmh(v)} km/h</small>` }, { t: 'formula' }]; },
+    note() { return `파면은 ${this.skip}개마다 1개`; },
+    onParam() { this.build(); }
+  },
+
+  /* ⑦ 두 소방차와 경찰차: 맥놀이 (논술형 02). 카메라가 경찰차를 따라감 */
+  {
+    chip: '두 소방차', cap: '경찰차에는 두 사이렌이 조금 다른 진동수로 들려 맥놀이가 생긴다 · 119쪽',
+    get view() { return { cx: this.Pp(this.run ? this.t : 0).x + 1, cy: 1.2, w: clamp(D.w / 9, 36, 96), h: 44 }; },
+    bg: 'road', K: 1, realtime: true,
+    p: { vp: 15 }, vB: 30, f0: 500, dur: 4.5, t: 0, run: false,
+    enter() { this.t = 0; this.run = false; this.res = this.calc(); },
+    A() { return { x: -1, y: LY }; },
+    Bp(t) { return { x: 29 + this.vB * t, y: LY }; },
+    Pp(t) { return { x: 14 + this.p.vp * t, y: LY }; },
+    calc() { const vp = this.p.vp; return { fa: this.f0 * (V - vp) / V, fb: this.f0 * (V + vp) / (V + this.vB) }; },
+    primary() { this.start(); },
+    start() {
+      if (this.run) return;
+      this.res = this.calc(); this.t = 0; this.run = true;
+      this.aStart = audioOK() ? beatSound(this) : null;
+    },
+    step(dt) { if (!this.run) return; this.t = this.aStart != null && AU.ctx && AU.key === 'beat' ? Math.max(0, AU.ctx.currentTime - this.aStart) : this.t + dt; if (this.t >= this.dur) this.run = false; },
+    draw() {
+      const t = this.run ? this.t : 0, a = this.A(), b = this.Bp(t), p = this.Pp(t);
+      const on = x => X(x) > 40 && X(x) < D.w - 40;       // 화면 안이면 이름표, 밖이면 가장자리 표지
+      vehicle('fire', X(a.x), Y(a.y), 1, { siren: true, minK: 9 });
+      if (on(a.x)) pill('소방차 A · 정지', X(a.x), Y(a.y) - 46, T.ink, 'center', 16);
+      else edgeTag(a.x, a.y - 3.2, `소방차 A · ${Math.round(p.x - a.x)} m 뒤`, T.ink);
+      const vb = vehicle('fire', X(b.x), Y(b.y), 1, { siren: true, minK: 9 });
+      arrowPx(X(b.x) + vb.L / 2 + 10, Y(b.y), X(b.x) + vb.L / 2 + 52, Y(b.y), T.ink, 4);
+      if (on(b.x)) pill(`소방차 B · ${kmh(this.vB)} km/h`, X(b.x), Y(b.y) - 46, T.ink, 'center', 16);
+      else edgeTag(b.x, b.y - 3.2, `소방차 B · ${Math.round(b.x - p.x)} m 앞`, T.ink);
+      const vp = vehicle('police', X(p.x), Y(p.y), 1, { minK: 9 });
+      arrowPx(X(p.x) + vp.L / 2 + 10, Y(p.y), X(p.x) + vp.L / 2 + 42, Y(p.y), T.b, 4);
+      pill(`경찰차 · ${kmh(this.p.vp)} km/h`, X(p.x), Y(p.y) + 46, T.b, 'center', 16);
+      scaleBar(10, '10 m');
+    },
+    hud() {
+      const r = this.res, vp = this.p.vp;
+      return {
+        L: [ro({ k: 'A 사이렌 (경찰차에서)', v: f1(r.fa), u: 'Hz', compact: true, f: `(340 − ${vp})/340 × 500` })],
+        M: [ro({ k: '맥놀이', v: Math.abs(r.fa - r.fb).toFixed(2), u: '번/초', s: '두 사이렌 모두 500 Hz', big: true, f: '|f<sub>A</sub> − f<sub>B</sub>|' })],
+        R: [ro({ k: 'B 사이렌 (경찰차에서)', v: f1(r.fb), u: 'Hz', compact: true, f: `(340 + ${vp})/(340 + 30) × 500` })]
+      };
+    },
+    gains(t) { const p = this.Pp(t).x, rA = Math.max(6, p - this.A().x), rB = Math.max(6, this.Bp(t).x - p); return [Math.pow(14 / rA, 0.7), Math.pow(14 / rB, 0.7)]; },
+    graph() {
+      const c = $('#gcv'), [w, h] = fit(c), g = c.getContext('2d');
+      g.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); g.clearRect(0, 0, w, h);
+      g.fillStyle = T.scope; g.beginPath(); g.roundRect(0, 0, w, h, 8); g.fill();
+      g.strokeStyle = T['scope-grid']; g.lineWidth = 1; g.beginPath();
+      for (let i = 1; i < 10; i++) { g.moveTo(i * w / 10, 0); g.lineTo(i * w / 10, h); } for (let j = 1; j < 4; j++) { g.moveTo(0, j * h / 4); g.lineTo(w, j * h / 4); } g.stroke();
+      const { fa, fb } = this.res, Tw = 2.0, t1 = this.run ? this.t : this.dur, cy = h / 2, A = h * 0.21, df = fa - fb;
+      g.save(); g.shadowColor = T['scope-trace']; g.shadowBlur = 8 * D.dpr; g.strokeStyle = T['scope-trace']; g.lineWidth = 1.6; g.beginPath();
+      const N = Math.round(w * 2); let pen = false;
+      for (let i = 0; i <= N; i++) {
+        const tt = t1 - Tw + i / N * Tw; if (tt < 0) { pen = false; continue; }
+        const [ga, gb] = this.gains(tt), m = Math.max(ga, gb);
+        const yv = cy - (ga * Math.cos(TAU * 24 * tt) + gb * Math.cos(TAU * (24 - df) * tt)) / m * A;   // 반송파는 화면용으로 느리게(24 Hz), 맥놀이는 실제 값
+        pen ? g.lineTo(i / N * w, yv) : g.moveTo(i / N * w, yv); pen = true;
+      }
+      g.stroke(); g.restore();
+      return ['경찰차 안에서 들리는 소리 (오실로스코프)', '최근 2초'];
+    },
+    dock() { return [{ t: 'go', label: '경찰차에서 듣기', busy: () => this.run }, { t: 'slider', label: '경찰차 속력', key: 'vp', min: 5, max: 25, step: 1, fmt: v => `${v} <small>m/s · ${kmh(v)} km/h</small>`, lock: () => this.run }, { t: 'formula' }]; },
+    onParam() { this.res = this.calc(); }
+  },
+
+  /* ⑧ 물방개 (마무리 07 유형) */
+  {
+    chip: '물방개', cap: '물방개가 헤엄치는 앞쪽에서 물결파의 진동수가 가장 크다 · 117쪽 07번',
+    view: { cx: 0.8, cy: 0.45, w: 1.66, h: 0.94 }, bg: 'water', K: reduce ? 2.5 : 1,
+    p: { U: 0.1, meas: true },
+    enter() { this.build(); },
+    build() {
+      const H = 0.9, y1 = H * 0.25, y2 = H * 0.75, c = rgba('#ffffff', 0.9), U = this.p.U;
+      this.w = WS({ v: 0.25, ems: [{ id: 'b1', x: 0.8, y: y1, f: 5, col: c, clip: [-5, H / 2], pre: 4 }, { id: 'b2', x: 0.42, y: y2, vx: U, f: 5, col: c, clip: [H / 2, 5], xmax: 1.3, pre: U ? Math.min(2.5, 0.25 / U) : 4 }],
+        rxs: [{ id: 'A', src: 'b1', x: 0.25, y: y1 }, { id: 'B', src: 'b1', x: 1.35, y: y1 }, { id: 'C', src: 'b2', x: 0.12, y: y2 }, { id: 'D', src: 'b2', x: 1.48, y: y2 }] });
+    },
+    step(dt) { wsStep(this.w, dt / this.K); },
+    draw() {
+      const w = this.w;
+      wsDraw(w, { lw: 2.2 });
+      const yd = Y(0.45);
+      ctx.fillStyle = 'rgba(0,0,0,.12)'; ctx.fillRect(0, yd + 2, D.w, 3);
+      ctx.fillStyle = rgba(T.surface, 0.88); ctx.fillRect(0, yd - 2, D.w, 4);
+      const Lb = Math.max(46, 0.045 * VW.sc);
+      for (const e of w.ems) { const p = wp(w, e, w.t); beetle(X(p.x), Y(p.y), Lb, !!e.vx); if (e.vx) arrowPx(X(p.x) + Lb * 0.75, Y(p.y), X(p.x) + Lb * 0.75 + 44, Y(p.y), T.ink, 3.5); }
+      const U = this.p.U, f = 5, v = 0.25, fv = { A: f, B: f, C: f * v / (v + U), D: f * v / (v - U) };
+      for (const rx of w.rxs) {
+        const x = X(rx.x), y = Y(rx.y); flashRing(rx, x, y, T.b);
+        buoy(x, y); pill(rx.id, x, y - 32, T.ink, 'center', 17);
+        if (this.p.meas) pill(`${fv[rx.id].toFixed(2)} Hz`, x, y + 34, T.b, 'center', 16);
+      }
+      pill('(가) 제자리', 14, yd - 24, T.ink, 'left', 16); pill(U ? `(나) ${Math.round(U * 100)} cm/s로 헤엄` : '(나) 제자리', 14, yd + 24, T.ink, 'left', 16);
+      scaleBar(0.1, '10 cm');
+    },
+    hud() { const U = this.p.U; return { L: [], M: [ro({ k: '물결 속력', v: '25', u: 'cm/s' })], R: [ro({ k: '물결파 (파원)', v: '5', u: 'Hz', s: U ? `D ${(5 * 0.25 / (0.25 - U)).toFixed(2)} Hz · C ${(5 * 0.25 / (0.25 + U)).toFixed(2)} Hz` : '어디서나 5 Hz' })] }; },
+    dock() { return [{ t: 'play' }, { t: 'restart' }, { t: 'seg', label: '(나) 물방개 속력', key: 'U', opts: [[0, '0'], [0.1, '10 cm/s'], [0.2, '20 cm/s']] }, { t: 'toggle', key: 'meas', label: '진동수' }]; },
+    onParam() { this.build(); }
+  }
+];
+
+/* ---------- 실제 속도 장면의 소리 (미리 계산한 곡선으로 정확히 맞춤) ---------- */
+function passBySound(s) {          // ③ 지나가는 구급차: 사이렌 + 엔진·타이어 + 거리 감쇠 + 좌우 + 공기 흡수
+  const bus = newBus(), c = AU.ctx, st = c.currentTime + 0.06, Tt = s.Ttot, o = s.obs();
+  AU.key = 'pass';
+  const N = Math.max(64, Math.ceil(Tt * 120));
+  const Dk = new Float32Array(N), lfoF = new Float32Array(N), vS = new Float32Array(N), fc = new Float32Array(N), pan = new Float32Array(N), road = new Float32Array(N), eng = new Float32Array(N), engF = new Float32Array(N);
+  for (let i = 0; i < N; i++) {
+    const t = i / (N - 1) * Tt, te = s.te(t), e = s.amb(te), r = Math.max(1.5, Math.hypot(o.x - e.x, o.y - e.y));
+    const d = clamp((s.te(t + 0.01) - s.te(t - 0.01)) / 0.02, 0.3, 3), fade = Math.min(1, t / 0.4, (Tt - t) / 0.6);
+    Dk[i] = d; lfoF[i] = SIREN.rate * d; engF[i] = 64 * d;
+    vS[i] = 0.34 * Math.min(1.35, 8 / r) * fade;
+    fc[i] = clamp(16000 * Math.pow(8 / r, 0.75), 2200, 16000);
+    const ec = { x: e.x - SPK, y: e.y }, rc = Math.max(1.5, Math.hypot(o.x - ec.x, o.y - ec.y));
+    pan[i] = clamp((e.x - o.x) / r, -1, 1) * 0.85;
+    road[i] = 0.55 * Math.min(1.4, 6 / rc) * fade; eng[i] = 0.3 * Math.min(1.4, 6 / rc) * fade;
+  }
+  const sv = sirenVoice(bus, s.f0, Dk[0], st);
+  sv.mul.gain.setValueCurveAtTime(Dk, st, Tt); sv.lfo.frequency.setValueCurveAtTime(lfoF, st, Tt);
+  sv.vol.gain.setValueCurveAtTime(vS, st, Tt); sv.air.frequency.setValueCurveAtTime(fc, st, Tt);
+  if (sv.pan) sv.pan.pan.setValueCurveAtTime(pan, st, Tt);
+  const rg = amp(0), eg = amp(0), np = c.createStereoPanner ? c.createStereoPanner() : null;
+  chain(noise(st), biquad('bandpass', 850, 0.6), biquad('lowpass', 2600, 0.5), rg);
+  const eo = keep(c.createOscillator()); eo.type = 'sawtooth'; eo.frequency.value = engF[0];
+  chain(eo, biquad('lowpass', 240, 1.6), eg); eo.start(st);
+  rg.gain.setValueCurveAtTime(road, st, Tt); eg.gain.setValueCurveAtTime(eng, st, Tt); eo.frequency.setValueCurveAtTime(engF, st, Tt);
+  if (np) { rg.connect(np); eg.connect(np); np.connect(bus); np.pan.setValueCurveAtTime(pan, st, Tt); } else { rg.connect(bus); eg.connect(bus); }
+  const amb = amp(0); chain(noise(st), biquad('lowpass', 420, 0.5), amb, bus);           // 도시의 낮은 배경 소음
+  amb.gain.setValueCurveAtTime(Float32Array.from([0, 0.12, 0.12, 0.12, 0]), st, Tt);
+  for (const x of AU.srcs) { try { x.stop(st + Tt + 0.1); } catch (e) {} }
+  return st;
+}
+function beatSound(s) {            // ⑦ 경찰차 안: 두 사이렌(일정한 음) + 거리 감쇠 + 차 안 소음
+  const bus = newBus(), c = AU.ctx, st = c.currentTime + 0.05, Tt = s.dur, N = Math.ceil(Tt * 60);
+  AU.key = 'beat';
+  const cabin = biquad('lowpass', 3400, 0.5); cabin.connect(bus);
+  [s.res.fa, s.res.fb].forEach((f, j) => {
+    const sv = sirenVoice(cabin, f, 1, st, true), a = new Float32Array(N);
+    for (let i = 0; i < N; i++) { const t = i / (N - 1) * Tt; a[i] = 0.2 * s.gains(t)[j] * Math.min(1, t / 0.15, (Tt - t) / 0.3); }
+    sv.vol.gain.setValueCurveAtTime(a, st, Tt);
+  });
+  const rum = amp(0); chain(noise(st), biquad('lowpass', 150, 0.7), biquad('lowpass', 220, 0.5), rum, bus);
+  rum.gain.setValueCurveAtTime(Float32Array.from([0, 1.3, 1.3, 1.3, 0]), st, Tt);
+  for (const x of AU.srcs) { try { x.stop(st + Tt + 0.1); } catch (e) {} }
+  return st;
+}
+
+/* ---------- 작은 그래프 ---------- */
+function plot(c, o) {
+  const [w, h] = fit(c), g = c.getContext('2d');
+  g.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); g.clearRect(0, 0, w, h);
+  const L = 44, R = 12, Tp = 8, B = 20, pw = w - L - R, ph = h - Tp - B;
+  const Xp = x => L + (x - o.x0) / (o.x1 - o.x0) * pw, Yp = y => Tp + ph - (y - o.y0) / (o.y1 - o.y0) * ph;
+  g.font = `12px ${T.mono}`; g.lineWidth = 1; g.textBaseline = 'middle';
+  for (const yv of o.yt) { g.strokeStyle = rgba(T.ink, 0.12); g.beginPath(); g.moveTo(L, Yp(yv)); g.lineTo(w - R, Yp(yv)); g.stroke(); g.fillStyle = T.muted; g.textAlign = 'right'; g.fillText(yv, L - 6, Yp(yv)); }
+  g.textBaseline = 'top';
+  o.xt.forEach((xv, i) => { g.fillStyle = T.muted; g.textAlign = i === o.xt.length - 1 && Xp(xv) > w - R - 14 ? 'right' : 'center'; g.fillText(o.xf(xv), g.textAlign === 'right' ? w - 2 : Xp(xv), h - B + 5); });
+  for (const hl of o.hl || []) { g.setLineDash([5, 4]); g.strokeStyle = T.muted; g.beginPath(); g.moveTo(L, Yp(hl.y)); g.lineTo(w - R, Yp(hl.y)); g.stroke(); g.setLineDash([]); }
+  g.save(); g.beginPath(); g.rect(L, Tp - 3, pw, ph + 6); g.clip();
+  for (const s of o.series) { g.globalAlpha = s.alpha ?? 1; g.strokeStyle = s.col; g.lineWidth = s.w; g.lineJoin = 'round'; g.beginPath(); s.pts.forEach(([x, y], i) => i ? g.lineTo(Xp(x), Yp(y)) : g.moveTo(Xp(x), Yp(y))); g.stroke(); }
+  g.restore(); g.globalAlpha = 1;
+}
+
+/* =====================================================================
+   화면 구성과 조작
+   ===================================================================== */
+let cur = SCENES[0], PB = [], DK = [];
+function renderChips() {
+  $('#chips').innerHTML = SCENES.map((s, i) => `<button class="chip" data-i="${i}" aria-pressed="${i === S.i}" title="${i + 1}"><b>${i + 1}</b>${s.chip}</button>`).join('');
+}
+function go(i) {
+  S.i = clamp(i, 0, SCENES.length - 1); stopAudio(); S.playing = !reduce;
+  cur = SCENES[S.i]; cur.enter(); setView(cur.view);
+  document.querySelectorAll('.chip').forEach((b, j) => b.setAttribute('aria-pressed', String(j === S.i)));
+  renderBars(); txt($('#caption'), cur.cap); $('#caption').hidden = !S.caption;
+  $('#gpanel').hidden = !cur.graph; BG.key = ''; hudKey = '';
+  renderHud();
+  try { localStorage.setItem('doppler3-scene', String(S.i)); } catch (e) {}
+}
+function renderBars() {
+  const items = cur.dock();
+  PB = items.filter(d => ['play', 'restart', 'go'].includes(d.t));
+  const snd = items.filter(d => d.t === 'sound');
+  DK = items.filter(d => ['slider', 'seg'].includes(d.t));
+  const tg = items.filter(d => d.t === 'toggle' || d.t === 'formula');
+  let pb = PB.map((d, i) => {
+    if (d.t === 'play') return `<button class="pbtn alt" data-pb="${i}" title="Space"></button><div class="seg speed"><button data-speed="1">보통</button><button data-speed="0.3">느리게</button></div>`;
+    if (d.t === 'restart') return `<button class="pbtn alt" data-pb="${i}">처음부터</button>`;
+    return `<button class="pbtn" data-pb="${i}" title="Space"></button>`;
+  }).join('');
+  if (snd.length) pb += `<div class="seg snd" aria-label="소리"><button data-snd="">소리 끔</button>${snd.map(s => `<button data-snd="${s.id}">${s.dot ? `<i class="dot" style="background:${s.dot}"></i>` : ''}${s.label}</button>`).join('')}</div>`;
+  pb += '<span class="timenote" id="timenote"></span>';
+  $('#playbar').innerHTML = pb;
+  let dk = DK.map((d, i) => {
+    if (d.t === 'slider') return `<div class="dg slider"${d.narrow ? ' style="flex-grow:.6"' : ''}><label for="sl${i}">${d.label}<output id="so${i}"></output></label><input type="range" id="sl${i}" data-dk="${i}" min="${d.min}" max="${d.max}" step="${d.step}"></div>`;
+    return `<div class="dg"><span>${d.label}</span><div class="seg">${d.opts.map(([v, l]) => `<button data-dk="${i}" data-v="${v}">${l}</button>`).join('')}</div></div>`;
+  }).join('');
+  if (tg.length) dk += `<div class="dg"><div class="tgs">${tg.map(d => d.t === 'formula' ? '<button class="tg" data-tg="formula">식</button>' : `<button class="tg" data-tg="${d.key}">${d.label}</button>`).join('')}</div></div>`;
+  $('#dock').innerHTML = dk;
+  syncBars();
+}
+function syncBars() {
+  PB.forEach((d, i) => {
+    const el = document.querySelector(`#playbar [data-pb="${i}"]`); if (!el) return;
+    if (d.t === 'play') { txt(el, S.playing ? '❚❚' : '▶'); el.setAttribute('aria-label', S.playing ? '멈춤' : '재생'); }
+    if (d.t === 'go') { txt(el, d.busy() ? '진행 중…' : `▶ ${d.label}`); el.disabled = d.busy(); }
+  });
+  document.querySelectorAll('#playbar [data-speed]').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.speed === S.speed)));
+  document.querySelectorAll('#playbar [data-snd]').forEach(b => b.setAttribute('aria-pressed', String((['pass', 'beat'].includes(AU.key) ? '' : AU.key || '') === b.dataset.snd)));
+  const tn = $('#timenote');
+  if (tn) {
+    const k = Math.round(cur.K / S.speed);
+    let s = !cur.realtime && !S.playing ? '일시정지' : cur.realtime || k <= 1 ? '실제 속도' : `실제보다 ${k}배 느림`;
+    if (cur.note && (S.playing || cur.realtime)) s += ' · ' + cur.note();
+    txt(tn, s);
+  }
+  DK.forEach((d, i) => {
+    if (d.t === 'slider') { const el = $('#sl' + i); if (!el) return; if (document.activeElement !== el) el.value = cur.p[d.key]; el.disabled = !!(d.lock && d.lock()); html($('#so' + i), d.fmt(cur.p[d.key])); }
+    else document.querySelectorAll(`#dock [data-dk="${i}"]`).forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === cur.p[d.key])));
+  });
+  document.querySelectorAll('#dock [data-tg]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.tg === 'formula' ? S.formula : !!cur.p[b.dataset.tg])));
+}
+function roHTML(o, compact) {
+  const dot = o.dot ? `<i style="background:${o.dot}"></i>` : '';
+  let h = compact
+    ? `<div class="ro"><span>${o.k}</span><b>${o.v}${o.u ? `<small>${o.u}</small>` : ''}</b></div>`
+    : `<div class="ro-k">${dot}${o.k}</div><div class="ro-db"><b>${o.v}</b>${o.u ? `<small>${o.u}</small>` : ''}</div>`;
+  if (o.s) h += `<div class="ro-sub${compact ? ' ro-opt' : ''}">${o.s}</div>`;
+  if (o.f && S.formula) h += `<div class="ro-f">${o.f}</div>`;
+  return h;
+}
+let hudKey = '';
+function renderHud() {
+  const h = cur.hud(), parts = [];
+  if (h.M && h.M.length) parts.push(h.M.map(o => roHTML(o, o.compact ?? !o.big)).join(''));
+  const lr = ['L', 'R'].filter(s => h[s] && h[s].length).map(s => h[s].map(o => roHTML(o, !!o.compact)).join(''));
+  if (lr.length) parts.push(lr.join(h.L && h.L.length && h.L[0].compact ? '' : '<div class="ro-sep"></div>'));
+  const s = parts.join('<div class="ro-sep"></div>');
+  if (s !== hudKey) { $('#readout').innerHTML = s; hudKey = s; }
+  if (cur.graph) { const g = cur.graph(); txt($('#gTitle'), g[0]); txt($('#gUnit'), g[1]); }
+}
+function toggleSound(id) {
+  if (!id || AU.key === id) { stopAudio(); return; }
+  if (!cur.listen || !audioOK()) return;
+  newBus(); AU.key = id; cur.listen(id);
+}
+
+$('#chips').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b) go(+b.dataset.i); });
+$('#playbar').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.pb != null) {
+    const d = PB[+b.dataset.pb];
+    if (d.t === 'play') S.playing = !S.playing;
+    else if (d.t === 'restart') cur.enter();
+    else if (d.t === 'go') cur.primary();
+  } else if (b.dataset.speed) S.speed = +b.dataset.speed;
+  else if (b.dataset.snd != null) toggleSound(b.dataset.snd);
+  syncBars(); renderHud();
+});
+$('#dock').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.dk != null) { const d = DK[+b.dataset.dk]; cur.p[d.key] = +b.dataset.v; cur.onParam(); }
+  else if (b.dataset.tg) {
+    if (b.dataset.tg === 'formula') { S.formula = !S.formula; try { localStorage.setItem('doppler3-formula', S.formula ? '1' : '0'); } catch (err) {} }
+    else cur.p[b.dataset.tg] = !cur.p[b.dataset.tg];
+  }
+  syncBars(); renderHud();
+});
+$('#dock').addEventListener('input', e => {
+  const r = e.target.closest('input[data-dk]'); if (!r) return;
+  const d = DK[+r.dataset.dk]; cur.p[d.key] = +r.value; cur.onParam(); syncBars(); renderHud();
+});
+$('#capBtn').addEventListener('click', () => { S.caption = !S.caption; $('#caption').hidden = !S.caption; $('#capBtn').setAttribute('aria-pressed', String(S.caption)); try { localStorage.setItem('doppler3-cap', S.caption ? '1' : '0'); } catch (e) {} });
+function toggleFS() {
+  try {
+    if (document.fullscreenElement) document.exitFullscreen();
+    else { const el = $('#app'), fn = el.requestFullscreen || el.webkitRequestFullscreen; if (fn) { const p = fn.call(el); if (p && p.catch) p.catch(() => {}); } }
+  } catch (e) {}
+}
+$('#fsBtn').addEventListener('click', toggleFS);
+document.addEventListener('fullscreenchange', () => { txt($('#fsBtn'), document.fullscreenElement ? '전체 화면 끝' : '전체 화면'); resize(); });
+document.addEventListener('keydown', e => {
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
+  const tg = e.target, onRange = !!tg.matches?.('input[type="range"]');
+  if (!onRange && tg.matches?.('input, textarea, select')) return;
+  if (e.key === ' ') { e.preventDefault(); if (cur.primary) cur.primary(); else S.playing = !S.playing; syncBars(); renderHud(); return; }
+  if (/^[1-9]$/.test(e.key) && +e.key <= SCENES.length) { go(+e.key - 1); return; }
+  if (e.key === 'f' || e.key === 'F') { toggleFS(); return; }
+  if (e.key === 'c' || e.key === 'C') { $('#capBtn').click(); return; }
+  if (onRange) return;                 // 화살표는 슬라이더 몫
+  if (cur.obs && !cur.run && (e.key === 'ArrowUp' || e.key === 'ArrowDown') && tg === cv) { e.preventDefault(); cur.p.d = clamp(cur.p.d + (e.key === 'ArrowUp' ? -1 : 1), 2, cur.dmax || 20); syncBars(); }
+});
+const pe = e => { const r = cv.getBoundingClientRect(); return toW(e.clientX - r.left, e.clientY - r.top); };
+cv.addEventListener('pointerdown', e => { if (cur.down && cur.down(pe(e))) cv.setPointerCapture(e.pointerId); });
+cv.addEventListener('pointermove', e => {
+  if (cur.move) cur.move(pe(e));
+  if (cur.obs) { const o = cur.obs(), p = pe(e); cv.style.cursor = cur.drag ? 'grabbing' : !cur.run && Math.hypot(p.x - o.x, p.y - o.y) < Math.max(3, 34 / VW.sc) ? 'grab' : 'default'; } else cv.style.cursor = 'default';
+});
+cv.addEventListener('pointerup', () => { if (cur.up) cur.up(); });
+cv.addEventListener('pointercancel', () => { if (cur.up) cur.up(); });
+
+/* ---------- 시작과 반복 (시간 기반: 창이 가려져도 같은 속도로 흐름) ---------- */
+readTheme(); resize();
+new ResizeObserver(resize).observe($('#stage'));
+renderChips();
+try {
+  if (localStorage.getItem('doppler3-cap') === '0') S.caption = false;
+  if (localStorage.getItem('doppler3-formula') === '1') S.formula = true;
+  const i = +(localStorage.getItem('doppler3-scene') || 0); if (i >= 0 && i < SCENES.length) S.i = i;
+} catch (e) {}
+$('#capBtn').setAttribute('aria-pressed', String(S.caption));
+go(S.i);
+let last = performance.now(), tick = 0, pending = false;
+function loop(now) { pending = false; frame(now); request(); }
+function request() { if (!pending) { pending = true; requestAnimationFrame(loop); } }
+setInterval(() => { if (performance.now() - last > 300) frame(performance.now()); }, 100);
+function frame(now) {
+  let el = Math.min(1, Math.max(0, (now - last) / 1000)); last = now;
+  if (cur.realtime) while (el > 1e-6) { const d = Math.min(0.05, el); cur.step(d); el -= d; }
+  else if (S.playing) { el *= S.speed; while (el > 1e-6) { const d = Math.min(0.05, el); cur.step(d); el -= d; } }
+  setView(cur.view);
+  if (cur.tickAudio) cur.tickAudio();
+  if (AU.siren && AU.key && cur.sound) { const s = cur.sound(AU.key), k = s.f + '|' + s.D; if (k !== AU.last) { AU.siren.set(s.f, s.D); AU.last = k; } }
+  ctx.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); ctx.globalAlpha = 1; ctx.setLineDash([]); noShadow(); ctx.filter = 'none';
+  drawBackground(cur.bg);
+  cur.draw();
+  if ((tick = (tick + 1) % 4) === 0) { renderHud(); syncBars(); }
+}
+request();
+})();
+</script>

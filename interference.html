@@ -1,0 +1,865 @@
+<title>두 스피커 간섭</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* TEACHER-DEMO v3 — 교사용 시연 도구 기준안
+   Layout: 얇은 상단 바(수업 순서 장면 칩) / 화면을 채우는 3D 무대 + 유리 카드 측정값 / 아래 조작 독 */
+:root {
+  --bg: #e9edf1;
+  --surface: #ffffff;
+  --surface-2: #f3f5f8;
+  --ink: #141c25;
+  --muted: #5a6573;
+  --line: #d3dae2;
+  --accent: #0b6b70;
+  --accent-ink: #ffffff;
+  --on-strong: #ffffff;
+  --s1: #0a7f86;
+  --s2: #d06a14;
+  --hi: #e2553f;
+  --lo: #2c6fd4;
+  --heat: #f0a20f;
+  --nodal: #6a3fd6;
+  --anti: #17955a;
+  --stage: #dfe5ea;
+  --wall: #eef1f3;
+  --floor-a: #d8dcd5;
+  --floor-b: #d1d6ce;
+  --grout: #bcc2b9;
+  --font: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+    --accent: #3fc0b5; --accent-ink: #0d1116; --on-strong: #ffffff; --s1: #3fc6c4; --s2: #f5a04c;
+    --hi: #ff7461; --lo: #5d9cff; --heat: #ffbb33; --nodal: #b08cff; --anti: #4fd389;
+    --stage: #12171d; --wall: #1a2028; --floor-a: #262c33; --floor-b: #22282f; --grout: #191e24;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0d1116; --surface: #161c23; --surface-2: #1d252e; --ink: #e6ebf0; --muted: #98a4b0; --line: #2b3540;
+  --accent: #3fc0b5; --accent-ink: #0d1116; --on-strong: #ffffff; --s1: #3fc6c4; --s2: #f5a04c;
+  --hi: #ff7461; --lo: #5d9cff; --heat: #ffbb33; --nodal: #b08cff; --anti: #4fd389;
+  --stage: #12171d; --wall: #1a2028; --floor-a: #262c33; --floor-b: #22282f; --grout: #191e24;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.5; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.app {
+  min-height: 100vh; display: flex; flex-direction: column; gap: 10px;
+  padding-block: 10px 14px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--bg);
+}
+.app:fullscreen { padding-block: 12px; }
+
+/* 상단 바 */
+.topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.brand { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tag { font: 500 12px var(--mono); color: var(--muted); border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; white-space: nowrap; }
+h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; }
+.presets { display: flex; flex-wrap: wrap; gap: 5px; flex: 1 1 520px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 4px 10px 4px 4px; cursor: pointer; font-size: 13.5px; font-weight: 500; white-space: nowrap; transition: background .15s, border-color .15s; }
+.chip b { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--surface-2); font: 600 12px var(--mono); }
+.chip:hover { border-color: var(--muted); }
+.chip[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: var(--surface); }
+.chip[aria-pressed="true"] b { background: var(--accent); color: var(--accent-ink); }
+.tools { display: flex; gap: 6px; margin-left: auto; }
+.tbtn { border: 1px solid var(--line); background: var(--surface); border-radius: 9px; padding: 6px 12px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; }
+.tbtn:hover { border-color: var(--muted); }
+.tbtn[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+
+/* 무대 */
+.stage { position: relative; flex: 1 1 auto; height: clamp(420px, calc(100vh - 200px), 1100px); border-radius: 16px; overflow: hidden; border: 1px solid var(--line); background: var(--stage); }
+.app:fullscreen .stage { height: auto; }
+#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.glass { background: color-mix(in srgb, var(--surface) 86%, transparent); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border: 1px solid color-mix(in srgb, var(--line) 85%, transparent); border-radius: 14px; box-shadow: 0 8px 28px rgb(10 20 30 / .10); }
+.readout { position: absolute; top: 12px; right: 12px; width: 236px; padding: 12px 14px 12px; display: flex; flex-direction: column; gap: 3px; }
+.ro { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font-size: 14px; color: var(--muted); }
+.ro b { font: 500 18px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.ro.s1 span { color: var(--s1); font-weight: 700; } .ro.s2 span { color: var(--s2); font-weight: 700; }
+.ro-sub { text-align: right; font: 500 14px var(--mono); color: var(--muted); margin-top: -2px; }
+.ro-sep { height: 1px; background: var(--line); margin: 6px 0; }
+.ro-db { display: flex; align-items: baseline; gap: 6px; }
+.ro-db b { font: 600 38px var(--mono); line-height: 1; font-variant-numeric: tabular-nums; }
+.ro-db small { color: var(--muted); font-size: 14px; }
+.state { margin-left: auto; font-size: 13px; font-weight: 700; padding: 2px 9px; border-radius: 999px; }
+.state[data-s="plus"] { color: var(--anti); background: color-mix(in srgb, var(--anti) 14%, transparent); }
+.state[data-s="minus"] { color: var(--nodal); background: color-mix(in srgb, var(--nodal) 14%, transparent); }
+.meter { height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin-top: 6px; }
+.meter i { display: block; height: 100%; width: 0; border-radius: 999px; background: linear-gradient(90deg, var(--anti), var(--heat) 65%, var(--hi)); }
+
+.playbar { position: absolute; top: 12px; left: 12px; display: flex; align-items: center; gap: 6px; padding: 6px; }
+.timenote { font-size: 12px; color: var(--muted); padding: 0 8px 0 4px; white-space: nowrap; }
+@media (min-width: 900px) and (min-height: 560px) {
+  html, body { height: 100%; }
+  .app { height: 100%; min-height: 0; }
+  .stage { height: auto; flex: 1 1 0; min-height: 360px; }
+}
+.bottom { position: absolute; left: 12px; right: 12px; bottom: 12px; display: flex; flex-wrap: wrap-reverse; justify-content: space-between; align-items: flex-end; gap: 10px; pointer-events: none; }
+.bottom > * { pointer-events: auto; }
+.caption { padding: 9px 16px; font-size: 18px; font-weight: 500; max-width: 720px; text-wrap: balance; }
+.graph-card { width: min(400px, 100%); padding: 8px 10px 4px; margin-left: auto; }
+.graph-card .gt { display: flex; justify-content: space-between; font-size: 13px; color: var(--muted); padding: 0 2px 2px; }
+#graph { display: block; width: 100%; height: 118px; }
+
+.labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.lbl { position: absolute; left: 0; top: 0; transform: translate(-50%, -100%); white-space: nowrap; font-weight: 700; font-size: 14px; padding: 2px 9px; border-radius: 999px; background: color-mix(in srgb, var(--surface) 90%, transparent); box-shadow: 0 2px 8px rgb(0 0 0 / .12); }
+.lbl.s1 { color: var(--s1); } .lbl.s2 { color: var(--s2); }
+.lbl.dist { font: 600 14px var(--mono); }
+.lbl.mic { font: 600 17px var(--mono); padding: 4px 11px; }
+.nogl { position: absolute; inset: 0; display: grid; place-items: center; text-align: center; padding: 24px; color: var(--muted); font-size: 16px; }
+
+/* 조작 독 */
+.dock { display: flex; flex-wrap: wrap; gap: 8px; }
+.dg { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 7px 12px; display: flex; align-items: center; gap: 10px; min-width: 0; }
+.dg > span { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.dg.slider { flex: 1 1 170px; }
+.dg.slider label { font-size: 12px; color: var(--muted); white-space: nowrap; display: flex; flex-direction: column; line-height: 1.2; }
+.dg.slider output { font: 600 17px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.dg input[type="range"] { flex: 1; min-width: 90px; accent-color: var(--accent); height: 28px; }
+.seg { display: flex; gap: 3px; background: var(--surface-2); border-radius: 9px; padding: 3px; }
+.seg button, .tg { border: 0; background: transparent; border-radius: 7px; padding: 5px 10px; cursor: pointer; font-size: 14px; font-weight: 500; white-space: nowrap; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--surface); color: var(--ink); box-shadow: 0 1px 3px rgb(0 0 0 / .14); }
+.tgs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tg { border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); }
+.tg[aria-pressed="true"] { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.tg .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.pbtn { border: 0; border-radius: 9px; padding: 7px 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--accent-ink); white-space: nowrap; }
+.pbtn.alt { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
+.pbtn[aria-pressed="true"].snd { background: var(--hi); color: var(--on-strong); }
+
+@media (max-width: 720px) {
+  h1 { font-size: 18px; }
+  .readout { width: 150px; padding: 8px 10px; }
+  .ro-opt { display: none !important; }
+  .ro b { font-size: 15px; } .ro-db b { font-size: 28px; }
+  .caption { font-size: 15px; }
+  .graph-card { display: none; }
+  .stage { height: clamp(380px, 62vh, 700px); }
+  .playbar .seg, .timenote { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div class="app" id="app">
+  <header class="topbar">
+    <div class="brand"><span class="tag">Ⅲ-04 음파의 간섭</span><h1>두 스피커 간섭</h1></div>
+    <nav class="presets" id="presets" aria-label="수업 장면"></nav>
+    <div class="tools">
+      <button class="tbtn" id="viewBtn" aria-pressed="false" title="T">위에서 보기</button>
+      <button class="tbtn" id="capBtn" aria-pressed="true" title="C">설명</button>
+      <button class="tbtn" id="fsBtn" title="F">전체 화면</button>
+    </div>
+  </header>
+
+  <section class="stage" id="stage" aria-label="3D 실험 장면. 마이크를 끌어서 옮기고, 빈 곳을 끌면 시점이 돌아갑니다.">
+    <canvas id="gl"></canvas>
+    <div class="labels" id="labels">
+      <span class="lbl s1" id="lS1">S₁</span><span class="lbl s2" id="lS2">S₂</span>
+      <span class="lbl dist s1" id="lR1"></span><span class="lbl dist s2" id="lR2"></span>
+      <span class="lbl mic" id="lMic"></span>
+    </div>
+    <div class="glass playbar">
+      <button class="pbtn alt" id="playBtn" title="Space">❚❚</button>
+      <div class="seg" data-seg="speed"><button data-v="1">보통</button><button data-v="0.3">느리게</button></div>
+      <button class="pbtn snd" id="sndBtn" aria-pressed="false" title="S">소리 켜기</button>
+      <span class="timenote" id="timenote"></span>
+    </div>
+    <div class="glass readout" aria-live="polite">
+      <div class="ro ro-opt"><span>진동수</span><b id="roF"></b></div>
+      <div class="ro ro-opt"><span>파장 λ</span><b id="roL"></b></div>
+      <div class="ro-sep ro-opt"></div>
+      <div class="ro s1"><span>r₁</span><b id="roR1"></b></div>
+      <div class="ro s2"><span>r₂</span><b id="roR2"></b></div>
+      <div class="ro"><span>경로차</span><b id="roDr"></b></div>
+      <div class="ro-sub" id="roRatio"></div>
+      <div class="ro-sep"></div>
+      <div class="ro-db"><b id="roDb"></b><small>dB</small><span class="state" id="roState"></span></div>
+      <div class="meter"><i id="roBar"></i></div>
+    </div>
+    <div class="bottom">
+      <div class="glass caption" id="caption"></div>
+      <div class="glass graph-card" id="graphCard">
+        <div class="gt"><span>마이크를 지나는 가로선 위 소리 크기</span><span>dB</span></div>
+        <canvas id="graph"></canvas>
+      </div>
+    </div>
+    <div class="nogl" id="nogl" hidden>이 기기에서는 3D 화면을 표시할 수 없습니다.<br>인터넷 연결과 브라우저의 그래픽 가속 설정을 확인해 주세요.</div>
+  </section>
+
+  <div class="dock">
+    <div class="dg slider"><label for="f">진동수<output id="fOut"></output></label><input type="range" id="f" min="200" max="1500" step="10"></div>
+    <div class="dg slider"><label for="d">스피커 간격<output id="dOut"></output></label><input type="range" id="d" min="0.4" max="2" step="0.05"></div>
+    <div class="dg"><span>스피커</span>
+      <div class="tgs"><button class="tg" data-tg="on1"><i class="dot" style="background:var(--s1)"></i>S₁</button><button class="tg" data-tg="on2"><i class="dot" style="background:var(--s2)"></i>S₂</button></div>
+      <div class="seg" data-seg="ph2"><button data-v="0">같은 위상</button><button data-v="1">반대 위상</button></div>
+    </div>
+    <div class="dg"><div class="seg" data-seg="mode"><button data-v="0">소리 (밀·소)</button><button data-v="1">간섭 무늬</button></div></div>
+    <div class="dg"><div class="tgs">
+      <button class="tg" data-tg="front">파면</button>
+      <button class="tg" data-tg="nodal"><i class="dot" style="background:var(--nodal)"></i>조용한 선</button>
+      <button class="tg" data-tg="anti"><i class="dot" style="background:var(--anti)"></i>큰 소리 선</button>
+      <button class="tg" data-tg="paths">경로</button>
+      <button class="tg" data-tg="graph">그래프</button>
+    </div></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const V = 340, FD = 0.5, BG = 35, EAR = 1.0;          // 음속 m/s, 화면 속 진동수 Hz, 배경 소음 dB, 소리 평면 높이 m
+const PW = 9.0, PD = 5.85, PZ0 = -0.65;                 // 소리 평면 크기와 시작 위치 (스피커 뒤쪽도 조금 보이게)
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const BASE = { f: 680, d: 1.0, ph2: 0, on1: true, on2: true, mode: 0, front: false, nodal: false, anti: false, paths: false, graph: false };
+const S = { ...BASE, run: !reduce, speed: reduce ? 0.3 : 1, sound: false, cap: true, top: false, mic: { x: 0, z: 1.0 }, preset: 0 };
+let theta = 0;
+const MZ = 1.0;                                          // 교과서: 두 스피커 가운데에서 수직으로 약 1 m
+let micTw = null;                                        // 장면이 바뀔 때 마이크가 미끄러지듯 옮겨 감
+
+/* ---------- 물리 ---------- */
+const lam = () => V / S.f;
+const srcs = () => [{ x: -S.d / 2, z: 0, ph: 0, on: S.on1 }, { x: S.d / 2, z: 0, ph: S.ph2, on: S.on2 }];
+const amp = r => 1 / Math.max(r, 0.18);                 // 1 m에서 1, 거리에 반비례
+function at(x, z) {
+  const k = 2 * Math.PI / lam(), ss = srcs();
+  const r = ss.map(s => Math.hypot(x - s.x, z - s.z));
+  const a = ss.map((s, i) => s.on ? amp(r[i]) : 0);
+  const ph = ss.map((s, i) => k * r[i] + s.ph);
+  const re = a[0] * Math.cos(ph[0]) + a[1] * Math.cos(ph[1]);
+  const im = a[0] * Math.sin(ph[0]) + a[1] * Math.sin(ph[1]);
+  const mag = Math.hypot(re, im);
+  const sig = mag > 1e-9 ? 70 + 20 * Math.log10(mag) : -Infinity;          // 스피커 하나, 1 m에서 70 dB
+  const dB = 10 * Math.log10(Math.pow(10, sig / 10) + Math.pow(10, BG / 10));
+  let dl = (ph[0] - ph[1]) % (2 * Math.PI); if (dl < 0) dl += 2 * Math.PI; if (dl > Math.PI) dl = 2 * Math.PI - dl;
+  return { r, a, ph, mag, dB, dr: Math.abs(r[0] - r[1]), deg: dl * 180 / Math.PI };
+}
+function solveX(dr0, z) {                               // r1 − r2 = dr0 인 x (x에 대해 증가)
+  const f = x => Math.hypot(x + S.d / 2, z) - Math.hypot(x - S.d / 2, z);
+  let lo = -3, hi = 3; if (f(lo) > dr0 || f(hi) < dr0) return null;
+  for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (f(m) < dr0) lo = m; else hi = m; }
+  return (lo + hi) / 2;
+}
+
+/* ---------- 수업 장면 ---------- */
+// mic: [x, z] 위치, 'quiet' 반 파장 지점, null 그대로 둠 · micLock: 마이크를 옮기면 설명이 맞지 않게 되는 장면
+const PRESETS = [
+  { label: '스피커 하나', cap: '스피커 하나: 멀어질수록 작아질 뿐, 조용한 곳은 없다', s: { on2: false, graph: true }, mic: [0, MZ], top: false },
+  { label: '두 스피커', cap: '두 소리가 겹친다 · 가운데는 경로차 0 → 보강 간섭', s: { graph: true }, mic: [0, MZ], top: false },
+  { label: '조용한 곳', cap: '옆으로 옮겨 경로차 = 반 파장 → 거의 들리지 않는다 (상쇄 간섭)', s: { paths: true, graph: true }, mic: 'quiet', micLock: true, top: false },
+  { label: '마루·골', cap: '마루(실선)끼리 만나면 보강 · 마루와 골(점선)이 만나면 상쇄', s: { front: true, nodal: true, anti: true, paths: true }, mic: 'quiet', top: true },
+  { label: '간섭 무늬', cap: '조용한 선(상쇄)과 큰 소리 선(보강)이 번갈아 나타난다', s: { mode: 1, nodal: true, anti: true }, mic: null, top: true },
+  { label: '진동수 2배', cap: '진동수 2배 → 파장 절반 → 무늬가 촘촘해진다', s: { f: 1360, mode: 1, nodal: true }, mic: null, top: true },
+  { label: '간격 넓게', cap: '스피커 사이가 멀수록 무늬가 촘촘해진다', s: { d: 1.6, mode: 1, nodal: true }, mic: null, top: true },
+  { label: '반대 위상', cap: '한쪽을 반대 위상으로 → 가운데도 조용해진다 (소음 제거의 원리)', s: { ph2: Math.PI, paths: true, nodal: true, graph: true }, mic: [0, MZ], top: false }
+];
+
+/* ---------- 테마 ---------- */
+const T = {};
+function readTheme() {
+  const cs = getComputedStyle(document.documentElement);
+  for (const k of ['surface', 'surface-2', 'ink', 'muted', 'line', 'accent', 's1', 's2', 'hi', 'lo', 'heat', 'nodal', 'anti', 'stage', 'wall', 'floor-a', 'floor-b', 'grout']) T[k] = cs.getPropertyValue('--' + k).trim();
+  T.font = getComputedStyle(document.body).fontFamily; T.mono = cs.getPropertyValue('--mono').trim();
+}
+readTheme();
+
+/* ---------- 2D 그래프 ---------- */
+const graph = $('#graph'), gctx = graph.getContext('2d');
+function drawGraph() {
+  const r = graph.getBoundingClientRect(); if (!r.width) return;
+  const dpr = Math.min(2, devicePixelRatio || 1), w = r.width, h = r.height;
+  if (graph.width !== Math.round(w * dpr)) { graph.width = Math.round(w * dpr); graph.height = Math.round(h * dpr); }
+  const c = gctx; c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, w, h);
+  const L = 30, R = 6, Tp = 5, B = 19, pw = w - L - R, ph = h - Tp - B, X0 = -2.8, X1 = 2.8;
+  const X = x => L + (x - X0) / (X1 - X0) * pw, Y = v => Tp + ph - (Math.max(30, Math.min(85, v)) - 30) / 55 * ph;
+  c.font = `12px ${T.mono}`; c.lineWidth = 1;
+  for (const v of [40, 60, 80]) { c.strokeStyle = T.line; c.beginPath(); c.moveTo(L, Y(v)); c.lineTo(w - R, Y(v)); c.stroke(); c.fillStyle = T.muted; c.textAlign = 'right'; c.textBaseline = 'middle'; c.fillText(v, L - 5, Y(v)); }
+  c.textAlign = 'center'; c.textBaseline = 'top';
+  for (let x = -2; x <= 2; x++) c.fillText(x === 0 ? '0' : `${x} m`.replace('-', '−'), X(x), h - B + 4);
+  const N = 280; c.beginPath();
+  for (let i = 0; i <= N; i++) { const x = X0 + (X1 - X0) * i / N, v = at(x, S.mic.z).dB; i ? c.lineTo(X(x), Y(v)) : c.moveTo(X(x), Y(v)); }
+  c.lineTo(X(X1), Tp + ph); c.lineTo(X(X0), Tp + ph); c.closePath();
+  c.fillStyle = T.accent; c.globalAlpha = 0.14; c.fill(); c.globalAlpha = 1;
+  c.beginPath();
+  for (let i = 0; i <= N; i++) { const x = X0 + (X1 - X0) * i / N, v = at(x, S.mic.z).dB; i ? c.lineTo(X(x), Y(v)) : c.moveTo(X(x), Y(v)); }
+  c.strokeStyle = T.accent; c.lineWidth = 2; c.stroke();
+  srcs().forEach((s, i) => { c.fillStyle = s.on ? (i ? T.s2 : T.s1) : T.muted; const x = X(s.x), y = Tp + ph; c.beginPath(); c.moveTo(x, y - 6); c.lineTo(x - 4.5, y); c.lineTo(x + 4.5, y); c.fill(); });
+  const mx = X(S.mic.x), my = Y(at(S.mic.x, S.mic.z).dB);
+  c.strokeStyle = T.ink; c.setLineDash([2, 3]); c.beginPath(); c.moveTo(mx, Tp); c.lineTo(mx, Tp + ph); c.stroke(); c.setLineDash([]);
+  c.fillStyle = T.ink; c.beginPath(); c.arc(mx, my, 4, 0, 2 * Math.PI); c.fill();
+}
+
+/* ---------- 3D ---------- */
+const stage = $('#stage'), canvas = $('#gl');
+let R3 = null;
+try { if (!window.THREE || !THREE.OrbitControls) throw new Error('three'); R3 = build3D(); }
+catch (err) { $('#nogl').hidden = false; canvas.hidden = true; }
+
+function build3D() {
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+  renderer.setPixelRatio(Math.min(2, devicePixelRatio || 1));
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(40, 1.6, 0.05, 80);
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true; controls.dampingFactor = 0.08; controls.screenSpacePanning = true;
+  controls.minDistance = 2.2; controls.maxDistance = 16; controls.maxPolarAngle = 1.36;
+  const lin = hex => new THREE.Color(hex).convertSRGBToLinear();
+  const std = (hex, rough, metal, extra = {}) => new THREE.MeshStandardMaterial({ color: lin(hex), roughness: rough, metalness: metal, ...extra });
+
+  // 환경 반사: 천장 조명과 왼쪽 창이 있는 실험실을 미리 구워(PMREM) 금속·플라스틱 표면에 비춘다
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const envScene = new THREE.Scene();
+  const envBox = new THREE.Mesh(new THREE.BoxGeometry(16, 6, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.36, 0.38, 0.4), side: THREE.BackSide }));
+  envBox.position.y = 2.5; envScene.add(envBox);
+  const envFloor = new THREE.Mesh(new THREE.PlaneGeometry(16, 16), new THREE.MeshBasicMaterial({ color: new THREE.Color(0.16, 0.16, 0.15) }));
+  envFloor.rotation.x = -Math.PI / 2; envFloor.position.y = -0.49; envScene.add(envFloor);
+  const envPanel = (w, h, x, y, z, rx, ry, k) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(k, k, k * 1.03), side: THREE.DoubleSide }));
+    m.position.set(x, y, z); m.rotation.set(rx, ry, 0); envScene.add(m);
+  };
+  for (const [x, z] of [[-3, -2], [3, -2], [-3, 3], [3, 3]]) envPanel(2.4, 0.7, x, 5.4, z, Math.PI / 2, 0, 6);
+  envPanel(5, 2.6, -7.9, 2.3, 1.5, 0, Math.PI / 2, 3.2);
+  envPanel(6, 1.2, 0, 2.6, 7.9, 0, 0, 1.2);
+  scene.environment = pmrem.fromScene(envScene, 0.035).texture;
+  pmrem.dispose();
+
+  // 조명: 왼쪽 위 앞에서 오는 주광 하나 (그림자), 약한 하늘빛과 보조광
+  const hemi = new THREE.HemisphereLight(0xffffff, 0x8f8a80, 0.32); scene.add(hemi);
+  const sun = new THREE.DirectionalLight(0xfff8ef, 1.05);
+  sun.position.set(-2.4, 7, 3.6); sun.castShadow = true;
+  sun.shadow.mapSize.set(2048, 2048); sun.shadow.camera.left = -4.5; sun.shadow.camera.right = 4.5; sun.shadow.camera.top = 4.5; sun.shadow.camera.bottom = -4.5;
+  sun.shadow.camera.near = 1; sun.shadow.camera.far = 18; sun.shadow.bias = -0.0003; sun.shadow.normalBias = 0.01;
+  sun.target.position.set(0, 0, 1.2); scene.add(sun, sun.target);
+  const fill = new THREE.DirectionalLight(0xdfe8ff, 0.22); fill.position.set(4, 3, 6); scene.add(fill);
+
+  // 바닥 (50 cm 타일)
+  const floorTex = new THREE.CanvasTexture(document.createElement('canvas'));
+  function paintFloor() {
+    const cv = floorTex.image; cv.width = cv.height = 1024; const g = cv.getContext('2d');
+    let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+    const n = 4, s = 1024 / n;
+    for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) {
+      g.fillStyle = (i + j) % 2 ? T['floor-a'] : T['floor-b']; g.fillRect(i * s, j * s, s, s);
+      g.globalAlpha = 0.015 + rnd() * 0.025; g.fillStyle = rnd() > 0.5 ? '#ffffff' : '#000000'; g.fillRect(i * s, j * s, s, s);
+      for (let k = 0; k < 260; k++) { g.globalAlpha = 0.04 + rnd() * 0.06; g.fillStyle = rnd() > 0.5 ? '#ffffff' : '#000000'; g.fillRect(i * s + rnd() * s, j * s + rnd() * s, 1 + rnd() * 2.5, 1 + rnd() * 2.5); }
+      g.globalAlpha = 1;
+    }
+    g.strokeStyle = T.grout; g.lineWidth = 3;
+    for (let i = 0; i <= n; i++) { g.beginPath(); g.moveTo(i * s, 0); g.lineTo(i * s, 1024); g.stroke(); g.beginPath(); g.moveTo(0, i * s); g.lineTo(1024, i * s); g.stroke(); }
+    floorTex.needsUpdate = true;
+  }
+  floorTex.wrapS = floorTex.wrapT = THREE.RepeatWrapping; floorTex.repeat.set(7, 5.5); floorTex.encoding = THREE.sRGBEncoding;
+  floorTex.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const floor = new THREE.Mesh(new THREE.PlaneGeometry(14, 11), new THREE.MeshStandardMaterial({ map: floorTex, roughness: 0.78, metalness: 0, envMapIntensity: 0.6 }));
+  floor.rotation.x = -Math.PI / 2; floor.position.set(0, 0, 2.6); floor.receiveShadow = true; scene.add(floor);
+
+  // 뒷벽: 칠한 벽 + 아랫단 판넬 + 몰딩 + 걸레받이
+  const wallMat = std('#eef1f3', 0.92, 0, { envMapIntensity: 0.5 }), wainMat = std('#e2e6e9', 0.85, 0, { envMapIntensity: 0.5 }), trimMat = std('#b8bec4', 0.5, 0.05);
+  const wall = new THREE.Mesh(new THREE.PlaneGeometry(14, 4), wallMat); wall.position.set(0, 2, -0.95); wall.receiveShadow = true; scene.add(wall);
+  const wains = new THREE.Mesh(new THREE.PlaneGeometry(14, 0.86), wainMat); wains.position.set(0, 0.47, -0.947); wains.receiveShadow = true; scene.add(wains);
+  const rail = new THREE.Mesh(new THREE.BoxGeometry(14, 0.04, 0.024), trimMat); rail.position.set(0, 0.9, -0.94); rail.castShadow = rail.receiveShadow = true; scene.add(rail);
+  const skirt = new THREE.Mesh(new THREE.BoxGeometry(14, 0.09, 0.022), trimMat); skirt.position.set(0, 0.045, -0.94); skirt.receiveShadow = true; scene.add(skirt);
+
+  // 형상 도우미
+  function roundedBox(w, h, d, r) {
+    const sh = new THREE.Shape(), x = -w / 2 + r, y = -h / 2 + r, iw = w - 2 * r, ih = h - 2 * r, c = Math.min(0.008, iw / 4, ih / 4);
+    sh.moveTo(x + c, y); sh.lineTo(x + iw - c, y); sh.quadraticCurveTo(x + iw, y, x + iw, y + c); sh.lineTo(x + iw, y + ih - c);
+    sh.quadraticCurveTo(x + iw, y + ih, x + iw - c, y + ih); sh.lineTo(x + c, y + ih); sh.quadraticCurveTo(x, y + ih, x, y + ih - c); sh.lineTo(x, y + c); sh.quadraticCurveTo(x, y, x + c, y);
+    const g = new THREE.ExtrudeGeometry(sh, { depth: Math.max(0.001, d - 2 * r), bevelEnabled: true, bevelThickness: r, bevelSize: r, bevelSegments: 5, curveSegments: 8 });
+    g.center(); return g;
+  }
+  const up = new THREE.Vector3(0, 1, 0);
+  function rod(a, b, r, mat, seg = 14) {
+    const len = a.distanceTo(b), m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, seg), mat);
+    m.position.copy(a).add(b).multiplyScalar(0.5); m.quaternion.setFromUnitVectors(up, b.clone().sub(a).normalize());
+    m.castShadow = true; return m;
+  }
+  // 바닥 접촉 그림자 (부드러운 원형)
+  const blobTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 128; const g = c.getContext('2d');
+    const gr = g.createRadialGradient(64, 64, 0, 64, 64, 64); gr.addColorStop(0, 'rgba(0,0,0,0.55)'); gr.addColorStop(0.45, 'rgba(0,0,0,0.25)'); gr.addColorStop(1, 'rgba(0,0,0,0)');
+    g.fillStyle = gr; g.fillRect(0, 0, 128, 128); return new THREE.CanvasTexture(c);
+  })();
+  function blob(r, opacity = 0.5) {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(r * 2, r * 2), new THREE.MeshBasicMaterial({ map: blobTex, transparent: true, depthWrite: false, opacity }));
+    m.rotation.x = -Math.PI / 2; m.renderOrder = 1; return m;
+  }
+  // 마이크 그릴 (촘촘한 철망 무늬)
+  const meshTex = (() => {
+    const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+    g.fillStyle = '#c9ced3'; g.fillRect(0, 0, 256, 256); g.fillStyle = '#3a3f45';
+    for (let y = 0; y < 32; y++) for (let x = 0; x < 32; x++) { g.beginPath(); g.arc(x * 8 + (y % 2) * 4 + 2, y * 8 + 4, 2.3, 0, 2 * Math.PI); g.fill(); }
+    const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(3, 2); t.encoding = THREE.sRGBEncoding; return t;
+  })();
+  const M = {
+    cabinet: std('#2a2e34', 0.48, 0.05), baffle: std('#1d2025', 0.6, 0.0), cone: std('#eceae4', 0.6, 0, { side: THREE.DoubleSide }),
+    surround: std('#121315', 0.95, 0), cap: std('#2c2f34', 0.4, 0.25), dome: std('#a2a9b2', 0.25, 0.9), port: std('#08090a', 0.9, 0),
+    metal: std('#5a616a', 0.34, 0.85), chrome: std('#d4d9de', 0.16, 1.0), rubber: std('#16181b', 0.88, 0),
+    micBody: std('#1d2024', 0.38, 0.4), grille: new THREE.MeshStandardMaterial({ map: meshTex, bumpMap: meshTex, bumpScale: 0.0015, roughness: 0.42, metalness: 0.85 }),
+    cable: std('#1b1d20', 0.55, 0), wood: std('#b88a5a', 0.55, 0), woodEdge: std('#8f6741', 0.6, 0), phone: std('#1a1c20', 0.3, 0.6), stand: std('#2b2f35', 0.5, 0.3)
+  };
+  function tripod(g, top, legR, legLen, spread, zOff = 0) {
+    const pole = rod(new THREE.Vector3(0, -1 + 0.08, zOff), new THREE.Vector3(0, top, zOff), 0.013, M.metal); g.add(pole);
+    const collarY = -1 + legLen * 0.62;
+    const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.05, 20), M.stand);
+    collar.position.set(0, collarY, zOff); collar.castShadow = true; g.add(collar);
+    const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 0.03, 12), M.stand); knob.rotation.z = Math.PI / 2; knob.position.set(0.03, collarY + 0.04, zOff); g.add(knob);
+    for (let i = 0; i < 3; i++) {
+      const a = i * 2 * Math.PI / 3 + Math.PI / 6, foot = new THREE.Vector3(Math.cos(a) * spread, -1 + 0.012, zOff + Math.sin(a) * spread);
+      g.add(rod(new THREE.Vector3(0, collarY, zOff), foot, legR, M.metal));
+      const brace = rod(new THREE.Vector3(0, collarY - 0.18, zOff), new THREE.Vector3(Math.cos(a) * spread * 0.55, -1 + legLen * 0.62 * 0.55 - 0.08, zOff + Math.sin(a) * spread * 0.55), legR * 0.6, M.metal, 8); g.add(brace);
+      const f = new THREE.Mesh(new THREE.SphereGeometry(legR * 1.9, 12, 8), M.rubber); f.position.copy(foot); f.castShadow = true; g.add(f);
+    }
+    const b = blob(spread * 1.25, 0.55); b.position.set(0, -1 + 0.002, zOff); g.add(b);
+  }
+  function makeSpeaker(accent) {
+    const g = new THREE.Group();
+    const cab = new THREE.Mesh(roundedBox(0.25, 0.37, 0.25, 0.016), M.cabinet); cab.position.set(0, 0.055, -0.125); cab.castShadow = cab.receiveShadow = true; g.add(cab);
+    const baf = new THREE.Mesh(roundedBox(0.232, 0.352, 0.008, 0.003), M.baffle); baf.position.set(0, 0.055, 0.0); g.add(baf);
+    const sur = new THREE.Mesh(new THREE.TorusGeometry(0.074, 0.0085, 18, 72), M.surround); sur.position.z = 0.022; g.add(sur);
+    const trim = new THREE.Mesh(new THREE.CylinderGeometry(0.084, 0.084, 0.018, 64, 1, true), M.baffle); trim.rotation.x = Math.PI / 2; trim.position.z = 0.013; g.add(trim);
+    const ringMat = std(accent, 0.35, 0.3, { emissive: lin(accent), emissiveIntensity: 0.45 });
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.0875, 0.0034, 10, 72), ringMat); ring.position.z = 0.012; g.add(ring);
+    const coneG = new THREE.Group();
+    const pts = [[0.069, 0], [0.061, -0.004], [0.048, -0.009], [0.035, -0.013], [0.024, -0.016]].map(p => new THREE.Vector2(p[0], p[1]));
+    const cg = new THREE.LatheGeometry(pts, 64); cg.rotateX(Math.PI / 2);
+    coneG.add(new THREE.Mesh(cg, M.cone));
+    const capG = new THREE.SphereGeometry(0.026, 32, 14, 0, Math.PI * 2, 0, Math.PI / 2); capG.rotateX(Math.PI / 2); capG.scale(1, 1, 0.5);
+    const cap = new THREE.Mesh(capG, M.cap); cap.position.z = -0.016; coneG.add(cap);
+    coneG.position.z = 0.022; g.add(coneG);
+    const tw = new THREE.Mesh(new THREE.TorusGeometry(0.022, 0.0045, 12, 40), M.baffle); tw.position.set(0, 0.145, 0.005); g.add(tw);
+    const domeG = new THREE.SphereGeometry(0.016, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2); domeG.rotateX(Math.PI / 2); domeG.scale(1, 1, 0.7);
+    const dome = new THREE.Mesh(domeG, M.dome); dome.position.set(0, 0.145, 0.003); g.add(dome);
+    const port = new THREE.Mesh(roundedBox(0.12, 0.02, 0.006, 0.0028), M.port); port.position.set(0, -0.106, 0.003); g.add(port);
+    const led = new THREE.Mesh(new THREE.SphereGeometry(0.0035, 10, 8), new THREE.MeshBasicMaterial({ color: 0x7dffb0 })); led.position.set(0.09, 0.205, 0.004); g.add(led);
+    const plate = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.012, 0.17), M.stand); plate.position.set(0, -0.14, -0.125); plate.castShadow = true; g.add(plate);
+    tripod(g, -0.14, 0.009, 0.62, 0.33, -0.125);
+    return { g, coneG, ringMat, led };
+  }
+  function makeMic() {
+    const g = new THREE.Group();
+    const grille = new THREE.Mesh(new THREE.SphereGeometry(0.022, 40, 24), M.grille); grille.castShadow = true; g.add(grille);
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.0222, 0.0016, 8, 40), M.chrome); g.add(band);
+    const collar = new THREE.Mesh(new THREE.CylinderGeometry(0.0205, 0.019, 0.016, 32), M.chrome); collar.rotation.x = Math.PI / 2; collar.position.z = 0.022; g.add(collar);
+    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.0175, 0.0125, 0.16, 32), M.micBody); body.rotation.x = Math.PI / 2; body.position.z = 0.108; body.castShadow = true; g.add(body);
+    const xlr = new THREE.Mesh(new THREE.CylinderGeometry(0.0125, 0.0125, 0.014, 24), M.chrome); xlr.rotation.x = Math.PI / 2; xlr.position.z = 0.195; g.add(xlr);
+    const clip = new THREE.Mesh(roundedBox(0.03, 0.04, 0.05, 0.006), M.rubber); clip.position.set(0, -0.026, 0.11); clip.castShadow = true; g.add(clip);
+    const g2 = new THREE.Group(); g.add(g2);
+    tripod(g2, -0.046, 0.007, 0.5, 0.25, 0.11);
+    // 마이크 케이블: 꼬리에서 스탠드를 따라 바닥으로, 뒤쪽으로 끌림
+    const cp = [[0, 0, 0.2], [0, -0.03, 0.235], [0.012, -0.12, 0.13], [0.014, -0.5, 0.122], [0.016, -0.86, 0.124], [0.03, -0.994, 0.17], [0.13, -0.994, 0.2], [0.26, -0.994, 0.16], [0.34, -0.994, 0.08]];
+    const cab = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cp.map(p => new THREE.Vector3(...p))), 80, 0.0035, 8, false), M.cable); cab.castShadow = true; g.add(cab);
+    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), new THREE.MeshBasicMaterial({ visible: false })); g.add(tip);   // 잡기 쉬운 영역
+    return g;
+  }
+  // 소리 발생기: 작은 탁자 위 거치대에 세운 스마트폰 (교과서: 스마트 기기 + 소리 발생기 앱)
+  function makeSource() {
+    const g = new THREE.Group();
+    const top = new THREE.Mesh(roundedBox(0.56, 0.026, 0.34, 0.006), M.wood); top.position.y = 0.6; top.castShadow = top.receiveShadow = true; g.add(top);
+    const apron = new THREE.Mesh(new THREE.BoxGeometry(0.5, 0.05, 0.28), M.woodEdge); apron.position.y = 0.562; apron.castShadow = true; g.add(apron);
+    for (const [x, z] of [[-0.24, -0.13], [0.24, -0.13], [-0.24, 0.13], [0.24, 0.13]]) {
+      const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.01, 0.585, 14), M.metal); leg.position.set(x, 0.2925, z); leg.castShadow = true; g.add(leg);
+      const ft = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.01, 14), M.rubber); ft.position.set(x, 0.005, z); g.add(ft);
+    }
+    const b = blob(0.42, 0.45); b.position.y = 0.002; b.scale.set(1.2, 0.9, 1); g.add(b);
+    const standBase = new THREE.Mesh(roundedBox(0.1, 0.012, 0.075, 0.004), M.stand); standBase.position.set(0, 0.619, 0.03); standBase.castShadow = true; g.add(standBase);
+    const standBack = new THREE.Mesh(roundedBox(0.06, 0.11, 0.008, 0.003), M.stand); standBack.position.set(0, 0.67, 0.0); standBack.rotation.x = -0.32; standBack.castShadow = true; g.add(standBack);
+    const scv = document.createElement('canvas'); scv.width = 256; scv.height = 512;
+    const tex = new THREE.CanvasTexture(scv); tex.encoding = THREE.sRGBEncoding; tex.anisotropy = 4;
+    const phone = new THREE.Group();
+    const body = new THREE.Mesh(roundedBox(0.078, 0.162, 0.009, 0.004), M.phone); body.castShadow = true; phone.add(body);
+    const scr = new THREE.Mesh(new THREE.PlaneGeometry(0.071, 0.152), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false })); scr.position.z = 0.0047; phone.add(scr);
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.073, 0.155), new THREE.MeshStandardMaterial({ color: 0x000000, roughness: 0.05, metalness: 1, transparent: true, opacity: 0.18 })); glass.position.z = 0.0049; phone.add(glass);
+    phone.position.set(0, 0.705, 0.024); phone.rotation.x = -0.3; g.add(phone);
+    g.position.set(-1.45, 0, -0.66); g.rotation.y = 0.32;
+    function paint(f) {
+      const c = scv.getContext('2d'), W = 256, H = 512;
+      const bg = c.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#16202a'); bg.addColorStop(1, '#0c1218'); c.fillStyle = bg; c.fillRect(0, 0, W, H);
+      c.fillStyle = '#8fa3b5'; c.font = '600 26px "IBM Plex Sans KR", sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('소리 발생기', W / 2, 52);
+      c.fillStyle = '#5ff2c4'; c.font = '600 92px "IBM Plex Mono", monospace'; c.fillText(String(f), W / 2, 196);
+      c.font = '600 36px "IBM Plex Mono", monospace'; c.fillStyle = '#9fe9cf'; c.fillText('Hz', W / 2, 262);
+      c.strokeStyle = '#5ff2c4'; c.lineWidth = 5; c.beginPath();
+      for (let i = 0; i <= 80; i++) { const x = 34 + i * 188 / 80, y = 336 + Math.sin(i / 80 * 6 * Math.PI) * 24; i ? c.lineTo(x, y) : c.moveTo(x, y); } c.stroke();
+      c.fillStyle = '#e2553f'; c.beginPath(); c.arc(W / 2, 430, 38, 0, 2 * Math.PI); c.fill();
+      c.fillStyle = '#ffffff'; c.fillRect(W / 2 - 13, 417, 26, 26);
+      tex.needsUpdate = true;
+    }
+    return { g, paint };
+  }
+
+  const spk = [makeSpeaker(T.s1), makeSpeaker(T.s2)]; spk.forEach(s => scene.add(s.g));
+  const mic = makeMic(); scene.add(mic);
+  const gen = makeSource(); scene.add(gen.g);
+  let cables = [];
+  function buildCables() {
+    cables.forEach(c => { scene.remove(c); c.geometry.dispose(); }); cables = [];
+    gen.g.updateMatrixWorld(true);
+    srcs().forEach((s, i) => {
+      const x = s.x;
+      // 탁자 위 스마트폰에서 탁자 다리를 타고 바닥으로, 벽을 따라 각 스피커 스탠드로
+      const jack = gen.g.localToWorld(new THREE.Vector3(i ? 0.01 : -0.01, 0.627, 0.046)), edge = gen.g.localToWorld(new THREE.Vector3(0.2 + i * 0.03, 0.613, -0.12));
+      const down = gen.g.localToWorld(new THREE.Vector3(0.27 + i * 0.03, 0.006, -0.12));
+      const pts = [[jack.x, jack.y, jack.z], [edge.x, edge.y, edge.z], [edge.x + 0.05, 0.4, edge.z - 0.01], [down.x, 0.006, down.z], [(down.x + x) / 2, 0.006, -0.5 + i * 0.04],
+        [x - 0.06, 0.006, -0.3], [x - 0.02, 0.06, -0.135], [x - 0.018, 0.5, -0.14], [x - 0.015, 0.86, -0.17], [x, 0.98, -0.255]].map(p => p.map(Number));
+      const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(...p)), false, 'centripetal');
+      const m = new THREE.Mesh(new THREE.TubeGeometry(curve, 140, 0.0038, 8, false), M.cable); m.castShadow = true; scene.add(m); cables.push(m);
+    });
+  }
+
+  // 소리 평면 (셰이더) — 귀 높이(1 m)의 수평면에서 계산한 소리를 바닥에 비춘 평면도
+  const U = {
+    uTheta: { value: 0 }, uK: { value: 1 }, uLam: { value: 0.5 }, uPh2: { value: 0 }, uOn1: { value: 1 }, uOn2: { value: 1 },
+    uMode: { value: 0 }, uWave: { value: 1 }, uFront: { value: 0 }, uNodal: { value: 0 }, uAnti: { value: 0 }, uGain: { value: 0.75 },
+    uS1: { value: new THREE.Vector2() }, uS2: { value: new THREE.Vector2() }, uBounds: { value: new THREE.Vector4(-PW / 2, PW / 2, PZ0, PZ0 + PD) },
+    cHi: { value: new THREE.Color() }, cLo: { value: new THREE.Color() }, cHeat: { value: new THREE.Color() }, cNodal: { value: new THREE.Color() },
+    cAnti: { value: new THREE.Color() }, cS1: { value: new THREE.Color() }, cS2: { value: new THREE.Color() }
+  };
+  const fieldMat = new THREE.ShaderMaterial({
+    uniforms: U, transparent: true, depthWrite: false, side: THREE.DoubleSide,
+    vertexShader: `varying vec2 vP; void main(){ vec4 w = modelMatrix * vec4(position, 1.0); vP = w.xz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: `
+      uniform float uTheta, uK, uLam, uPh2, uOn1, uOn2, uMode, uWave, uFront, uNodal, uAnti, uGain;
+      uniform vec2 uS1, uS2; uniform vec4 uBounds;
+      uniform vec3 cHi, cLo, cHeat, cNodal, cAnti, cS1, cS2;
+      varying vec2 vP;
+      const float TAU = 6.28318530718;
+      // 화면에서 일정한 굵기(hw 픽셀 반폭)의 선
+      float lineMask(float x, float hw) { float f = abs(fract(x + 0.5) - 0.5); float w = fwidth(x); return 1.0 - smoothstep(w * hw, w * (hw + 1.1), f); }
+      // 원을 따라 끊어진 점선 (골)
+      float dashes(vec2 d, float r) { float s = r * atan(d.x, d.y) / 0.075; float w = fwidth(s); float f = fract(s); return smoothstep(0.0, w, f) * (1.0 - smoothstep(0.52 - w, 0.52, f)); }
+      void over(inout vec3 acc, inout float A, vec3 c, float m) { acc = c * m + acc * (1.0 - m); A = m + A * (1.0 - m); }
+      void main() {
+        float r1 = distance(vP, uS1), r2 = distance(vP, uS2);
+        float a1 = uOn1 / max(r1, 0.18), a2 = uOn2 / max(r2, 0.18);
+        float p1 = uK * r1, p2 = uK * r2 + uPh2;
+        vec3 col; float A;
+        if (uMode < 0.5) {
+          float v = clamp((a1 * cos(p1 - uTheta) + a2 * cos(p2 - uTheta)) * uGain, -1.0, 1.0);
+          col = v >= 0.0 ? cHi : cLo; A = pow(abs(v), 0.8) * 0.72;
+        } else {
+          float re = a1 * cos(p1) + a2 * cos(p2), im = a1 * sin(p1) + a2 * sin(p2);
+          float I = (re * re + im * im) / max((a1 + a2) * (a1 + a2), 1e-5);
+          col = cHeat; A = pow(I, 1.3) * 0.85;
+        }
+        A *= uWave;
+        vec3 acc = col * A;
+        if (uFront > 0.5) {
+          float f1 = uOn1 * smoothstep(0.1, 0.28, r1), f2 = uOn2 * smoothstep(0.1, 0.28, r2);
+          over(acc, A, cS1, lineMask((p1 - uTheta) / TAU, 1.0) * f1 * 0.95);
+          over(acc, A, cS1, lineMask((p1 - uTheta) / TAU - 0.5, 0.75) * dashes(vP - uS1, r1) * f1 * 0.85);
+          over(acc, A, cS2, lineMask((p2 - uTheta) / TAU, 1.0) * f2 * 0.95);
+          over(acc, A, cS2, lineMask((p2 - uTheta) / TAU - 0.5, 0.75) * dashes(vP - uS2, r2) * f2 * 0.85);
+        }
+        if (uOn1 * uOn2 > 0.5) {
+          // 보강선·상쇄선은 스피커 앞쪽(교과서 그림처럼)만 그린다
+          float x = (r1 - r2) / uLam - uPh2 / TAU, fr = smoothstep(0.03, 0.22, vP.y);
+          over(acc, A, cAnti, lineMask(x, 0.9) * uAnti * 0.9 * fr);
+          over(acc, A, cNodal, lineMask(x - 0.5, 0.9) * uNodal * 0.95 * fr);
+        }
+        float e = smoothstep(uBounds.x, uBounds.x + 0.35, vP.x) * (1.0 - smoothstep(uBounds.y - 0.35, uBounds.y, vP.x))
+                * smoothstep(uBounds.z, uBounds.z + 0.45, vP.y) * (1.0 - smoothstep(uBounds.w - 0.45, uBounds.w, vP.y));
+        A *= e; acc *= e;
+        gl_FragColor = linearToOutputTexel(vec4(A > 1e-4 ? acc / A : vec3(0.0), A));
+      }`
+  });
+  fieldMat.extensions.derivatives = true;
+  const field = new THREE.Mesh(new THREE.PlaneGeometry(PW, PD), fieldMat);
+  field.rotation.x = -Math.PI / 2; field.position.set(0, 0.004, PZ0 + PD / 2); field.renderOrder = 2; scene.add(field);
+  // 마이크 바닥 표시 (밝은 고리 + 어두운 테)
+  const spot = new THREE.Group();
+  const ringMesh = (r0, r1, color, opacity) => { const m = new THREE.Mesh(new THREE.RingGeometry(r0, r1, 56), new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false })); m.rotation.x = -Math.PI / 2; m.renderOrder = 4; return m; };
+  spot.add(ringMesh(0.098, 0.112, 0x0b1218, 0.35), ringMesh(0.074, 0.098, 0xffffff, 0.92)); scene.add(spot);
+  // 파원 위치 표시 (스피커 앞면 바로 아래)
+  const srcMark = [0, 1].map(() => { const m = ringMesh(0.03, 0.05, 0xffffff, 0.95); scene.add(m); return m; });
+
+  // 경로 막대와 측정선
+  const pathMat = [std('#0a7f86', 0.4, 0.1, { emissive: lin('#0a7f86'), emissiveIntensity: 0.45 }), std('#d06a14', 0.4, 0.1, { emissive: lin('#d06a14'), emissiveIntensity: 0.45 })];
+  const paths = pathMat.map(m => { const r = new THREE.Mesh(new THREE.CylinderGeometry(0.0065, 0.0065, 1, 10), m); r.renderOrder = 3; scene.add(r); return r; });
+  const mline = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-2.8, 0.008, 0), new THREE.Vector3(2.8, 0.008, 0)]), new THREE.LineDashedMaterial({ color: 0x334455, dashSize: 0.06, gapSize: 0.05, transparent: true, opacity: 0.7 }));
+  mline.computeLineDistances(); mline.renderOrder = 3; scene.add(mline);
+
+  function applyTheme() {
+    scene.background = lin(T.stage); scene.fog = new THREE.Fog(lin(T.stage), 10, 22);
+    wallMat.color = lin(T.wall); wainMat.color = lin(T.wall).multiplyScalar(0.9); trimMat.color = lin(T.wall).multiplyScalar(0.62); paintFloor();
+    U.cHi.value = lin(T.hi); U.cLo.value = lin(T.lo); U.cHeat.value = lin(T.heat); U.cNodal.value = lin(T.nodal); U.cAnti.value = lin(T.anti);
+    U.cS1.value = lin(T.s1); U.cS2.value = lin(T.s2);
+    pathMat[0].color = lin(T.s1); pathMat[0].emissive = lin(T.s1); pathMat[1].color = lin(T.s2); pathMat[1].emissive = lin(T.s2);
+    srcMark[0].material.color = lin(T.s1); srcMark[1].material.color = lin(T.s2);
+    mline.material.color = lin(T.ink);
+  }
+  applyTheme();
+
+  // 카메라
+  const cam = { from: null, to: null, t: 1 };
+  function viewFor(top) {
+    const asp = camera.aspect, t = Math.tan(camera.fov * Math.PI / 360);
+    if (top) {
+      const halfX = asp < 1 ? 1.9 : 3.1, need = Math.max(2.35 / t, halfX / (t * asp));   // z −0.45~4.2, x ±halfX 가 보이게
+      return { pos: new THREE.Vector3(0, need * 1.02 + 1.3, 1.885), tgt: new THREE.Vector3(0, 0, 1.875) };
+    }
+    // 비스듬히: 이름표까지 포함한 스피커와 앞쪽 바닥이 함께 보이게. 화면이 좁을수록 더 물러나 내려다본다
+    const pitch = Math.min(1.0, Math.max(0.585, 0.585 + (1.75 - asp) * 0.22));
+    const dist = Math.max(3.35, 1.7 / (t * asp));
+    const tgt = new THREE.Vector3(0, asp < 1 ? 0.85 : 0.64, asp < 1 ? 0.15 : 1.1);   // 세로 화면: 스피커가 측정 카드 아래로 오게
+    return { pos: tgt.clone().add(new THREE.Vector3(0, Math.sin(pitch), Math.cos(pitch)).multiplyScalar(dist)), tgt };
+  }
+  let userMoved = false, orbiting = false;
+  controls.addEventListener('start', () => { orbiting = true; });
+  controls.addEventListener('end', () => { orbiting = false; });
+  controls.addEventListener('change', () => { if (orbiting) userMoved = true; });
+  function goView(top, instant) {
+    const v = viewFor(top); userMoved = false;
+    if (instant || reduce) { camera.position.copy(v.pos); controls.target.copy(v.tgt); controls.update(); cam.t = 1; return; }
+    cam.from = { pos: camera.position.clone(), tgt: controls.target.clone() }; cam.to = v; cam.t = 0;
+  }
+  function resize() {
+    const r = stage.getBoundingClientRect(); if (!r.width) return;
+    renderer.setSize(r.width, r.height, false); camera.aspect = r.width / r.height; camera.updateProjectionMatrix();
+    if (!userMoved && cam.t >= 1) goView(S.top, true);
+  }
+
+  // 조작: 마이크/스피커 끌기, 빈 곳 클릭으로 마이크 이동
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), earPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), -EAR), floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), hit = new THREE.Vector3();
+  let drag = null, downAt = null;
+  function setRay(e) { const r = canvas.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(ndc, camera); }
+  const clampMic = (x, z) => ({ x: Math.max(-2.9, Math.min(2.9, x)), z: Math.max(0.35, Math.min(4.3, z)) });
+  canvas.addEventListener('pointerdown', e => {
+    setRay(e); downAt = { x: e.clientX, y: e.clientY };
+    if (ray.intersectObject(mic, true).length) drag = 'mic';
+    else { const si = spk.findIndex(s => ray.intersectObject(s.g, true).length); if (si >= 0) drag = 'spk'; }
+    if (drag) { controls.enabled = false; canvas.setPointerCapture(e.pointerId); micTw = null; if (drag === 'spk') stopPreset(); else micMoved(); canvas.style.cursor = drag === 'mic' ? 'grabbing' : 'ew-resize'; }
+  }, { capture: true });
+  canvas.addEventListener('pointermove', e => {
+    setRay(e);
+    if (drag && ray.ray.intersectPlane(earPlane, hit)) {
+      if (drag === 'mic') S.mic = clampMic(hit.x, hit.z);
+      else { const d = Math.round(Math.max(0.4, Math.min(2.0, Math.abs(hit.x) * 2)) * 20) / 20; if (d !== S.d) setS({ d }); }
+      dirtyGraph = true;
+    } else if (!drag) {
+      const over = ray.intersectObject(mic, true).length ? 'grab' : spk.some(s => ray.intersectObject(s.g, true).length) ? 'ew-resize' : 'default';
+      canvas.style.cursor = over;
+    }
+  });
+  const endDrag = e => {
+    if (!drag && downAt && e.type === 'pointerup' && Math.hypot(e.clientX - downAt.x, e.clientY - downAt.y) < 5) {
+      setRay(e);
+      if (ray.ray.intersectPlane(floorPlane, hit) && Math.abs(hit.x) < 3 && hit.z > 0.3 && hit.z < 4.4) { moveMic(clampMic(hit.x, hit.z)); micMoved(); }
+    }
+    if (drag) canvas.style.cursor = drag === 'mic' ? 'grab' : 'ew-resize';
+    drag = null; downAt = null; controls.enabled = true;
+  };
+  canvas.addEventListener('pointerup', endDrag); canvas.addEventListener('pointercancel', endDrag);
+
+  // 3D 이름표: anchor = [가로 이동 비율, 세로 이동 비율, 가로 여백 px, 세로 여백 px]
+  const tmp = new THREE.Vector3();
+  const lab = { s1: $('#lS1'), s2: $('#lS2'), mic: $('#lMic'), r1: $('#lR1'), r2: $('#lR2') };
+  function place(el, x, y, z, ax, ay, ox = 0, oy = 0) {
+    tmp.set(x, y, z).project(camera);
+    if (tmp.z > 1 || tmp.z < -1) { el.style.visibility = 'hidden'; return; }
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    el.style.visibility = '';
+    el.style.transform = `translate(${((tmp.x + 1) / 2 * w + ox).toFixed(1)}px, ${((1 - tmp.y) / 2 * h + oy).toFixed(1)}px) translate(${ax}%, ${ay}%)`;
+  }
+  const scr = (x, y, z) => { tmp.set(x, y, z).project(camera); return tmp.x; };
+
+  function frame(e, dt) {
+    const ss = srcs();
+    U.uTheta.value = theta; U.uK.value = 2 * Math.PI / lam(); U.uLam.value = lam(); U.uPh2.value = S.ph2;
+    U.uOn1.value = S.on1 ? 1 : 0; U.uOn2.value = S.on2 ? 1 : 0; U.uMode.value = S.mode;
+    U.uFront.value = S.front ? 1 : 0; U.uNodal.value = S.nodal ? 1 : 0; U.uAnti.value = S.anti ? 1 : 0;
+    U.uWave.value = S.front ? 0.42 : 1;
+    U.uS1.value.set(ss[0].x, 0); U.uS2.value.set(ss[1].x, 0);
+    spk.forEach((s, i) => {
+      s.g.position.set(ss[i].x, EAR, 0);
+      s.coneG.position.z = 0.022 + (ss[i].on ? 0.0045 * Math.cos(ss[i].ph - theta) : 0);    // 진동판: 반대 위상이면 반대로 움직인다
+      s.ringMat.emissiveIntensity = ss[i].on ? 0.45 : 0; s.led.visible = ss[i].on;
+      srcMark[i].position.set(ss[i].x, 0.007, 0.0); srcMark[i].visible = ss[i].on;
+    });
+    mic.position.set(S.mic.x, EAR, S.mic.z); mic.rotation.y = Math.atan2(S.mic.x, S.mic.z);
+    const tip = new THREE.Vector3(S.mic.x, EAR, S.mic.z);
+    paths.forEach((p, i) => {
+      const a = new THREE.Vector3(ss[i].x, EAR, 0.01), show = S.paths && ss[i].on;
+      p.visible = show; if (!show) return;
+      const dir = tip.clone().sub(a), len = dir.length();
+      p.position.copy(a).add(tip).multiplyScalar(0.5); p.scale.set(1, len, 1); p.quaternion.setFromUnitVectors(up, dir.normalize());
+    });
+    mline.visible = S.graph; mline.position.z = S.mic.z;
+    spot.position.set(S.mic.x, 0.006, S.mic.z);
+    if (cam.t < 1) {
+      cam.t = Math.min(1, cam.t + dt / 0.9); const u = cam.t < 0.5 ? 4 * cam.t ** 3 : 1 - (-2 * cam.t + 2) ** 3 / 2;
+      camera.position.lerpVectors(cam.from.pos, cam.to.pos, u); controls.target.lerpVectors(cam.from.tgt, cam.to.tgt, u);
+    }
+    controls.update();
+    const cd = camera.position.distanceTo(controls.target); scene.fog.near = cd + 5; scene.fog.far = cd + 17;
+    renderer.render(scene, camera);
+    // 이름표
+    place(lab.s1, ss[0].x, EAR + 0.29, -0.1, -50, -100); place(lab.s2, ss[1].x, EAR + 0.29, -0.1, -50, -100);
+    lab.s1.style.opacity = S.on1 ? 1 : 0.4; lab.s2.style.opacity = S.on2 ? 1 : 0.4;
+    place(lab.mic, S.mic.x, EAR + 0.075, S.mic.z, -50, -100, 0, -6);
+    // 경로 길이: 각 경로의 가운데에, 두 경로의 바깥쪽으로 붙여 서로 겹치지 않게
+    const mz = S.mic.z / 2, mid = [0, 1].map(i => (ss[i].x + S.mic.x) / 2), flip = scr(mid[0], EAR, mz) > scr(mid[1], EAR, mz);
+    [['r1', 0], ['r2', 1]].forEach(([k, i]) => {
+      const el = lab[k], show = S.paths && ss[i].on; el.hidden = !show; if (!show) return;
+      const t = `${Math.round(e.r[i] * 100)} cm`; if (el.textContent !== t) el.textContent = t;
+      const left = (i === 0) !== flip;
+      place(el, mid[i], EAR, mz, left ? -100 : 0, -50, left ? -10 : 10, 0);
+    });
+  }
+  return { frame, resize, goView, gen, buildCables, applyTheme };
+}
+
+/* ---------- 상태와 화면 ---------- */
+let dirtyGraph = true;
+function setS(patch) {
+  const rebuild = 'd' in patch && patch.d !== S.d;
+  Object.assign(S, patch); dirtyGraph = true;
+  if (R3) { if (rebuild) R3.buildCables(); if ('f' in patch) R3.gen.paint(S.f); }
+  sync();
+}
+function stopPreset() { if (S.preset !== -1) { S.preset = -1; sync(); } }
+function micMoved() { if (S.preset >= 0 && PRESETS[S.preset].micLock) stopPreset(); }
+function moveMic(to, instant) {
+  const far = Math.hypot(to.x - S.mic.x, to.z - S.mic.z) > 1e-3;
+  if (instant || reduce || !far) { micTw = null; S.mic = { ...to }; }
+  else micTw = { from: { ...S.mic }, to: { ...to }, t: 0 };
+  dirtyGraph = true;
+}
+function applyPreset(i) {
+  const p = PRESETS[i]; S.preset = i;
+  setS({ ...BASE, ...p.s });
+  if (p.mic === 'quiet') { const z = MZ, x = solveX(lam() / 2, z); moveMic({ x: x ?? 0.3, z }); }
+  else if (p.mic) moveMic({ x: p.mic[0], z: p.mic[1] });
+  S.top = p.top; if (R3) R3.goView(S.top, false);
+  dirtyGraph = true; sync();
+}
+function sync() {
+  $('#presets').querySelectorAll('.chip').forEach((b, i) => b.setAttribute('aria-pressed', String(i === S.preset)));
+  $('#f').value = S.f; $('#fOut').textContent = `${S.f} Hz`;
+  $('#d').value = S.d; $('#dOut').textContent = `${Math.round(S.d * 100)} cm`;
+  document.querySelectorAll('[data-tg]').forEach(b => b.setAttribute('aria-pressed', String(!!S[b.dataset.tg])));
+  document.querySelectorAll('[data-seg]').forEach(sg => sg.querySelectorAll('button').forEach(b => {
+    const k = sg.dataset.seg, v = +b.dataset.v;
+    const on = k === 'ph2' ? (S.ph2 ? 1 : 0) === v : k === 'speed' ? S.speed === v : S[k] === v;
+    b.setAttribute('aria-pressed', String(on));
+  }));
+  $('#playBtn').textContent = S.run ? '❚❚' : '▶'; $('#playBtn').setAttribute('aria-label', S.run ? '멈춤' : '재생');
+  $('#viewBtn').setAttribute('aria-pressed', String(S.top)); $('#viewBtn').textContent = S.top ? '기울여 보기' : '위에서 보기';
+  $('#capBtn').setAttribute('aria-pressed', String(S.cap));
+  const cap = S.preset >= 0 ? PRESETS[S.preset].cap : '';
+  $('#caption').textContent = cap; $('#caption').hidden = !S.cap || !cap;
+  $('#graphCard').hidden = !S.graph;
+  $('#sndBtn').setAttribute('aria-pressed', String(S.sound)); $('#sndBtn').textContent = S.sound ? '소리 끄기' : '소리 켜기';
+  $('#timenote').textContent = S.run ? `화면 속 진동은 실제보다 약 ${Math.round(S.f / (FD * S.speed)).toLocaleString('ko-KR')}배 느림` : '일시정지';
+}
+let lastRO = '';
+function updateReadout(e) {
+  const L = lam(), both = S.on1 && S.on2;
+  const vals = [`${S.f} Hz`, `${Math.round(L * 100)} cm`, S.on1 ? `${Math.round(e.r[0] * 100)} cm` : '—', S.on2 ? `${Math.round(e.r[1] * 100)} cm` : '—',
+    both ? `${Math.round(e.dr * 100)} cm` : '—', both ? `= λ/2 × ${(e.dr / (L / 2)).toFixed(1)}` : '', String(Math.round(e.dB))];
+  const key = vals.join('|') + e.deg.toFixed(0);
+  if (key === lastRO) return; lastRO = key;
+  ['#roF', '#roL', '#roR1', '#roR2', '#roDr', '#roRatio', '#roDb'].forEach((id, i) => { $(id).textContent = vals[i]; });
+  const st = $('#roState'); const s = !both ? '' : e.deg <= 25 ? 'plus' : e.deg >= 155 ? 'minus' : '';
+  st.dataset.s = s; st.textContent = s === 'plus' ? '보강' : s === 'minus' ? '상쇄' : ''; st.hidden = !s;
+  $('#roBar').style.width = `${Math.max(0, Math.min(100, (e.dB - 30) / 50 * 100))}%`;
+  $('#lMic').textContent = `${Math.round(e.dB)} dB`;
+}
+
+/* ---------- 소리: 소리 발생기 앱의 순수한 음 (마이크가 듣는 크기 그대로) ---------- */
+const AU = { ctx: null, osc: null, gain: null, master: null };
+function toggleSound() {
+  if (!AU.ctx) {
+    try {
+      AU.ctx = new (window.AudioContext || window.webkitAudioContext)();
+      AU.osc = AU.ctx.createOscillator(); AU.gain = AU.ctx.createGain(); AU.osc.type = 'sine'; AU.gain.gain.value = 0; AU.osc.frequency.value = S.f;
+      const comp = AU.ctx.createDynamicsCompressor(); comp.threshold.value = -12; comp.knee.value = 6; comp.ratio.value = 6; comp.attack.value = 0.005; comp.release.value = 0.2;
+      AU.master = AU.ctx.createGain(); AU.master.gain.value = 0.9;
+      AU.osc.connect(AU.gain); AU.gain.connect(comp); comp.connect(AU.master); AU.master.connect(AU.ctx.destination); AU.osc.start();
+    } catch (err) { AU.ctx = null; return; }
+  }
+  S.sound = !S.sound; if (S.sound && AU.ctx.state !== 'running') AU.ctx.resume(); sync();
+}
+function updateAudio(e) {
+  if (!AU.ctx) return; const t = AU.ctx.currentTime;
+  AU.osc.frequency.setTargetAtTime(S.f, t, 0.02);
+  AU.gain.gain.setTargetAtTime(S.sound ? Math.min(0.35, 0.25 * Math.pow(10, (e.dB - 76) / 20)) : 0, t, S.sound ? 0.05 : 0.04);
+}
+
+/* ---------- 이벤트 ---------- */
+$('#presets').innerHTML = PRESETS.map((p, i) => `<button class="chip" data-p="${i}" title="${i + 1}"><b>${i + 1}</b>${p.label}</button>`).join('');
+$('#presets').addEventListener('click', e => { const b = e.target.closest('[data-p]'); if (b) applyPreset(+b.dataset.p); });
+$('#f').addEventListener('input', e => { stopPreset(); setS({ f: +e.target.value }); });
+$('#d').addEventListener('input', e => { stopPreset(); setS({ d: +e.target.value }); });
+document.querySelectorAll('[data-tg]').forEach(b => b.addEventListener('click', () => { const k = b.dataset.tg; if (k === 'on1' || k === 'on2') stopPreset(); setS({ [k]: !S[k] }); }));
+document.querySelectorAll('[data-seg]').forEach(sg => sg.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return; const k = sg.dataset.seg, v = +b.dataset.v;
+  if (k === 'ph2') { stopPreset(); setS({ ph2: v ? Math.PI : 0 }); } else setS({ [k]: v });
+}));
+$('#playBtn').addEventListener('click', () => setS({ run: !S.run }));
+$('#sndBtn').addEventListener('click', toggleSound);
+$('#viewBtn').addEventListener('click', () => { S.top = !S.top; if (R3) R3.goView(S.top, false); sync(); });
+$('#capBtn').addEventListener('click', () => setS({ cap: !S.cap }));
+$('#fsBtn').addEventListener('click', () => {
+  try {
+    if (document.fullscreenElement) { const p = document.exitFullscreen(); if (p && p.catch) p.catch(() => {}); }
+    else { const el = $('#app'), fn = el.requestFullscreen || el.webkitRequestFullscreen; if (fn) { const p = fn.call(el); if (p && p.catch) p.catch(() => {}); } }
+  } catch (err) {}
+});
+document.addEventListener('fullscreenchange', () => { $('#fsBtn').textContent = document.fullscreenElement ? '전체 화면 끝' : '전체 화면'; });
+document.addEventListener('keydown', e => {
+  // 슬라이더를 만진 뒤에도 단축키가 듣도록 range는 막지 않는다 (글자 입력 칸만 제외)
+  if (e.target.matches?.('input:not([type="range"]), textarea, select') || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (e.key === ' ') { e.preventDefault(); setS({ run: !S.run }); }
+  else if (/^[1-9]$/.test(e.key) && +e.key <= PRESETS.length) applyPreset(+e.key - 1);
+  else if (k === 't') $('#viewBtn').click();
+  else if (k === 'f') $('#fsBtn').click();
+  else if (k === 'c') $('#capBtn').click();
+  else if (k === 's') toggleSound();
+});
+const reTheme = () => { readTheme(); if (R3) R3.applyTheme(); dirtyGraph = true; lastRO = ''; };
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', reTheme);
+new MutationObserver(reTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+new ResizeObserver(() => { if (R3) R3.resize(); dirtyGraph = true; }).observe(stage);
+
+/* ---------- 시작 ---------- */
+if (R3) { R3.resize(); R3.buildCables(); R3.gen.paint(S.f); }
+applyPreset(1);
+if (R3) R3.goView(S.top, true);
+document.fonts?.ready.then(() => { if (R3) R3.gen.paint(S.f); });
+let last = performance.now(), tick = 0;
+function loop(now) {
+  const raw = Math.min(0.5, (now - last) / 1000), dt = Math.min(0.05, raw); last = now;
+  if (S.run) theta += 2 * Math.PI * FD * S.speed * dt;
+  if (micTw) {
+    micTw.t = Math.min(1, micTw.t + raw / 0.9); const u = micTw.t < 0.5 ? 4 * micTw.t ** 3 : 1 - (-2 * micTw.t + 2) ** 3 / 2;
+    S.mic = { x: micTw.from.x + (micTw.to.x - micTw.from.x) * u, z: micTw.from.z + (micTw.to.z - micTw.from.z) * u };
+    dirtyGraph = true; if (micTw.t >= 1) micTw = null;
+  }
+  const e = at(S.mic.x, S.mic.z);
+  if (R3) R3.frame(e, raw);
+  if ((tick = (tick + 1) % 3) === 0 || micTw) updateReadout(e);
+  if (dirtyGraph && S.graph) { drawGraph(); dirtyGraph = false; }
+  updateAudio(e);
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+})();
+</script>
