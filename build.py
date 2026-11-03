@@ -44,6 +44,11 @@ HEAD = f"""<!doctype html>
 body {{ margin: 0; }}
 a.tag {{ text-decoration: none; transition: border-color .15s, color .15s; }}
 a.tag:hover {{ color: var(--accent); border-color: var(--accent); }}
+/* 휴대폰: 단원 표시는 숨겨도 목록으로 가는 '←' 단추는 남긴다 */
+@media (max-width: 600px) and (orientation: portrait), (max-height: 500px) and (orientation: landscape) {{
+  a.tag {{ display: inline-flex !important; align-items: center; justify-content: center; min-width: 30px; min-height: 30px; padding: 0 8px; font-size: 16px; font-weight: 700; color: var(--ink); }}
+  a.tag .tag-txt {{ display: none; }}
+}}
 </style>
 """
 
@@ -71,7 +76,7 @@ def build_page(src: pathlib.Path) -> str:
     else:
         # 제목 위 단원 표시를 목록으로 돌아가는 링크로
         body, n = TAG_RE.subn(
-            r'<a class="tag" href="./" title="시뮬레이터 목록으로">← \1</a>', body, count=1
+            r'<a class="tag" href="./" title="시뮬레이터 목록으로" aria-label="시뮬레이터 목록으로">←<span class="tag-txt"> \1</span></a>', body, count=1
         )
         if n != 1:
             raise SystemExit(f"{src.name}: 단원 표시(.tag)를 찾지 못함")
