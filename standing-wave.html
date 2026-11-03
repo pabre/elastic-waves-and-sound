@@ -247,7 +247,13 @@ const clamp = (x, a, b) => Math.max(a, Math.min(b, x));
 /* ---------- 물리 ----------
    두 진행파: 빨강 y₁ = A sin(kx − ωt) (오른쪽), 파랑 y₂ = A sin(kx + ωt) (왼쪽)
    합성파 y = 2A sin kx · cos ωt → 마디 x = nλ/2, 배의 진폭 2A
-   고정단 반사로 만들기: 끝 x = Lf에서 뒤집혀 반사 (파원 쪽 재반사는 없다고 가정)
+   고정단 반사로 만들기: 진동 발생기(x = 0)가 약 한 주기에 걸쳐 부드럽게 켜지며 파동 s(t)를 보내고,
+     고정된 끝(x = LF)에서 뒤집혀(반사율 −1) 돌아온다. 돌아온 파동은 발생기 끝에서 다시 뒤집혀 반사되고(반사율 −RD,
+     나머지는 발생기가 흡수), 실 자체의 감쇠로 한 번 왕복할 때 진폭이 RA배가 된다(e^{−αx}).
+       오른쪽 n번째: RDⁿ e^{−α(2nLF + x)} s(t − (2nLF + x)/v),  왼쪽 n번째: −RDⁿ e^{−α(2(n+1)LF − x)} s(t − (2(n+1)LF − x)/v)
+     → 고정된 끝은 언제나 정확히 0. LF = 3λ라 왕복할 때마다 위상이 맞아 진폭이 쌓이다가(공명) 2A = 4 cm에서 자리 잡는다.
+       발생기 끝의 변위는 처음 AS(약 1.1 cm)에서 왕복마다 줄어 거의 마디(약 0.1 cm)가 된다 — 실제 진동 발생기 끝처럼.
+     s(t) = −AS·g(t)·sin ωt 로 잡아 다 자란 모습이 위 장면들의 2A sin kx cos ωt와 같다.
    줄 길이 맞추기(108쪽): 전동기·전지 끼우개를 실 끝에 매달아 늘어뜨리고, 손가락으로 위쪽을 집는다.
      추의 무게(약 0.8 N)가 굵은 실(약 2 g/m)을 당겨 v = √(T/μ) ≈ 20 m/s, 전동기 50 Hz → λ = 40 cm.
      감쇠가 있는 강제 진동: y = Re[(sin k(L−x) + iγ(1 − x/L))·C·e^{iωt}], C = a/(sin kL + iγ)
@@ -262,12 +268,24 @@ const lam = () => S.mode === 'motor' ? V / S.f : LAM;
 const k = () => 2 * Math.PI / lam();
 const phi = () => 2 * Math.PI * S.tau;
 const front = () => LAM * S.tau;                                   // 고정단 장면: 파원에서 나간 파면의 위치
-function red(x) { if (S.build && x > front()) return 0; return A * Math.sin(k() * x - phi()); }
-function blue(x) {
-  if (S.build) { if (2 * LF - x > front()) return 0; return -A * Math.sin(k() * (2 * LF - x) - phi()); }
-  return A * Math.sin(k() * x + phi());
+const RD = 0.5, RA = 0.95, AL = -Math.log(RA) / (2 * LF), ON = 1.2, NB = 14;   // 발생기 끝 반사율, 왕복 감쇠, 켜지는 시간(주기), 더할 반사 횟수
+const AS = 2 * A * (1 - RD * RA) / (Math.exp(-AL * LF / 2) + Math.exp(-AL * 1.5 * LF));   // 다 자란 배의 진폭이 2A가 되게
+const onset = tp => { const q = clamp(tp / ON, 0, 1); return q * q * (3 - 2 * q); };       // 부드럽게 켜짐 (파면에 꺾임이 없다)
+function goB(x, dir, env) {                                         // dir 1: 오른쪽으로 가는 파동들의 합, −1: 왼쪽. env이면 그 자리의 진폭
+  let y = 0;
+  for (let n = 0; n <= NB; n++) {
+    const d = dir > 0 ? 2 * n * LF + x : 2 * (n + 1) * LF - x, tp = S.tau - d / LAM;
+    if (tp <= 0) break;
+    const a = Math.pow(RD, n) * Math.exp(-AL * d) * AS * onset(tp);
+    y += env ? a : -a * Math.sin(2 * Math.PI * tp);
+  }
+  return env || dir > 0 ? y : -y;
 }
-const built = () => !S.build || front() >= 2 * LF;
+function red(x) { return S.build ? goB(x, 1) : A * Math.sin(k() * x - phi()); }
+function blue(x) { return S.build ? goB(x, -1) : A * Math.sin(k() * x + phi()); }
+const phaseB = () => front() < LF ? 1 : front() < 2 * LF ? 2 : 3;  // 1 보내는 중 · 2 반사파가 돌아오는 중 · 3 겹쳐 정상파
+const built = () => !S.build || phaseB() === 3;
+const antiB = () => { let m = 0; for (let x = LAM / 4; x < LF; x += LAM / 2) m = Math.max(m, goB(x, 1, true) + goB(x, -1, true)); return m; };   // 지금 배의 진폭
 function target() { const s = Math.sin(k() * S.L), d = s * s + GAM * GAM; return [A0 * s / d, -A0 * GAM / d]; }    // C = a/(s + iγ)
 const steadyAmp = L => { const s = Math.sin(2 * Math.PI * L / (V / S.f)); return A0 / Math.sqrt(s * s + GAM * GAM); };
 const motorAmp = () => Math.hypot(S.cR, S.cI);
@@ -325,9 +343,10 @@ const PRESETS = [
   { label: '겹치면', cap: '두 파동이 겹치면 제자리에서 진동하는 합성파가 생긴다 → 정상파', s: { crests: true } },
   { label: 'T/4씩', cap: '', s: { run: false, tau: 0, graph: true, crests: false }, quarter: true },
   { label: '마디·배', cap: '이웃한 마디 사이 거리 = λ/2, 정상파의 진폭 = 2A', s: { red: false, blue: false, nodes: true, dots: true, crests: false } },
-  { label: '고정단 반사로 만들기', cap: '고정된 끝에서 뒤집혀 반사된 파동이 보낸 파동과 겹쳐 정상파가 된다', s: { build: true, tau: 0, crests: false } },
-  { label: '줄 길이 맞추기', cap: '실의 길이가 λ/2의 정수배일 때만 뚜렷한 정상파가 생긴다 (교과서 108쪽 활동)', motor: true }
+  { label: '고정단 반사로 만들기', cap: '', s: { build: true, tau: 0, crests: false }, build: true },
+  { label: '줄 길이 맞추기', cap: '실의 길이가 λ/2의 정수배일 때만 뚜렷한 정상파가 생긴다', motor: true }
 ];
+const CAPSB = ['보낸 파동이 고정된 끝을 향해 간다', '고정된 끝에서 뒤집혀 반사되어 돌아온다', '두 파동이 겹쳐 정상파가 된다'];   // 휴대폰에서도 한 줄 (단계가 바뀌어도 장면이 움직이지 않게)
 const WAVE_BASE = { red: true, blue: true, sum: true, nodes: false, dots: false, crests: true, graph: false, split: false, build: false };
 function applyPreset(i) {
   const p = PRESETS[i]; S.preset = i;
@@ -371,7 +390,7 @@ new MutationObserver(readTheme).observe(document.documentElement, { attributes: 
 /* ---------- 캔버스 ---------- */
 const stage = $('#stage'), cv = $('#cv'), ctx = cv.getContext('2d');
 const graph = $('#graph'), gctx = graph.getContext('2d');
-const D = { dpr: 1, w: 1, h: 1, roBottom: 160, roLeft: 9999, botTop: 9999, rects: [] };
+const D = { dpr: 1, w: 1, h: 1, roBottom: 160, botTop: 9999, rects: [] };
 function resize() {
   const r = cv.getBoundingClientRect(), dpr = Math.min(2, window.devicePixelRatio || 1);
   const w = Math.max(1, Math.round(r.width * dpr)), h = Math.max(1, Math.round(r.height * dpr));
@@ -380,7 +399,7 @@ function resize() {
   measureRO();
 }
 function measureRO() {
-  const r = cv.getBoundingClientRect(), ro = $('#ro').getBoundingClientRect(); D.roBottom = ro.bottom - r.top; D.roLeft = ro.left - r.left;
+  const r = cv.getBoundingClientRect(), ro = $('#ro').getBoundingClientRect(); D.roBottom = ro.bottom - r.top;
   const shown = el => !el.hidden && el.getBoundingClientRect().height > 0;     // CSS로 숨긴 그래프 카드(좁은 화면)는 빼고
   let bt = r.bottom; for (const el of [$('#caption'), $('#graphCard')]) if (shown(el)) bt = Math.min(bt, el.getBoundingClientRect().top);
   D.botTop = bt - r.top;
@@ -487,73 +506,91 @@ function limb(pts, rs) {
   p.closePath();
   return p;
 }
-const skinFill = (x0, y0, x1, y1) => lin(x0, y0, x1, y1, [[0, T['skin-hi']], [0.45, T.skin], [1, T['skin-lo']]]);
-function skinPart(p, gr, sh = true) {
-  if (sh) shadowed(() => { ctx.fillStyle = gr; ctx.fill(p); }, 6, 3, 2, 0.26); else { ctx.fillStyle = gr; ctx.fill(p); }
-  ctx.strokeStyle = T['skin-lo']; ctx.globalAlpha = 0.6; ctx.lineWidth = 1; ctx.stroke(p); ctx.globalAlpha = 1;
+// 엄지와 검지로 실을 집은 오른손 (교과서 사진과 같은 자세): 손등이 우리 쪽, 손끝이 왼쪽.
+// 검지(앞)와 엄지(뒤, 위쪽) 사이에 실이 끼어 있고, 나머지 세 손가락은 느슨하게 접혀 아래에 있다.
+// 단위는 cm(손 길이 약 18.5 cm, 손바닥 너비 8.5 cm)로 자·실과 같은 축척. (x, y) = 집은 곳, hs = 1 cm의 픽셀 수.
+// 손목 뒤 아래팔은 검은 배경판의 어둠 속으로 사라진다(사진처럼 손과 손목만 보이게).
+const HC = document.createElement('canvas'), HX = HC.getContext('2d');
+function drawPinchHand(x, y, hs) {
+  const X0 = -3.2, X1 = 21.6, Y0 = -3.0, Y1 = 6.2, dpr = D.dpr, k = hs * dpr;            // 손 그림 상자(cm). 따로 그린 뒤 그림자와 함께 얹는다
+  const W = Math.ceil((X1 - X0) * k), H = Math.ceil((Y1 - Y0) * k);
+  if (HC.width !== W || HC.height !== H) { HC.width = W; HC.height = H; } else { HX.setTransform(1, 0, 0, 1, 0, 0); HX.clearRect(0, 0, W, H); }
+  HX.setTransform(k, 0, 0, k, -X0 * k, -Y0 * k);
+  paintHand(HX, hs, dpr);
+  HX.globalCompositeOperation = 'destination-out';                                    // 손목 너머 아래팔은 어둠 속으로 사라지게
+  HX.fillStyle = lin(15.2, 0, 20.8, 0, [[0, 'rgba(0,0,0,0)'], [0.5, 'rgba(0,0,0,0.72)'], [1, '#000']]); HX.fillRect(15.2, Y0, X1 - 15.2, Y1 - Y0);
+  HX.globalCompositeOperation = 'source-over';
+  ctx.save(); ctx.shadowColor = A_(T.shadow, 0.45); ctx.shadowBlur = 14; ctx.shadowOffsetX = 6; ctx.shadowOffsetY = 9;   // 판 위에 떨어지는 그림자
+  ctx.drawImage(HC, x + X0 * hs, y + Y0 * hs, W / dpr, H / dpr);
+  ctx.restore();
 }
-function nail(x, y, rx, ry, rot) {
-  ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
-  ctx.fillStyle = lin(-rx, -ry, rx, ry, [[0, T.spec], [0.4, T.nail], [1, T['skin-lo']]]);
-  ctx.beginPath(); ctx.ellipse(0, 0, rx, ry, 0, 0, 2 * Math.PI); ctx.fill();
-  ctx.strokeStyle = T['skin-lo']; ctx.globalAlpha = 0.5; ctx.lineWidth = 0.8; ctx.stroke(); ctx.restore();
-}
-// 엄지와 검지로 실을 집은 오른손 (오른쪽 위에서 들어옴). (x, y) = 집은 곳
-function drawPinchHand(x, y, u) {
-  const P = (a, b) => [x + a * u, y + b * u];
-  ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
-  // 팔뚝과 소매
-  const c0 = P(100, -2), ty = Math.max(c0[1] - 60, (D.roLeft < D.w - 20 ? D.roBottom + 46 : c0[1]));   // 측정값 카드 아래로 지나가게
-  const ang = clamp(Math.atan2(ty - c0[1], Math.max(80, D.w - c0[0])), -0.15, 0.3), ax = Math.cos(ang), ay = Math.sin(ang), nx = -ay, ny = ax;   // 팔 방향과 그 법선
-  const far = [c0[0] + ax * 900, c0[1] + ay * 900];
-  const sl = new Path2D();
-  sl.moveTo(c0[0] - nx * 26 * u, c0[1] - ny * 26 * u); sl.lineTo(far[0] - nx * 34 * u, far[1] - ny * 34 * u);
-  sl.lineTo(far[0] + nx * 34 * u, far[1] + ny * 34 * u); sl.lineTo(c0[0] + nx * 27 * u, c0[1] + ny * 27 * u); sl.closePath();
-  shadowed(() => { ctx.fillStyle = lin(c0[0] - nx * 30 * u, c0[1] - ny * 30 * u, c0[0] + nx * 30 * u, c0[1] + ny * 30 * u, [[0, T['sleeve-hi']], [0.35, T.sleeve], [1, T['sleeve-lo']]]); ctx.fill(sl); }, 18, 10, 6, 0.3);
-  ctx.save(); ctx.clip(sl);
-  for (const [d0, o, a] of [[30, -10, 0.45], [62, 6, 0.4], [96, -4, 0.35]]) {
-    const p0 = [c0[0] + ax * d0 * u, c0[1] + ay * d0 * u];
-    ctx.strokeStyle = T['sleeve-lo']; ctx.globalAlpha = a; ctx.lineWidth = 2.6 * u;
-    ctx.beginPath(); ctx.moveTo(p0[0] - nx * 28 * u, p0[1] - ny * 28 * u); ctx.quadraticCurveTo(p0[0] + ax * (o + 12) * u, p0[1] + ay * (o + 12) * u, p0[0] + ax * 20 * u + nx * 28 * u, p0[1] + ay * 20 * u + ny * 28 * u); ctx.stroke();
-    ctx.strokeStyle = T['sleeve-hi']; ctx.globalAlpha = a * 0.7; ctx.lineWidth = 1.3 * u;
-    ctx.beginPath(); ctx.moveTo(p0[0] - nx * 26 * u + ax * 3 * u, p0[1] - ny * 26 * u + ay * 3 * u); ctx.quadraticCurveTo(p0[0] + ax * (o + 15) * u, p0[1] + ay * (o + 15) * u, p0[0] + ax * 23 * u + nx * 26 * u, p0[1] + ay * 23 * u + ny * 26 * u); ctx.stroke();
-  }
-  ctx.restore(); ctx.globalAlpha = 1;
-  // 소맷부리
-  const cf = new Path2D(), c1 = [c0[0] + ax * 11 * u, c0[1] + ay * 11 * u];
-  cf.moveTo(c0[0] - nx * 28 * u, c0[1] - ny * 28 * u); cf.lineTo(c1[0] - nx * 29 * u, c1[1] - ny * 29 * u); cf.lineTo(c1[0] + nx * 29 * u, c1[1] + ny * 29 * u); cf.lineTo(c0[0] + nx * 28 * u, c0[1] + ny * 28 * u); cf.closePath();
-  shadowed(() => { ctx.fillStyle = lin(c0[0] - nx * 28 * u, c0[1] - ny * 28 * u, c0[0] + nx * 28 * u, c0[1] + ny * 28 * u, [[0, T['sleeve-hi']], [0.4, T.sleeve], [1, T['sleeve-lo']]]); ctx.fill(cf); }, 5, 2, -2, 0.25);
-  // 손목
-  const wr = new Path2D(); wr.moveTo(...P(84, -17)); wr.lineTo(c0[0] - nx * 19 * u + ax * 4 * u, c0[1] - ny * 19 * u + ay * 4 * u); wr.lineTo(c0[0] + nx * 19 * u + ax * 4 * u, c0[1] + ny * 19 * u + ay * 4 * u); wr.lineTo(...P(84, 18)); wr.closePath();
-  ctx.fillStyle = lin(x, y - 18 * u, x, y + 20 * u, [[0, T['skin-hi']], [0.4, T.skin], [1, T['skin-lo']]]); ctx.fill(wr);
-  // 손등
-  const back = new Path2D();
-  back.moveTo(...P(44, -19)); back.bezierCurveTo(...P(58, -27), ...P(78, -24), ...P(92, -19));
-  back.lineTo(...P(95, 16)); back.bezierCurveTo(...P(84, 27), ...P(66, 35), ...P(52, 33));
-  back.bezierCurveTo(...P(43, 31), ...P(39, 22), ...P(41, 12)); back.bezierCurveTo(...P(43, 2), ...P(42, -10), ...P(44, -19)); back.closePath();
-  shadowed(() => { ctx.fillStyle = skinFill(x + 44 * u, y - 26 * u, x + 92 * u, y + 32 * u); ctx.fill(back); }, 16, 8, 5, 0.3);
-  ctx.strokeStyle = T['skin-lo']; ctx.globalAlpha = 0.5; ctx.lineWidth = 1; ctx.stroke(back); ctx.globalAlpha = 1;
-  ctx.fillStyle = T.spec; ctx.globalAlpha = 0.25; ctx.beginPath(); ctx.ellipse(...P(64, -16), 16 * u, 4 * u, -0.08, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1;
-  // 접은 새끼·약지·중지
-  const curl = [
-    [[P(62, 9), P(52, 13), P(49, 19), P(55, 23)], [6 * u, 5.6 * u, 5 * u, 4.6 * u]],
-    [[P(56, 0), P(44, 4), P(39, 11), P(45, 16)], [6.8 * u, 6.4 * u, 5.8 * u, 5.2 * u]],
-    [[P(50, -8), P(36, -4), P(29, 4), P(35, 10)], [7.2 * u, 6.8 * u, 6.2 * u, 5.6 * u]]
+function paintHand(ctx, hs, dpr) {                                                     // ctx: 손 전용 캔버스, 단위 cm
+  const sh = (fn, blur, oy, ox, a) => { ctx.save(); ctx.shadowColor = A_(T.shadow, a); ctx.shadowBlur = blur * dpr; ctx.shadowOffsetX = ox * dpr; ctx.shadowOffsetY = oy * dpr; fn(); ctx.restore(); };
+  const lw = 1 / hs, LX = -0.6, LY = -0.8;                                            // 빛: 왼쪽 위
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  const grad = (cx0, cy0, r, stops) => lin(cx0 + LX * r, cy0 + LY * r, cx0 - LX * r, cy0 - LY * r, stops);
+  const shade = (p, cx0, cy0, r, mid = 0.45, dark = T['skin-lo']) => { ctx.fillStyle = grad(cx0, cy0, r, [[0, T['skin-hi']], [mid, T.skin], [1, dark]]); ctx.fill(p); };
+  const across = (p, a, b, r) => {                                                    // 손가락을 가로질러: 빛 쪽 가장자리는 밝게, 반대쪽은 어둡게
+    let nx = a[1] - b[1], ny = b[0] - a[0]; const l = Math.hypot(nx, ny) || 1; nx /= l; ny /= l; if (nx * LX + ny * LY < 0) { nx = -nx; ny = -ny; }
+    const cx0 = (a[0] + b[0]) / 2, cy0 = (a[1] + b[1]) / 2, k = r * 1.25;
+    ctx.fillStyle = lin(cx0 + nx * k, cy0 + ny * k, cx0 - nx * k, cy0 - ny * k, [[0, T['skin-hi']], [0.42, T.skin], [1, T['skin-lo']]]); ctx.fill(p);
+  };
+  const edge = (p, a = 0.7, w = 1) => { ctx.strokeStyle = T['skin-lo']; ctx.globalAlpha = a; ctx.lineWidth = w * lw; ctx.stroke(p); ctx.globalAlpha = 1; };
+  const crease = (x0, y0, cx0, cy0, x1, y1, a = 0.4) => { const p = new Path2D(); p.moveTo(x0, y0); p.quadraticCurveTo(cx0, cy0, x1, y1); edge(p, a, 0.85); };
+  const gloss = (cx0, cy0, rx, ry, rot, a) => { ctx.fillStyle = T.spec; ctx.globalAlpha = a; ctx.beginPath(); ctx.ellipse(cx0, cy0, rx, ry, rot, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1; };
+  // 뼈대: 관절 중심(cm)과 반지름. 손가락 굵기 ≈ 손바닥 너비의 1/4, 끝으로 갈수록 조금 가늘게.
+  const IDX = [[5.3, 0.45], [1.85, 0.72], [-0.25, 1.02], [-1.75, 1.42]], IDXr = [1.0, 0.9, 0.8, 0.72];  // 검지: 손등 쪽에서 보여 조금 짧아 보임
+  const THB = [[11.0, -0.35], [7.3, -1.1], [4.0, -0.85], [0.35, -0.2]], THBr = [1.4, 1.12, 0.98, 0.85];   // 엄지: 굵은 뿌리 + 두 마디
+  const CURL = [                                                                     // 새끼 · 약지 · 중지: 손바닥 쪽으로 말려 들어가 둘째 마디까지만 보임
+    [[[6.8, 3.6], [4.45, 3.9], [4.8, 4.7]], [0.8, 0.75, 0.68]],
+    [[[6.2, 2.75], [3.3, 3.1], [3.75, 4.05]], [0.9, 0.85, 0.76]],
+    [[[5.7, 1.75], [2.45, 2.15], [2.95, 3.25]], [0.96, 0.9, 0.8]]
   ];
-  for (const [pp, rr] of curl) skinPart(limb(pp, rr), lin(0, pp[0][1] - 8 * u, 0, pp[3][1] + 6 * u, [[0, T['skin-hi']], [0.5, T.skin], [1, T['skin-lo']]]));
-  // 검지 (실 위쪽)
-  const idx = limb([P(50, -16), P(32, -17), P(16, -12), P(3, -5)], [7.8 * u, 6.9 * u, 6.2 * u, 5.6 * u]);
-  skinPart(idx, lin(x + 20 * u, y - 25 * u, x + 26 * u, y - 3 * u, [[0, T['skin-hi']], [0.5, T.skin], [1, T['skin-lo']]]));
-  ctx.strokeStyle = T['skin-lo']; ctx.globalAlpha = 0.45; ctx.lineWidth = 1;
-  for (const [a, b] of [[17, -12], [32, -17]]) { ctx.beginPath(); ctx.moveTo(...P(a - 1.5, b - 6)); ctx.quadraticCurveTo(...P(a + 1.5, b), ...P(a, b + 6)); ctx.stroke(); }
+  const idx = limb(IDX, IDXr), thb = limb(THB, THBr);
+  const curls = CURL.map(([q, r]) => [limb([q[0], q[1]], [r[0], r[1]]), limb([q[1], q[2]], [r[1], r[2]])]);   // 꺾인 손가락은 곧은 두 마디로 (윤곽이 꼬이지 않게)
+  const TOP = [[6.2, -0.52], [8.6, -1.0], [11.2, -1.12], [13.6, -0.95], [16.5, -1.1], [21.5, -1.5]];   // 손등 위 테두리 → 손목 → 아래팔
+  const BOT = [[21.5, 4.4], [16.5, 3.95], [14.0, 3.75], [11.4, 4.15], [8.9, 4.55], [7.3, 4.45]];        // 아래팔 → 손목 → 새끼손가락 쪽
+  const smooth = (p, pts, move) => { pts.forEach(([a, b], i) => { if (i === 0) { if (move) p.moveTo(a, b); else p.lineTo(a, b); return; } const [pa, pb] = pts[i - 1]; p.quadraticCurveTo(pa, pb, (pa + a) / 2, (pb + b) / 2); }); p.lineTo(...pts[pts.length - 1]); };
+  const back = new Path2D();                                                          // 손등 + 손목 + 아래팔 (한 덩어리)
+  back.moveTo(4.9, 0.0); back.quadraticCurveTo(5.3, -0.42, 6.2, -0.52);
+  smooth(back, TOP, false); smooth(back, BOT, false);
+  smooth(back, [[7.3, 4.45], [6.95, 4.05], [6.25, 3.62], [6.6, 3.15], [5.6, 2.75], [6.05, 2.25], [5.1, 1.75], [5.6, 1.12], [4.7, 0.5], [4.9, 0.0]], false); back.closePath();   // 너클을 따라 오목볼록
+  const backRim = new Path2D(); smooth(backRim, TOP, true); smooth(backRim, BOT, true);   // 겉 테두리 (손가락 뿌리 쪽은 선 없이)
+  // 엄지 (검지 뒤, 실 뒤)
+  across(thb, THB[0], THB[3], 1.15); edge(thb, 0.75);
+  gloss(5.6, -1.85, 1.9, 0.2, -0.08, 0.3);
+  crease(4.25, -0.25, 3.9, -0.9, 4.15, -1.6, 0.35);                                  // 엄지 마디 주름
+  // 엄지 위를 지나 검지 뒤로 들어가는 실 (엄지와 검지 사이에 끼어 있다)
+  ctx.strokeStyle = T.shadow; ctx.globalAlpha = 0.3; ctx.lineWidth = 2.4 * lw; ctx.beginPath(); ctx.moveTo(1.8 * lw, -1.2); ctx.lineTo(1.8 * lw, 0.4); ctx.stroke(); ctx.globalAlpha = 1;
+  ctx.strokeStyle = T['thread-lo']; ctx.lineWidth = 3 * lw; ctx.beginPath(); ctx.moveTo(0, -1.8); ctx.lineTo(0, 0.5); ctx.stroke();
+  ctx.strokeStyle = T.thread; ctx.lineWidth = 1.8 * lw; ctx.beginPath(); ctx.moveTo(-0.4 * lw, -1.8); ctx.lineTo(-0.4 * lw, 0.5); ctx.stroke();
+  // 느슨하게 접은 세 손가락 (먼 것부터)
+  curls.forEach((segs, i) => {
+    const q = CURL[i][0], r = CURL[i][1][0], F = new Path2D();
+    segs.forEach(p => F.addPath(p));
+    sh(() => { ctx.fillStyle = T.skin; ctx.fill(F); }, 4, 2, 1.5, 0.3);       // 아래 손가락에 지는 옅은 그림자
+    edge(F, 0.75, 2); segs.forEach(p => across(p, q[0], q[1], r));                  // 겉 테두리만 남기고 안쪽 이음매는 덮음
+    gloss(q[1][0] + 0.15, q[1][1] - 0.45, 0.55, 0.15, -0.12, 0.22);                  // 둘째 마디(너클) 위 빛
+  });
+  // 검지 (가장 앞)
+  sh(() => across(idx, IDX[0], IDX[3], 0.92), 4, 2, 1.5, 0.3); edge(idx, 0.75);
+  gloss(2.9, 0.15, 1.7, 0.18, 0.08, 0.35);
+  for (const [cx0, a] of [[1.68, 0.35], [2.0, 0.3]]) crease(cx0 + 0.12, 0.05, cx0 - 0.1, 0.75, cx0 + 0.08, 1.45, a);   // 둘째 마디 주름
+  crease(-0.1, 0.35, -0.28, 1.02, -0.14, 1.68, 0.32);
+  // 검지 손톱 (손등 쪽이 우리를 향함)
+  ctx.save(); ctx.translate(-1.72, 1.43); ctx.rotate(-0.26);
+  ctx.fillStyle = lin(-0.5, -0.45, 0.4, 0.45, [[0, T.spec], [0.35, T.nail], [1, T['skin-lo']]]);
+  ctx.beginPath(); ctx.roundRect(-0.62, -0.38, 1.2, 0.76, [0.38, 0.22, 0.22, 0.38]); ctx.fill();
+  ctx.strokeStyle = T['skin-lo']; ctx.globalAlpha = 0.65; ctx.lineWidth = 0.9 * lw; ctx.stroke(); ctx.globalAlpha = 1;
+  ctx.fillStyle = T.spec; ctx.globalAlpha = 0.6; ctx.beginPath(); ctx.roundRect(-0.62, -0.38, 0.22, 0.76, [0.38, 0, 0, 0.38]); ctx.fill(); ctx.globalAlpha = 1;   // 손톱 끝 흰 부분
+  ctx.restore();
+  // 손등 (손가락 뿌리를 덮음). 손목을 지나면 어둠 속으로 사라짐
+  ctx.fillStyle = lin(8.6, -1.6, 10.2, 5.4, [[0, T['skin-hi']], [0.4, T.skin], [1, T['skin-lo']]]); ctx.fill(back);
+  edge(backRim, 0.75);
+  ctx.save(); ctx.clip(back);
+  for (const [kx, ky] of [[5.6, 1.12], [6.05, 2.25], [6.6, 3.15]]) { ctx.fillStyle = T['skin-lo']; ctx.globalAlpha = 0.16; ctx.beginPath(); ctx.ellipse(kx + 0.15, ky, 0.5, 0.22, -0.2, 0, 2 * Math.PI); ctx.fill(); }   // 너클 사이 골
   ctx.globalAlpha = 1;
-  nail(...P(7.5, -8.4), 4.4 * u, 2.8 * u, -0.48);
-  // 엄지 (실 아래쪽, 가장 앞)
-  const th = limb([P(58, 30), P(37, 21), P(18, 11), P(3, 5)], [10 * u, 8.4 * u, 7 * u, 6 * u]);
-  skinPart(th, lin(x + 18 * u, y - 1 * u, x + 26 * u, y + 38 * u, [[0, T['skin-hi']], [0.45, T.skin], [1, T['skin-lo']]]));
-  ctx.strokeStyle = T['skin-lo']; ctx.globalAlpha = 0.45; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(...P(20, 4)); ctx.quadraticCurveTo(...P(17, 11), ...P(21, 18)); ctx.stroke(); ctx.globalAlpha = 1;
-  ctx.fillStyle = T.spec; ctx.globalAlpha = 0.28; ctx.beginPath(); ctx.ellipse(...P(30, 13), 9 * u, 2.2 * u, 0.48, 0, 2 * Math.PI); ctx.fill(); ctx.globalAlpha = 1;
-  nail(...P(7.5, 8.6), 4.4 * u, 2.8 * u, 0.5);
+  for (const [kx, ky] of [[5.35, 0.35], [5.75, 1.6], [6.25, 2.6], [6.85, 3.45]]) gloss(kx, ky, 0.36, 0.15, -0.45, 0.14);   // 너클
   ctx.restore();
 }
 
@@ -617,33 +654,31 @@ function drawWaves() {
   ctx.beginPath(); ctx.moveTo(S.build ? X(0) : 0, G.cy); ctx.lineTo(S.build ? X(LF) : w, G.cy); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
   if (S.build) { drawDriver(G); drawClamp(G, false); }
   const sumF = x => red(x) + blue(x);
-  // 두 진행파가 겹칠 때도 둘 다 보이도록: 빨강은 조금 굵게 아래에, 파랑은 가늘게 위에
-  const comps = wd => {
-    if (S.red) { const a = xa, b = S.build ? Math.min(LF, front()) : xb; if (b > a) glowLine(sampled(red, a, b, G), T.hi, wd * 1.45); }
-    if (S.blue) { const a = S.build ? Math.max(0, 2 * LF - front()) : xa; if (xb > a) glowLine(sampled(blue, a, xb, G), T.lo, wd * 0.8); }
-  };
-  if (!S.build) comps(3.2);
+  // 성분파(빨강·파랑)는 실 아래에 깔아 실(합성파)이 늘 주인공으로 보이게. 두 진행파가 겹칠 때도 둘 다 보이도록 빨강은 굵게, 파랑은 가늘게
+  const wd = S.build ? 2.6 : 3.2, lead = 0.1 * ON * LAM;                // 파면 앞 거의 0인 곳은 빼고
+  if (S.red) { const b = S.build ? Math.min(LF, front() - lead) : xb; if (b > xa) glowLine(sampled(red, xa, b, G), T.hi, wd * 1.45); }
+  if (S.blue) { const a = S.build ? Math.max(0, 2 * LF - front() + lead) : xa; if (xb > a) glowLine(sampled(blue, a, xb, G), T.lo, wd * 0.8); }
   if (S.sum) tube(sampled(sumF, xa, xb, G), strW, 'str');
-  if (S.build) comps(2.4);                                  // 만들어지는 과정에서는 두 파동을 실 위에 겹쳐 보여 줌
   if (S.build) { drawClamp(G, true); drawDriverClip(G); }
   if (S.crests) { if (S.red) crestMarks(G, 1, G.cy, T.hi); if (S.blue) crestMarks(G, -1, G.cy, T.lo); }
   if (S.dots) drawDots(G, sumF, xa, xb);
   if (S.nodes && built()) drawNodes(G, 0, 60, 2 * A);
-  if (S.build && !built()) {
-    const fx = Math.min(LF, front());
-    label(front() < LF ? '보낸 파동 →' : '← 반사된 파동', front() < LF ? X(fx) : X(2 * LF - front()), Y(-A) + 38, front() < LF ? T.hi : T.lo);
+  if (S.build && !built()) {                                // 파면 바로 뒤에 이름표
+    const one = phaseB() === 1, xf = one ? front() - 0.6 * LAM : 2 * LF - front() + 0.6 * LAM;
+    // 보낸 파동은 실 위에 (실 아래 왼쪽의 '진동 발생기' 이름표와 겹치지 않게), 반사된 파동은 실 아래에
+    label(one ? '보낸 파동 →' : '← 반사된 파동', X(clamp(xf, 4, LF - 4)), one ? Y(2.4) - 22 : Y(-2.4) + 22, one ? T.hi : T.lo);
   }
 }
 function crestMarks(G, dir, cc, col) {
   const kk = k();
   for (let m = -2; m <= 6; m++) {
     let x;
-    if (dir > 0) x = (Math.PI / 2 + 2 * Math.PI * m + phi()) / kk;
-    else x = S.build ? 2 * LF - (Math.PI / 2 + 2 * Math.PI * m + phi()) / kk : (Math.PI / 2 + 2 * Math.PI * m - phi()) / kk;
+    if (dir > 0) x = (Math.PI / 2 + 2 * Math.PI * m + phi()) / kk;           // 고정단 장면도 빨강 ∝ sin(kx − ωt), 파랑 ∝ sin(kx + ωt)
+    else x = (Math.PI / 2 + 2 * Math.PI * m - phi()) / kk;
     if (x < -1 || x > 61) continue;
     if (S.build && (dir > 0 ? x > front() : 2 * LF - x > front())) continue;
     const yv = dir > 0 ? red(x) : blue(x), px = G.X(x), py = G.Y(yv, cc) - 13;
-    if (yv < A * 0.9) continue;
+    if (yv < (S.build ? 0.3 : A * 0.9)) continue;
     ctx.save(); ctx.fillStyle = col; ctx.shadowColor = col; ctx.shadowBlur = 6;
     ctx.beginPath(); ctx.moveTo(px, py + 7); ctx.lineTo(px - 7.5, py - 5.5); ctx.lineTo(px + 7.5, py - 5.5); ctx.closePath(); ctx.fill(); ctx.restore();
   }
@@ -741,29 +776,29 @@ function mgeo() {
     for (const r of D.rects) {
       if (r.pos === 'top' && r.l < cx + 150 && r.r > cx - 100) top = Math.max(top, r.b + 10);
       if (r.pos === 'bottom') {
-        if (r.l < cx + 45 && r.r > cx - 100) botP = Math.min(botP, r.t - 8);        // 전지 끼우개 · 자
+        if (r.l < cx + 45 && r.r > cx - 200) botP = Math.min(botP, r.t - 8);        // 전지 끼우개 · 자 · 자 왼쪽의 '전동기' 이름표
         if (r.l < cx + 160 && r.r > cx + 20) botH = Math.min(botH, r.t - 6);        // 가장 낮게 내려온 손
       }
     }
-    let bot = botP, s = 2.4, u = 0.62;
+    let bot = botP, s = 2.4, hs = 3.2;
     for (let it = 0; it < 6; it++) {
-      s = Math.max(2.4, (bot - top - 40) / (LMAX + 2 + packCm)); u = clamp(s / 6.4, 0.62, 1.35);
-      const handLow = bot - (packCm + LMIN) * s + 36 * u;
+      s = Math.max(2.4, (bot - top - 40) / (LMAX + 2 + packCm)); hs = Math.max(3.2, s);   // 손은 자·실과 같은 축척 (아주 좁은 화면에서만 조금 크게)
+      const handLow = bot - (packCm + LMIN) * s + 6.3 * hs;                // 접은 손가락 끝까지 집은 곳 아래 약 6 cm
       if (handLow > botH + 0.5) bot -= handLow - botH; else break;
     }
     const score = bot - top - Math.abs(f - 0.47) * 60;
-    if (!best || score > best.score) best = { cx, top, bot, s, u, score };
+    if (!best || score > best.score) best = { cx, top, bot, s, hs, score };
   }
-  const { cx, top, bot, s, u } = best;
+  const { cx, top, bot, s, hs } = best;
   const yA = bot - packCm * s;                                           // 실이 전지 끼우개에 묶인 곳 (L의 0점)
   const E = clamp(22 / (AMAX * s), 1, 3.2);                              // 실의 흔들림만 보기 좋게 키움
-  return { w, h, cx, top, bot, s, E, yA, u, Yc: L => yA - L * s, Xd: d => cx + d * s * E };
+  return { w, h, cx, top, bot, s, E, yA, hs, Yc: L => yA - L * s, Xd: d => cx + d * s * E };
 }
 function drawMotorScene() {
   const G = mgeo(), { cx, s, E, yA, Yc, Xd } = G, L = S.L, yF = Yc(L);
   background();
   // 검은 배경판 (교과서 사진처럼)
-  const bx0 = Math.max(0, cx - 150), bx1 = Math.min(D.w, cx + 130);
+  const bx0 = Math.max(0, cx - 150), bx1 = Math.min(D.w, cx + Math.max(130, 25 * G.hs));     // 손목 뒤 아래팔이 사라질 자리까지
   shadowed(() => { ctx.fillStyle = lin(bx0, 0, bx1, D.h, [[0, T['board-hi']], [0.45, T.board], [1, T.board]]); ctx.fillRect(bx0, -10, bx1 - bx0, D.h + 20); }, 24, 0, 8, 0.3);
   ctx.save(); ctx.beginPath(); ctx.rect(bx0, 0, bx1 - bx0, D.h); ctx.clip();
   ctx.strokeStyle = T['board-hi']; ctx.globalAlpha = 0.22; ctx.lineWidth = 1;
@@ -808,7 +843,7 @@ function drawMotorScene() {
   // 전지 끼우개와 전동기 (아래 끝에 매달림)
   if (S.view) drawPack(G, Xd(yMotorAt(0, phi())), 1, phi());
   else { const a = A0 * s * E; drawPack(G, cx - a, 0.28, null); drawPack(G, cx + a, 0.28, null); drawPack(G, cx, 0.9, null); }   // 빠르게 떨리는 모습
-  drawPinchHand(cx, yF, G.u);
+  drawPinchHand(cx, yF, G.hs);
   // 읽는 선과 이름표
   ctx.strokeStyle = T.thread; ctx.globalAlpha = 0.5; ctx.setLineDash([4, 5]); ctx.lineWidth = 1.5;
   ctx.beginPath(); ctx.moveTo(rx + rw + 2, yF); ctx.lineTo(cx - 6, yF); ctx.stroke(); ctx.setLineDash([]); ctx.globalAlpha = 1;
@@ -929,6 +964,14 @@ function readout() {
       <div class="ro-sep"></div>
       <div class="ro-cap">배의 진폭</div>
       <div class="ro-db"><b>${amp.toFixed(1)}</b><small>cm</small><span class="state" data-s="${clear ? 'plus' : 'minus'}">${clear ? `정상파 · 배 ${nn}개` : '약함'}</span></div>`;
+  } else if (S.build) {                                                  // 반사가 되풀이되며 자라는 모습을 그대로 보여 줌
+    const ph = phaseB(), aw = goB(0, 1, true) * Math.exp(-AL * LF / 2), an = antiB(), full = an > 0.96 * 2 * A;   // 보낸 파동: 실 가운데에서의 진폭
+    h = `<div class="ro"><span>파장 λ</span><b>${LAM} cm</b></div>
+      <div class="ro hi"><span>보낸 파동의 진폭</span><b>${aw.toFixed(1)} cm</b></div>
+      <div class="ro nd"><span>마디 사이 λ/2</span><b>${ph > 1 ? `${LAM / 2} cm` : '—'}</b></div>
+      <div class="ro-sep"></div>
+      <div class="ro-cap">합성파 진폭 (배)</div>
+      <div class="ro-db"><b>${ph > 1 ? an.toFixed(1) : '—'}</b><small>${ph > 1 ? 'cm' : ''}</small><span class="state" data-s="plus" ${full ? '' : 'hidden'}>2A</span></div>`;
   } else {
     const done = built();
     h = `<div class="ro"><span>파장 λ</span><b>${LAM} cm</b></div>
@@ -959,7 +1002,7 @@ function sync() {
   $('#sndBtn').setAttribute('aria-pressed', String(S.sound));
   $('#Lr').value = S.L; $('#LOut').textContent = `${S.L.toFixed(1)} cm`;
   $('#graphCard').hidden = !S.graph;
-  $('#gTitle').textContent = S.mode === 'motor' ? '손가락 위치 L에 따른 배의 진폭 (지나간 자리만)' : '그림 Ⅲ-20 · 주기 T 동안의 모습';
+  $('#gTitle').textContent = S.mode === 'motor' ? '손가락 위치 L에 따른 배의 진폭 (지나간 자리만)' : '주기 T 동안의 모습';
   $('#gUnit').textContent = S.mode === 'motor' ? 'cm' : '';
   updateCaption(); measureRO();
   lastRO = ''; readout();
@@ -968,7 +1011,8 @@ function sync() {
 function updateCaption() {
   const p = PRESETS[S.preset];
   let cap = p ? p.cap : '';
-  if (p && p.quarter) { const q = qIndex(); cap = q === null ? '→ 키를 누르면 T/4씩 넘어간다 (교과서 109쪽 그림 Ⅲ-20)' : CAPS4[q]; }
+  if (p && p.quarter) { const q = qIndex(); cap = q === null ? '→ 키를 누르면 T/4씩 넘어간다' : CAPS4[q]; }
+  if (p && p.build) cap = CAPSB[phaseB() - 1];
   const el = $('#caption'), hid = !S.cap || !cap;
   if (el.textContent !== cap || el.hidden !== hid) { el.textContent = cap; el.hidden = hid; measureRO(); }
 }

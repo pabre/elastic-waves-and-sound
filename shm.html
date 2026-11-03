@@ -160,7 +160,7 @@ h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white
 .pbtn { border: 0; border-radius: 9px; padding: 7px 14px; font-weight: 700; cursor: pointer; background: var(--accent); color: var(--accent-ink); white-space: nowrap; }
 .pbtn.alt { background: var(--surface-2); color: var(--ink); border: 1px solid var(--line); }
 .pbtn.stop { background: var(--hi); color: var(--accent-ink); border: 0; }
-.seg button:disabled { opacity: .35; cursor: not-allowed; }
+.seg button:disabled, .pbtn:disabled { opacity: .35; cursor: not-allowed; }
 
 @media (max-width: 720px) {
   h1 { font-size: 18px; }
@@ -196,6 +196,7 @@ h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; white
     <div class="labels" id="labels"></div>
     <div class="glass playbar">
       <button class="pbtn" id="playBtn" title="Space">▶ 놓기</button>
+      <button class="pbtn alt" id="resetBtn" title="R — 추를 평형 위치에 멈춤">↺ 리셋</button>
       <div class="seg num" data-seg="speed"><button data-v="1" title="실제 빠르기">1×</button><button data-v="0.5" title="2배 느리게">½×</button><button data-v="0.25" title="4배 느리게">¼×</button></div>
       <span class="timenote" id="timenote"></span>
     </div>
@@ -967,6 +968,7 @@ function paintReadout(cur) {
 function sync() {
   $('#presets').querySelectorAll('.chip').forEach((b, i) => b.setAttribute('aria-pressed', String(i === S.preset)));
   const pb = $('#playBtn'); txt(pb, !S.released ? '▶ 놓기' : S.paused ? '▶' : '❚❚'); pb.classList.toggle('alt', S.released);
+  $('#resetBtn').disabled = !S.released && S.hold === null;
   document.querySelectorAll('[data-seg="speed"] button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === S.speed)));
   txt($('#timenote'), S.paused ? '일시정지' : S.speed === 1 ? '실제 빠르기' : S.speed === 0.5 ? '실제보다 2배 느림' : '실제보다 4배 느림');
   const lim = maxA();
@@ -994,6 +996,8 @@ function togglePlay() {
   S.paused = !S.paused; sync();
 }
 $('#playBtn').addEventListener('click', togglePlay);
+function resetMotion() { if (dragging) return; stopMotion(); sync(); }     // 추를 평형 위치에 멈추고 기록 그래프·연속 사진을 지움 (측정표는 남김)
+$('#resetBtn').addEventListener('click', resetMotion);
 document.querySelectorAll('[data-seg="speed"]').forEach(sg => sg.addEventListener('click', e => { const b = e.target.closest('button'); if (b) { S.speed = +b.dataset.v; sync(); } }));
 $('#pullSeg').addEventListener('click', e => { const b = e.target.closest('[data-pull]'); if (b && !b.disabled) pullCm(+b.dataset.pull); });
 $('#kSeg').addEventListener('click', e => { const b = e.target.closest('[data-k]'); if (b && +b.dataset.k !== S.k) setApparatus({ k: +b.dataset.k }); });
@@ -1030,6 +1034,7 @@ document.addEventListener('keydown', e => {
   }
   if (e.key === ' ') { e.preventDefault(); togglePlay(); }
   else if (/^[1-9]$/.test(e.key) && +e.key <= PRESETS.length) applyPreset(+e.key - 1);
+  else if (e.key === 'r' || e.key === 'R') resetMotion();
   else if (e.key === 't' || e.key === 'T') $('#viewBtn').click();
   else if (e.key === 'f' || e.key === 'F') $('#fsBtn').click();
 });
