@@ -27,7 +27,7 @@
 
 | 그림 | 출처 | 라이선스 |
 |---|---|---|
-| 주먹, 집는 손, 가리키는 손, 사람 얼굴, 서 있는 사람, 헤드폰 | [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (Medium 피부색, Color) | MIT, Copyright (c) Microsoft Corporation |
+| 주먹, 집는 손, 가리키는 손, 사람 얼굴, 서 있는 사람, 걷는 사람, 요리사, 초밥, 헤드폰 | [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (Medium 피부색, Color) | MIT, Copyright (c) Microsoft Corporation |
 | 귀 단면(글자 없는 판) | [Anatomy of the Human Ear blank.svg](https://commons.wikimedia.org/wiki/File:Anatomy_of_the_Human_Ear_blank.svg) — Chittka L, Brockmann A; derivative work M. Komorniczak | [CC BY 2.5](https://creativecommons.org/licenses/by/2.5/) |
 
 ## 구조
