@@ -1365,11 +1365,86 @@ const sirenSound = {          // ①②④ 공통: '원래 소리 / A / B' 단�
 /* ② 돋보기와 '한 주기 ▶' (제안 ㉡): 한 주기 T 동안 소리는 λ, 구급차는 vS·T만큼 가서 앞쪽 파장이 λ′ = λ − vS·T가 된다.
    '한 주기 ▶'(키 .)는 멈춘 채 다음 파면이 나오는 순간까지, 그다음부터는 정확히 한 주기씩 0.55초에 걸쳐 넘긴다.
    돋보기(아래 오른쪽 작은 창)는 사이렌 뒤 vS·T부터 앞쪽 λ′까지를 크게 그리고, 파면이 막 나온 순간에는 자 세 개로 '빼기'를 보여 준다. */
+/* 관찰자 시점 (아래 오른쪽 작은 창, ①②④ 공통, 매 프레임): 관찰자는 제자리에 두고, 파면이 다가와 지나간다.
+   파면 위치 = 관찰자 자리 − (관찰자까지 남은 거리 d)·배율, d = |관찰자 − 파면 중심| − r.
+   본 화면과 같은 배율(같은 파장)·같은 느린 시간이라, 파면이 여기서 관찰자를 지나는 순간 = 본 화면에서 관찰자를 지나는 순간.
+   모든 줄에서 음원 쪽을 왼쪽에 둔다. 오른쪽 수 = 이번 회차 처음부터 만난 파면 수 (wsStep이 셈).
+   rows: { o, name, sub, col, kind: 'car'·'car2' (달리는 차) | 'meter' (길 위 측정기) | 'walk' (보도의 사람), dir: 차 그림 방향, m: −1이면 좌우 뒤집기 } */
+function obsPanel(w, rows) {
+  const c = $('#gcv'), [W, H] = fit(c); if (W < 160) return;
+  const g = c.getContext('2d'), sc = VW.sc, n = rows.length;
+  g.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); g.clearRect(0, 0, W, H);
+  const gap = PH.on ? 4 : 6, rh = (H - (n - 1) * gap) / n, s0 = PH.on ? 76 : 96, s1 = W - (PH.on ? 40 : 60), xo = s0 + (s1 - s0) * 0.6, ty = PH.on ? 7.5 : 9;
+  const lw = clamp(V / w.ems[0].f * sc * 0.11, 1.2, 2.6), fs = w.fronts.filter(f => f.ep === w.ep && f.src === 's');
+  ctx = g;
+  try {
+    rows.forEach((R, i) => {
+      const y0 = i * (rh + gap), ym = y0 + rh / 2, p = wp(w, R.o, w.t), m = R.m || 1, car = R.kind === 'car' || R.kind === 'car2';
+      g.textBaseline = 'middle'; g.textAlign = 'left';
+      g.font = `700 ${PH.on ? 12 : 14}px ${T.font}`; g.fillStyle = R.col; g.fillText(R.name, 2, ym - ty);
+      g.font = `500 ${PH.on ? 11.5 : 13}px ${T.mono}`; g.fillStyle = T.muted; g.fillText(R.sub, 2, ym + ty + 1);
+      g.save(); rr(s0, y0, s1 - s0, rh, 9); g.clip();
+      if (R.kind === 'walk') {       // 보도: 서 있으니 판석이 그대로
+        g.fillStyle = T.walk; g.fillRect(s0, y0, s1 - s0, rh);
+        g.strokeStyle = T['walk-j']; g.lineWidth = 1; g.beginPath();
+        for (let k = -40; k <= 40; k++) { const xx = xo + k * 1.5 * sc; g.moveTo(xx, y0); g.lineTo(xx, y0 + rh); }
+        g.stroke();
+      } else {                       // 도로: 달리는 차는 차선 점선이 반대쪽으로 흘러감, 서 있는 측정기는 점선이 그대로
+        g.fillStyle = T.asphalt; g.fillRect(s0, y0, s1 - s0, rh);
+        g.fillStyle = rgba(T['lane-w'], 0.75);
+        for (let k = Math.floor((p.x - 40) / 8); k * 8 < p.x + 40; k++) {
+          const xa = xo + m * (k * 8 - p.x) * sc, xb = xo + m * (k * 8 + 3 - p.x) * sc;
+          g.fillRect(Math.min(xa, xb), y0 + 3, Math.abs(xb - xa), 2.5); g.fillRect(Math.min(xa, xb), y0 + rh - 5.5, Math.abs(xb - xa), 2.5);
+        }
+      }
+      const xs = [];
+      for (const f of fs) { const x = xo - (Math.hypot(p.x - f.cx, p.y - f.cy) - w.v * (w.t - f.t0)) * sc; if (x > s0 - 4 && x < s1 + 4) xs.push(x); }
+      g.strokeStyle = rgba(T.wave, T.dark ? 0.85 : 0.95); g.lineWidth = lw; g.beginPath();
+      for (const x of xs) { g.moveTo(x, y0); g.lineTo(x, y0 + rh); }
+      g.stroke();
+      if (car) vehicle(R.kind, xo, ym, R.dir, { k: Math.min(10, (rh - 16) / 1.85) });
+      for (const x of xs) {          // 파면이 관찰자를 지나는 순간: 그 파면이 관찰자 색으로 잠깐 밝아짐
+        const a = Math.exp(-Math.pow((x - xo) / 9, 2)); if (a < 0.04) continue;
+        g.strokeStyle = rgba(T.surface, 0.8 * a); g.lineWidth = lw + 5; g.beginPath(); g.moveTo(x, y0); g.lineTo(x, y0 + rh); g.stroke();
+        g.strokeStyle = rgba(R.col, a); g.lineWidth = lw + 2; g.stroke();
+      }
+      if (R.kind === 'walk') person(xo, ym + rh * 0.4, rh * 0.84);     // 그림은 밝아진 파면 앞에 (얇은 그림이 선에 가리지 않게)
+      if (R.kind === 'meter') meterTop(xo, ym, Math.min(46, rh - 12), Math.PI, R.col, R.o.flash && performance.now() - R.o.flash < 120);
+      g.fillStyle = R.col;           // 관찰자 자리 표시 (위·아래 작은 삼각형)
+      for (const [yy, s] of [[y0, 1], [y0 + rh, -1]]) { g.beginPath(); g.moveTo(xo - 5, yy); g.lineTo(xo + 5, yy); g.lineTo(xo, yy + s * 6); g.closePath(); g.fill(); }
+      g.restore();
+      g.strokeStyle = rgba(T.ink, 0.12); g.lineWidth = 1; rr(s0 + 0.5, y0 + 0.5, s1 - s0 - 1, rh - 1, 9); g.stroke();
+      g.font = `600 ${PH.on ? 19 : 24}px ${T.mono}`; g.textAlign = 'right'; g.fillStyle = R.col; g.fillText(String(R.o.hits), W - 2, ym + 1);
+    });
+  } finally { ctx = ctx0; }
+}
+
+/* ①② 작은 창 (제안 ㉢): '관찰자 시점'은 서 있는 측정기 A·B에 파면이 똑같이 340 m/s로 다가오지만 간격(파장)이 달라
+   같은 시간에 만나는 수가 다름을 보여 준다. ②는 '돋보기'와 '관찰자 시점' 가운데 하나만 켠다 (ov = 작은 창이 보임). */
+const SIREN_PANEL = {
+  onToggle(key) {
+    if (key === 'mag' && this.p.mag) this.p.obs = false;
+    if (key === 'obs' && this.p.obs) this.p.mag = false;
+    this.p.ov = !!(this.p.mag || this.p.obs);
+  },
+  graph() {
+    if (this.p.mag) return this.magGraph();
+    return ['관찰자 자리에서 본 파면 · 둘 다 340 m/s로 다가옴', `같은 ${(this.w.t - this.w.t0).toFixed(3)}초 동안 만난 파면`];
+  },
+  live() {
+    if (this.p.mag) { this.magLive(); return; }
+    const w = this.w, u = this.p.u, f = this.p.f;
+    obsPanel(w, [
+      { o: w.rxs[0], name: u ? 'A 뒤' : 'A', sub: `λ ${((V + u) / f).toFixed(2)} m`, col: T.a, kind: 'meter', m: -1 },
+      { o: w.rxs[1], name: u ? 'B 앞' : 'B', sub: `λ ${((V - u) / f).toFixed(2)} m`, col: T.b, kind: 'meter' }]);
+  }
+};
+
 const MAG = {
   stepPeriod() {
     const w = this.w, T1 = 1 / w.ems[0].f;
     S.playing = false;
-    if (!this.p.ov) { this.p.ov = true; panelSync(); measureUI(); layoutDirty(); }
+    if (!this.p.mag) { this.p.mag = true; this.p.obs = false; this.p.ov = true; panelSync(); measureUI(); layoutDirty(); }
     this.advTo = this.adv > 0 ? this.advTo + T1 : w.ems[0].next;
     this.adv = this.advTo - w.t;
     syncBars(); renderHud();
@@ -1381,19 +1456,19 @@ const MAG = {
     wsStep(this.w, d);
   },
   magBox() {                     // 본 화면: 돋보기로 보는 자리
-    const m = this.mag; if (!this.p.ov || !panelShown || !m) return;
+    const m = this.magWin; if (!this.p.mag || !panelShown || !m) return;
     const x0 = X(m.xa), x1 = X(m.xb), y0 = Y(LY - m.hh), y1 = Y(LY + m.hh);
     ctx.save(); rr(x0 - 4, y0 - 4, x1 - x0 + 8, y1 - y0 + 8, 4);
     ctx.strokeStyle = rgba(T.surface, 0.75); ctx.lineWidth = 4; ctx.stroke(); ctx.setLineDash([4, 3]); ctx.strokeStyle = T.accent; ctx.lineWidth = 2; ctx.stroke(); ctx.restore();
   },
-  graph() { return ['돋보기 · 사이렌 바로 앞', `한 주기 ${Number((1 / this.p.f).toPrecision(2))}초`]; },
-  live() {
+  magGraph() { return ['돋보기 · 사이렌 바로 앞', `한 주기 ${Number((1 / this.p.f).toPrecision(2))}초`]; },
+  magLive() {
     const c = $('#gcv'), [W, H] = fit(c); if (W < 160) return;
     const g = c.getContext('2d'), w = this.w, e = w.ems[0], f = this.p.f, u = this.p.u;
     const lam = V / f, vT = u / f, src = wp(w, e, w.t).x;
     const xa = src - vT - Math.max(0.12 * lam, 0.06), xb = src + lam - vT + 0.12 * lam, k = W / (xb - xa);
     const Xm = x => (x - xa) * k, ym = H / 2;
-    this.mag = { xa, xb, hh: H / 2 / k };
+    this.magWin = { xa, xb, hh: H / 2 / k };
     const fs = w.fronts.filter(q => q.src === 's' && q.ep === w.ep), fn = fs[fs.length - 1], fp = fs[fs.length - 2];
     const at = !S.playing && !(this.adv > 0) && fn && fp && w.t - fn.t0 < 1e-6;
     const fsz = PH.on ? 11 : 12.5, white = '#ffffff', red = mix(T.cone, '#ffffff', 0.2), pur = mix(T.b, '#ffffff', 0.42), cyan = mix(T.wave, '#ffffff', 0.15);
@@ -1448,7 +1523,7 @@ function sirenScene(moving) {        // ① 정지한 사이렌, ② 다가오�
     chip: moving ? '다가오는 구급차' : '정지한 사이렌',
     cap: moving ? '앞(B)은 파장이 짧아져 높은 소리, 뒤(A)는 파장이 길어져 낮은 소리' : '멈춘 음원: 앞뒤 어디서나 파장과 진동수가 같다',
     view: { cx: 0, cy: 2.4, w: 40, h: 21 }, bg: 'road', K: SLOW,
-    p: { f: 500, u: moving ? 30 : 0, centers: false, rulers: true, ov: false },
+    p: { f: 500, u: moving ? 30 : 0, centers: false, rulers: true, ov: false, mag: false, obs: false },
     pv() { const r = 54 * PH.k * 0.62 + 6, g = this.g; return { x0: g.A, x1: g.B, y0: LY - 1.1, y1: LY + 1.1, pad: [fz(58), r, fz(60), r] }; },
     enter() { this.build(); },
     relayout() { if (this.g.B !== geo().B) this.build(); },
@@ -1495,16 +1570,17 @@ function sirenScene(moving) {        // ① 정지한 사이렌, ② 다가오�
       if (moving) d.push({ t: 'slider', label: '구급차 속력', key: 'u', min: 0, max: 50, step: 5, fmt: v => `${v} <small>m/s · ${kmh(v)} km/h</small>` });
       d.push({ t: 'slider', label: '사이렌 (높은 음)', key: 'f', min: 300, max: 1000, step: 50, fmt: v => `${v} <small>Hz</small>`, narrow: true });
       d.push({ t: 'sound', id: 'o', label: '원래 소리' }, { t: 'sound', id: 'A', label: 'A', dot: T.a }, { t: 'sound', id: 'B', label: 'B', dot: T.b });
-      if (moving) d.push({ t: 'toggle', key: 'centers', label: '파면 중심' }, { t: 'toggle', key: 'ov', label: '돋보기' });
+      if (moving) d.push({ t: 'toggle', key: 'centers', label: '파면 중심' }, { t: 'toggle', key: 'mag', label: '돋보기' });
+      d.push({ t: 'toggle', key: 'obs', label: '관찰자 시점' });
       d.push({ t: 'toggle', key: 'rulers', label: '파장 자' }, { t: 'formula' });
       return d;
     },
     sound(id) { const u = this.p.u; return { f: this.p.f, D: { o: 1, A: V / (V + u), B: V / (V - u) }[id] }; },
     onParam() { this.build(); }
   });
-  if (!moving) return s;
-  Object.defineProperty(s, 'view', { get() { return { cx: 0, cy: this.p.ov ? 4 : 2.4, w: 40, h: 21 }; } });
-  return Object.assign(s, MAG);
+  Object.defineProperty(s, 'view', { get() { return { cx: 0, cy: this.p.ov ? 4 : 2.4, w: 40, h: 21 }; } });   // 작은 창이 켜지면 B 이름표가 가리지 않게 위로
+  Object.assign(s, SIREN_PANEL);
+  return moving ? Object.assign(s, MAG) : s;
 }
 
 const SCENES = [
@@ -1602,11 +1678,14 @@ const SCENES = [
     onParam() { if (!this.run) this.uRun = this.p.u; if (!this.drag) this.dv = Math.max(8, this.p.d); }
   },
 
-  /* ④ 관찰자가 움직일 때 */
+  /* ④ 관찰자가 움직일 때 (+ 제안 ㉣: 구급차도 움직이기)
+     구급차는 보는 쪽(왼쪽, −x)으로 vS, 관찰자 차 A(구급차 앞·왼쪽)와 B(뒤·오른쪽)는 같은 방향 dir(−1 ←, +1 →)으로 vO.
+     A: f = (v ± vO)/(v − vS) f₀ (구급차가 다가옴), B: f = (v ∓ vO)/(v + vS) f₀ (구급차가 멀어짐). 관찰자가 구급차 쪽으로 가면 분자 +.
+     예시: 1 '나란히 달리기' (vS = vO = 30, ←: 앞차 A와 뒤차 B 모두 거리 그대로 → 500 Hz), 2 '마주 달리기' (→: A가 마주 옴 → 약 597 Hz) */
   Object.assign(Object.create(sirenSound), {
     chip: '관찰자 이동', cap: '관찰자가 움직이면 파장은 그대로, 1초에 만나는 파면 수가 달라진다',
     view: { cx: 2, cy: -3.1, w: 40, h: 21 }, bg: 'road', K: SLOW,      // 아래 오른쪽 관찰자 시점 창에 차 이름표가 가리지 않게 조금 위로
-    p: { f: 500, u: 30, rulers: true, ov: true },
+    p: { f: 500, u: 30, vs: 0, dir: -1, ex: 0, rulers: true, ov: true }, exSet: 0,
     Ly: -1.75, P: { x: -4.5, y: -8.8 },       // P: 길가 보도에 서 있는 사람 (비교용 정지 관찰자)
     pv() {                         // 휴대폰: 세 차와 (관찰자 시점 창이 켜져 있으면) 보도의 사람까지. A는 멀어지며 화면 밖으로 나가도 됨
       const ov = this.p.ov;
@@ -1614,20 +1693,36 @@ const SCENES = [
     },
     enter() { this.build(); },
     build() {
-      const u = this.p.u, Ly = this.Ly;
-      this.w = WS({ v: V, ems: [{ id: 's', x: 0, y: Ly, vx: 0, f: this.p.f, pre: 0.16 }],
-        rxs: [{ id: 'A', src: 's', x: -7, y: Ly, vx: -u, xmin: -21 }, { id: 'B', src: 's', x: 19, y: Ly, vx: -u, xmin: 10 }, { id: 'P', src: 's', x: this.P.x, y: this.P.y }] });
+      const { u, vs, dir } = this.p, Ly = this.Ly, out = dir > 0 && u, a0 = out ? -16 : -7, b0 = out ? 12 : 19, va = dir * u, cA = va + vs;   // cA: A와 구급차 사이가 줄어드는 빠르기. → 방향이면 A는 멀리서, B는 가까이서 출발
+      this.w = WS({ v: V, ems: [{ id: 's', x: 0, y: Ly, vx: -vs, f: this.p.f, pre: 0.16 }],
+        rxs: [{ id: 'A', src: 's', x: a0, y: Ly, vx: va }, { id: 'B', src: 's', x: b0, y: Ly, vx: va }, { id: 'P', src: 's', x: this.P.x, y: this.P.y }] });
+      // 한 회차 길이 (느린 시간): 차끼리 닿기 전, 차·구급차가 화면 밖으로 멀리 나가기 전
+      let T = 0.6;
+      if (cA > 0) T = Math.min(T, (-a0 - 3.55) / cA);           // A 꽁무니 ~ 구급차 앞 범퍼
+      if (cA < 0) T = Math.min(T, (b0 - 9.25) / -cA);           // 구급차 꽁무니 ~ B 앞 범퍼
+      if (va < 0) T = Math.min(T, (a0 + 21) / -va); else if (va > 0) T = Math.min(T, (32 - b0) / va);
+      if (vs > 0) T = Math.min(T, 14 / vs);
+      this.w.tEnd = Math.max(0.05, T);
+    },
+    vals() {                       // A·B가 듣는 소리: 분자 = 소리와 만나는 속력, 분모 = 그쪽 파장 × f
+      const { f, u, vs, dir } = this.p, nA = V + (dir > 0 ? u : -u), nB = V + (dir < 0 ? u : -u), dA = V - vs, dB = V + vs, cA = dir * u + vs;
+      const gapW = c => c > 0 ? '가까워짐' : c < 0 ? '멀어짐' : '거리 그대로';
+      const ob = (toward) => !u ? '관찰자 정지' : toward ? '관찰자 다가감 ↑' : '관찰자 멀어짐 ↓';
+      return { nA, nB, dA, dB, fA: f * nA / dA, fB: f * nB / dB, labA: gapW(cA), labB: gapW(-cA),
+        legA: `${ob(dir > 0)} · ${vs ? '구급차 다가옴 ↑' : '구급차 정지'}`, legB: `${ob(dir < 0)} · ${vs ? '구급차 멀어짐 ↓' : '구급차 정지'}` };
     },
     step(dt) { wsStep(this.w, dt / this.K); },
     draw() {
       const w = this.w, P = w.rxs[2];
       wsDraw(w);
-      vehicle('amb', X(SPK), Y(this.Ly), -1, { siren: true });
-      for (const [rx, col, kind] of [[w.rxs[0], T.a, 'car2'], [w.rxs[1], T.b, 'car']]) {
-        const p = wp(w, rx, w.t), x = X(p.x), y = Y(p.y); flashRing(rx, x, y, col);
-        const vh = vehicle(kind, x, y, -1, {});
-        if (this.p.u) arrowPx(x - vh.L / 2 - 10 * PH.k, y, x - vh.L / 2 - 48 * PH.k, y, col, 4 * PH.k);
-        pill(rx.id === 'A' ? 'A · 멀어짐' : 'B · 다가감', x, y + Math.max(40 * PH.k, 1.95 * VW.sc), col, 'center', fz(17));
+      const { u, vs, dir } = this.p, xs = wp(w, w.ems[0], w.t).x, k1 = PH.k, v = this.vals();
+      const av = vehicle('amb', X(xs + SPK), Y(this.Ly), -1, { siren: true });
+      if (vs) arrowPx(X(xs + SPK) - av.L / 2 - 10 * k1, Y(this.Ly), X(xs + SPK) - av.L / 2 - 48 * k1, Y(this.Ly), T.ink, 4 * k1);
+      for (const [rx, col, kind, lab] of [[w.rxs[0], T.a, 'car2', v.labA], [w.rxs[1], T.b, 'car', v.labB]]) {
+        const p = wp(w, rx, w.t), x = X(p.x), y = Y(p.y), fc = u && dir > 0 ? 1 : -1; flashRing(rx, x, y, col);
+        const vh = vehicle(kind, x, y, fc, {});
+        if (u) arrowPx(x + fc * (vh.L / 2 + 10 * k1), y, x + fc * (vh.L / 2 + 48 * k1), y, col, 4 * k1);
+        pill(`${rx.id} · ${lab}`, x, y + Math.max(40 * k1, 1.95 * VW.sc), col, 'center', fz(17));
       }
       if (panelShown) {             // 서 있는 사람은 관찰자 시점 창의 비교 대상이라, 그 창이 보일 때만
         const h = manH(), x = X(P.x), y = Y(P.y), ly = y - h * 0.45, gx = personW(h) / 2 + 10 * PH.k, f16 = fz(16);
@@ -1636,87 +1731,50 @@ const SCENES = [
         ctx.font = `600 ${f16}px ${T.font}`; const pw = ctx.measureText('서 있는 사람').width + 18, pr = !uiHit(x + gx, ly - 14, x + gx + pw, ly + 14);
         pill('서 있는 사람', x + (pr ? gx : -gx), ly, T.ink, pr ? 'left' : 'right', f16);
       }
-      if (this.p.rulers) {           // 왼쪽: 구급차 앞 ~ A 꽁무니, 오른쪽: 구급차 꽁무니 ~ B 앞 화살표 (구간은 8 m까지)
-        const sc = VW.sc, lam = V / this.p.f, hl = VEH.car[0] / 2, ia = SPK - VEH.amb[0] / 2 - 14 / sc, ib = SPK + VEH.amb[0] / 2 + 14 / sc;
-        const lab = `λ = ${lam.toFixed(2)} m`;
+      if (this.p.rulers) {           // 왼쪽: 구급차 앞(화살표 끝) ~ A, 오른쪽: 구급차 꽁무니 ~ B (구간은 8 m까지)
+        const sc = VW.sc, f = this.p.f, hl = VEH.car[0] / 2, ia = xs + SPK - VEH.amb[0] / 2 - (vs ? 60 * k1 : 14) / sc, ib = xs + SPK + VEH.amb[0] / 2 + 14 / sc;
+        const pa = wp(w, w.rxs[0], w.t).x, pb = wp(w, w.rxs[1], w.t).x, ea = u && dir > 0 ? 60 * k1 : 14, eb = u && dir < 0 ? 60 * k1 : 14;
         lamRulers(this, w, this.Ly, [
-          { key: 'a', dir: -1, inner: ia, outer: Math.max(ia - 8, wp(w, w.rxs[0], w.t).x + hl + 14 / sc), lam, label: lab, col: T.a },
-          { key: 'b', dir: 1, inner: ib, outer: Math.min(ib + 8, wp(w, w.rxs[1], w.t).x - hl - 60 * PH.k / sc), lam, label: lab, col: T.b }]);
+          { key: 'a', dir: -1, inner: ia, outer: Math.max(ia - 8, pa + hl + ea / sc), lam: v.dA / f, label: `${vs ? 'λ′' : 'λ'} = ${(v.dA / f).toFixed(2)} m`, col: T.a },
+          { key: 'b', dir: 1, inner: ib, outer: Math.min(ib + 8, pb - hl - eb / sc), lam: v.dB / f, label: `${vs ? 'λ″' : 'λ'} = ${(v.dB / f).toFixed(2)} m`, col: T.b }]);
       }
       scaleBar(5, '5 m');
       if (panelShown) credit();
     },
     graph() { return ['관찰자 자리에서 본 파면 · 왼쪽이 구급차 쪽', `같은 ${(this.w.t - this.w.t0).toFixed(3)}초 동안 만난 파면`]; },
-    /* 관찰자 시점 (작은 창, 매 프레임): 관찰자는 제자리에 두고, 파면이 (340 ± vO) m/s로 다가와 지나간다.
-       파면 위치 = 관찰자 자리 − (관찰자까지 남은 거리 d)·배율, d = |관찰자 − 파면 중심| − r.
-       본 화면과 같은 배율(같은 파장)·같은 느린 시간이라, 파면이 여기서 관찰자를 지나는 순간 = 본 화면에서 차를 지나는 순간.
-       세 줄 모두 구급차 쪽을 왼쪽에 두었다 (A는 좌우를 뒤집어 그림). 수 = 이번 회차 처음부터 만난 파면 수 (wsStep이 셈) */
+    /* 관찰자 시점 (obsPanel): 세 줄 모두 구급차 쪽을 왼쪽에 (A는 좌우를 뒤집어 그림). 둘째 줄 = 파면이 관찰자에게 다가오는 속력 */
     live() {
-      const c = $('#gcv'), [W, H] = fit(c); if (W < 160) return;
-      const g = c.getContext('2d'), w = this.w, u = this.p.u, sc = VW.sc;
-      g.setTransform(D.dpr, 0, 0, D.dpr, 0, 0); g.clearRect(0, 0, W, H);
-      const rows = [
-        { o: w.rxs[0], name: 'A 멀어짐', col: T.a, rel: V - u, kind: 'car2', dir: 1, m: -1 },
-        { o: w.rxs[2], name: '서 있는 사람', col: T.ink, rel: V },
-        { o: w.rxs[1], name: 'B 다가감', col: T.b, rel: V + u, kind: 'car', dir: -1, m: 1 }];
-      const gap = PH.on ? 4 : 6, rh = (H - 2 * gap) / 3, s0 = PH.on ? 76 : 96, s1 = W - (PH.on ? 40 : 60), xo = s0 + (s1 - s0) * 0.6, ty = PH.on ? 7.5 : 9;
-      const lw = clamp(V / this.p.f * sc * 0.11, 1.2, 2.6), fs = w.fronts.filter(f => f.ep === w.ep && f.src === 's');
-      ctx = g;
-      try {
-        rows.forEach((R, i) => {
-          const y0 = i * (rh + gap), ym = y0 + rh / 2, p = wp(w, R.o, w.t);
-          g.textBaseline = 'middle'; g.textAlign = 'left';
-          g.font = `700 ${PH.on ? 12 : 14}px ${T.font}`; g.fillStyle = R.col; g.fillText(R.name, 2, ym - ty);
-          g.font = `500 ${PH.on ? 11.5 : 13}px ${T.mono}`; g.fillStyle = T.muted; g.fillText(`${R.rel} m/s`, 2, ym + ty + 1);
-          g.save(); rr(s0, y0, s1 - s0, rh, 9); g.clip();
-          if (R.kind) {                // 도로: 차선 점선이 관찰자 반대쪽으로 흘러감 (관찰자가 달리고 있다는 표시)
-            g.fillStyle = T.asphalt; g.fillRect(s0, y0, s1 - s0, rh);
-            g.fillStyle = rgba(T['lane-w'], 0.75);
-            for (let n = Math.floor((p.x - 40) / 8); n * 8 < p.x + 40; n++) {
-              const xa = xo + R.m * (n * 8 - p.x) * sc, xb = xo + R.m * (n * 8 + 3 - p.x) * sc;
-              g.fillRect(Math.min(xa, xb), y0 + 3, Math.abs(xb - xa), 2.5); g.fillRect(Math.min(xa, xb), y0 + rh - 5.5, Math.abs(xb - xa), 2.5);
-            }
-          } else {                     // 보도: 서 있으니 판석이 그대로
-            g.fillStyle = T.walk; g.fillRect(s0, y0, s1 - s0, rh);
-            g.strokeStyle = T['walk-j']; g.lineWidth = 1; g.beginPath();
-            for (let n = -40; n <= 40; n++) { const xx = xo + n * 1.5 * sc; g.moveTo(xx, y0); g.lineTo(xx, y0 + rh); }
-            g.stroke();
-          }
-          const xs = [];
-          for (const f of fs) { const x = xo - (Math.hypot(p.x - f.cx, p.y - f.cy) - w.v * (w.t - f.t0)) * sc; if (x > s0 - 4 && x < s1 + 4) xs.push(x); }
-          g.strokeStyle = rgba(T.wave, T.dark ? 0.85 : 0.95); g.lineWidth = lw; g.beginPath();
-          for (const x of xs) { g.moveTo(x, y0); g.lineTo(x, y0 + rh); }
-          g.stroke();
-          if (R.kind) vehicle(R.kind, xo, ym, R.dir, { k: Math.min(10, (rh - 16) / 1.85) });
-          for (const x of xs) {        // 파면이 관찰자를 지나는 순간: 그 파면이 관찰자 색으로 잠깐 밝아짐
-            const a = Math.exp(-Math.pow((x - xo) / 9, 2)); if (a < 0.04) continue;
-            g.strokeStyle = rgba(T.surface, 0.8 * a); g.lineWidth = lw + 5; g.beginPath(); g.moveTo(x, y0); g.lineTo(x, y0 + rh); g.stroke();
-            g.strokeStyle = rgba(R.col, a); g.lineWidth = lw + 2; g.stroke();
-          }
-          if (!R.kind) person(xo, ym + rh * 0.4, rh * 0.84);     // 사람 그림은 밝아진 파면 앞에 (얇은 그림이 선에 가리지 않게)
-          g.fillStyle = R.col;           // 관찰자 자리 표시 (위·아래 작은 삼각형)
-          for (const [yy, s] of [[y0, 1], [y0 + rh, -1]]) { g.beginPath(); g.moveTo(xo - 5, yy); g.lineTo(xo + 5, yy); g.lineTo(xo, yy + s * 6); g.closePath(); g.fill(); }
-          g.restore();
-          g.strokeStyle = rgba(T.ink, 0.12); g.lineWidth = 1; rr(s0 + 0.5, y0 + 0.5, s1 - s0 - 1, rh - 1, 9); g.stroke();
-          g.font = `600 ${PH.on ? 19 : 24}px ${T.mono}`; g.textAlign = 'right'; g.fillStyle = R.col; g.fillText(String(R.o.hits), W - 2, ym + 1);
-        });
-      } finally { ctx = ctx0; }
+      const w = this.w, v = this.vals(), fc = this.p.u && this.p.dir > 0 ? 1 : -1;
+      obsPanel(w, [
+        { o: w.rxs[0], name: `A ${v.labA}`, sub: `${v.nA} m/s`, col: T.a, kind: 'car2', dir: -fc, m: -1 },
+        { o: w.rxs[2], name: '서 있는 사람', sub: `${V} m/s`, col: T.ink, kind: 'walk' },
+        { o: w.rxs[1], name: `B ${v.labB}`, sub: `${v.nB} m/s`, col: T.b, kind: 'car', dir: fc }]);
     },
     hud() {
-      const f = this.p.f, u = this.p.u;
+      const { f, u, vs, dir } = this.p, v = this.vals(), sA = dir > 0 ? '+' : '−', sB = dir < 0 ? '+' : '−';
       return {
-        L: [ro({ k: 'A가 듣는 소리', dot: T.a, v: f1(f * (V - u) / V), u: 'Hz', s: `소리와 만나는 속력 ${V - u} m/s`, f: `(340 − ${u})/340 × ${f}` })],
-        M: [ro({ k: '관찰자 차', v: `${u}`, u: `m/s · ${kmh(u)} km/h`, s: `파장 ${(V / f).toFixed(2)} m 그대로` })],
-        R: [ro({ k: 'B가 듣는 소리', dot: T.b, v: f1(f * (V + u) / V), u: 'Hz', s: `소리와 만나는 속력 ${V + u} m/s`, f: `(340 + ${u})/340 × ${f}` })]
+        L: [ro({ k: 'A가 듣는 소리', dot: T.a, v: f1(v.fA), u: 'Hz', s: `만남 ${v.nA} m/s · λ ${(v.dA / f).toFixed(2)} m`, f: `(340${sA}${u})/(340−${vs}) × ${f}<br><small>${v.legA}</small>` })],
+        M: [ro({ k: '관찰자 차', v: `${u}`, u: `m/s · ${u ? (dir < 0 ? '←' : '→') : '정지'}`, s: vs ? `구급차 ${vs} m/s · ←` : '구급차 정지' })],
+        R: [ro({ k: 'B가 듣는 소리', dot: T.b, v: f1(v.fB), u: 'Hz', s: `만남 ${v.nB} m/s · λ ${(v.dB / f).toFixed(2)} m`, f: `(340${sB}${u})/(340+${vs}) × ${f}<br><small>${v.legB}</small>` })]
       };
     },
     dock() {
       return [{ t: 'play' }, { t: 'restart' }, { t: 'slider', label: '관찰자 속력', key: 'u', min: 0, max: 50, step: 5, fmt: v => `${v} <small>m/s · ${kmh(v)} km/h</small>` },
+        { t: 'seg', label: '관찰자 방향', key: 'dir', opts: [[-1, '←'], [1, '→']] },
+        { t: 'slider', label: '구급차 속력 (←)', key: 'vs', min: 0, max: 50, step: 5, fmt: v => `${v} <small>m/s · ${kmh(v)} km/h</small>` },
+        { t: 'seg', label: '예시', key: 'ex', opts: [[1, '나란히 달리기'], [2, '마주 달리기']] },
         { t: 'sound', id: 'o', label: '원래 소리' }, { t: 'sound', id: 'A', label: 'A', dot: T.a }, { t: 'sound', id: 'B', label: 'B', dot: T.b },
         { t: 'toggle', key: 'ov', label: '관찰자 시점' }, { t: 'toggle', key: 'rulers', label: '파장 자' }, { t: 'formula' }];
     },
-    sound(id) { const u = this.p.u; return { f: this.p.f, D: { o: 1, A: (V - u) / V, B: (V + u) / V }[id] }; },
-    onParam() { this.build(); }
+    sound(id) { const v = this.vals(); return { f: this.p.f, D: { o: 1, A: v.nA / v.dA, B: v.nB / v.dB }[id] }; },
+    onParam() {
+      const P = this.p;
+      if (P.ex !== this.exSet && P.ex) { P.u = 30; P.vs = 30; P.dir = P.ex === 1 ? -1 : 1; }     // 예시 단추
+      P.ex = this.exSet = P.u === 30 && P.vs === 30 ? (P.dir < 0 ? 1 : 2) : 0;                     // 값을 바꾸면 예시 표시도 따라감
+      this.cap = P.vs ? '음원은 파장을, 관찰자는 파면을 만나는 빠르기를 바꾼다 (둘 다 움직이면 둘 다)' : '관찰자가 움직이면 파장은 그대로, 1초에 만나는 파면 수가 달라진다';
+      txt($('#caption'), this.cap);
+      this.build();
+    }
   }),
 
   /* ⑤ 음속 돌파: 충격파 (옆에서 본 모습) */
@@ -2250,7 +2308,7 @@ $('#dock').addEventListener('click', e => {
   if (b.dataset.dk != null) { const d = DK[+b.dataset.dk]; cur.p[d.key] = +b.dataset.v; cur.onParam(); }
   else if (b.dataset.tg) {
     if (b.dataset.tg === 'formula') { S.formula = !S.formula; try { localStorage.setItem('doppler3-formula', S.formula ? '1' : '0'); } catch (err) {} }
-    else cur.p[b.dataset.tg] = !cur.p[b.dataset.tg];
+    else { cur.p[b.dataset.tg] = !cur.p[b.dataset.tg]; if (cur.onToggle) cur.onToggle(b.dataset.tg); }
   }
   syncBars(); renderHud(); measureUI(); layoutDirty();
 });
